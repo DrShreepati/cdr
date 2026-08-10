@@ -1,0 +1,8 @@
+{
+  "name": "CB-CDR Operational Suite",
+  "short_name": "CB-CDR",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef2f5",
+  "theme_color": "#2c3e50"
+}
