@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Child Death Review - Complete Operational Suite</title>
+  <style>
+    /* TYPOGRAPHY & UX */
+    html, body { overscroll-behavior-y: none; }
+    body { 
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Nirmala UI", "Kalinga", "Oriya MN", sans-serif; 
+      background-color: #eef2f5; margin: 0; padding: 15px; color: #2c3e50; font-size: 0.9rem; line-height: 1.5;
+    }
+    .app-container { max-width: 1150px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    p { text-align: justify; }
+
+    /* Space-Saving Swipeable Navigation */
+    .tab-navigation { 
+      display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; 
+      border-bottom: 3px solid #2c3e50; margin-bottom: 20px; 
+      -webkit-overflow-scrolling: touch; scrollbar-width: none; 
+    }
+    .tab-navigation::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 10px 16px; border: 1px solid #ccc; border-bottom: none; background: #e9ecef; cursor: pointer; font-weight: bold; color: #495057; font-size: 0.85rem; border-radius: 4px 4px 0 0; transition: background 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .tab-btn:hover { background: #dee2e6; }
+    .tab-btn.active { background: #2c3e50; color: #fff; border-color: #2c3e50; }
+    
+    /* Tab Display Logic */
+    .tab-content { display: none; margin-bottom: 30px; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Physical Master View Override for Mobile Failsafe */
+    body.print-all-mode .tab-content { display: block !important; border-bottom: 4px dashed #dc3545; padding-bottom: 30px; }
+    body.print-all-mode .tab-content.restricted-tab { display: none !important; } 
+    body.print-all-mode .tab-content:last-of-type { border-bottom: none; }
+    
+    .form-header { text-align: center; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #2c3e50; padding-bottom: 8px; }
+    
+    /* STANDARDIZED SECTION HEADERS */
+    h3 { font-size: 1rem; color: #0056b3; border-bottom: 2px solid #e1e5eb; margin-top: 25px; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; }
+    h4 { margin: 15px 0 10px 0; font-size: 0.85rem; color: #fff; background-color: #6c757d; padding: 6px 12px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    /* Layouts */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 10px; }
+    
+    .office-use-box { border: 2px solid #2c3e50; padding: 10px 15px; margin-bottom: 15px; border-radius: 4px; background-color: #f8faff; }
+    .office-use-box h4 { margin: 0 0 10px 0; color: #dc3545; background: none; padding: 0; text-transform: uppercase; font-size: 0.85rem; }
+
+    .sub-q-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; padding: 10px; background: #f8faff; border-left: 3px solid #0056b3; border-radius: 0 4px 4px 0; }
+    .sub-q-row > .field-group { flex: 1; min-width: 160px; margin-bottom: 0; }
+
+    .field-group { display: flex; flex-direction: column; margin-bottom: 8px; }
+    .field-group label { font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; color: #34495e; }
+    
+    /* Inputs */
+    input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea { 
+      width: 100%; padding: 8px; border: 1px solid #aebac6; border-radius: 4px; box-sizing: border-box; 
+      font-size: 0.85rem; font-family: inherit; font-weight: 600; color: #004085; background-color: #fbfcff; transition: border 0.2s, background-color 0.3s;
+      line-height: 1.6; 
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #0056b3; background-color: #fff; box-shadow: 0 0 0 2px rgba(0,86,179,0.1); }
+    input[readonly], select[disabled], input[disabled] { background-color: #e9ecef; color: #495057; cursor: not-allowed; border-color: #ced4da; }
+    
+    /* Advanced Textarea handling for narratives */
+    textarea { resize: vertical; overflow: hidden; min-height: 80px; } 
+    textarea[rows="1"] { min-height: 40px; }
+    .print-mirror { display: none; } /* Hidden on screen, shown in print */
+
+    /* Special formatting for massive dropdowns */
+    select.cause-box { white-space: normal; max-width: 100%; height: auto !important; padding: 10px; font-size: 0.8rem; }
+    select.cause-box option { white-space: normal; padding: 4px; }
+
+    /* HRP Smart Chips */
+    .hrp-chip { background:#0056b3; color:#fff; padding:6px 12px; border-radius:16px; font-size:0.8rem; display:inline-flex; align-items:center; gap:8px; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 2px; }
+    .hrp-chip button { background:none; border:none; color:#fff; cursor:pointer; font-weight:bold; padding:0; font-size:1rem; line-height:1; }
+    
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #e1e5eb; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 0; font-size: 0.8rem; background: #fff; min-width: 850px; }
+    th, td { border: 1px solid #ced4da; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background-color: #f1f3f5; color: #34495e; font-weight: bold; }
+    
+    /* Checkboxes */
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin: 8px 0 15px 0; }
+    .checkbox-grid-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 15px 0; }
+    .checkbox-grid label, .checkbox-grid-2col label { display: flex; align-items: center; font-size: 0.85rem; font-weight: 500; cursor: pointer; color: #2c3e50; }
+    input[type="checkbox"] { width: 18px; height: 18px; margin: 0 8px 0 0; cursor: pointer; flex-shrink: 0; accent-color: #0056b3; }
+    
+    .handover-note { border: 1px solid #ced4da; background: #fdfdfe; padding: 20px; margin-top: 15px; border-radius: 6px; border-left: 4px solid #495057; }
+    
+    /* Signature Block Elements */
+    .signature-block { margin-top: 25px; padding-top: 15px; border-top: 2px solid #2c3e50; }
+    .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border: 1px solid #ced4da; padding: 15px; border-radius: 4px; background: #fff; align-items: end; }
+    .thumb-box { border: 1px solid #aebac6; height: 120px; background: #fbfcff; margin-bottom: 8px; border-radius: 4px; }
+    .cause-box { border: 1px solid #aebac6 !important; border-radius: 4px; }
+
+    /* Media Upload Tab */
+    .media-card { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+    .preview-item { border: 1px solid #ccc; border-radius: 4px; padding: 8px; text-align: center; position: relative; background: #fff; }
+    .preview-item img { max-width: 100%; height: auto; border-radius: 2px; }
+    .preview-label { font-size: 0.8rem; color: #333; margin-bottom: 8px; word-break: break-all; }
+    .remove-btn { position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+
+    /* Smart Alerts & Overlays */
+    #printBanner { display: none; background: #ffc107; color: #000; padding: 15px; font-weight: bold; text-align: center; border-radius: 4px; margin-bottom: 15px; border: 2px solid #d39e00; }
+    body.print-all-mode #printBanner { display: block; }
+    #autoSaveStatus { display: inline-block; font-size: 0.85rem; color: #28a745; opacity: 0; transition: opacity 0.3s; font-weight: bold; margin-right: 15px; }
+    
+    .age-warning { display: none; background: #f8d7da; color: #721c24; padding: 15px; border: 1px solid #f5c6cb; border-radius: 4px; font-weight: bold; margin-bottom: 15px; text-align: center; }
+    .restricted-tab .grid-2, .restricted-tab .grid-3, .restricted-tab .grid-4, .restricted-tab .grid-5, .restricted-tab .sub-q-row, .restricted-tab table, .restricted-tab .signature-block, .restricted-tab .table-responsive { opacity: 0.4; pointer-events: none; }
+
+    /* Actions Bar */
+    .actions-bar { position: sticky; bottom: 0; background: #fff; padding: 12px 20px; border-top: 1px solid #e1e5eb; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); z-index: 100; }
+    .actions-container { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; width: 100%; }
+    .actions-status-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .btn { padding: 10px 16px; border: none; font-weight: bold; cursor: pointer; color: #fff; font-size: 0.85rem; border-radius: 4px; transition: opacity 0.2s; white-space: nowrap; }
+    .btn:hover { opacity: 0.9; }
+    
+    /* Button Colors */
+    .btn-toggle { display: none; background-color: #34495e; width: 140px; }
+    .btn-attach { background-color: #007bff; } 
+    .btn-print { background-color: #17a2b8; } 
+    .btn-print-all { background-color: #2c3e50; }
+    .btn-ai { background-color: #8e44ad; } 
+    .btn-clear-single { background-color: #fd7e14; }
+    .btn-clear-all { background-color: #dc3545; }
+    .btn-backup { background-color: #6c757d; }
+    .btn-add-row { background-color: #28a745; margin-top: 8px; width: 100%; display: block; }
+    
+    /* Mobile Collapsible Actions View */
+    @media (max-width: 768px) {
+      .actions-bar { flex-direction: column; padding: 10px 15px; align-items: stretch; border-radius: 8px 8px 0 0; }
+      .btn-toggle { display: block; }
+      .actions-container { display: none; margin-top: 15px; justify-content: center; gap: 8px; }
+      .actions-container.expanded { display: flex; }
+      .actions-container .btn, .actions-container select { flex: 1 1 45%; text-align: center; padding: 12px 10px; } 
+    }
+
+    /* STRICT PRINT STYLES */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm 10mm; } 
+      body { background: #fff; font-family: "Times New Roman", serif; padding: 0; color: #000; font-size: 11pt; line-height: 1.3; -webkit-print-color-adjust: exact; print-color-adjust: exact; } 
+      .app-container { max-width: 100%; padding: 0; box-shadow: none; margin: 0; }
+      
+      .tab-navigation, .actions-bar, #printBanner, .age-warning, .btn-add-row, .no-print { display: none !important; }
+      
+      /* AUTOMATICALLY EXCLUDE RESTRICTED AGE FORMS FROM MASTER PDF */
+      .restricted-tab { display: none !important; }
+      
+      /* NORMAL PRINT (Single Active Tab) */
+      .tab-content { display: none !important; } 
+      .tab-content.active { display: block !important; }
+
+      /* MASTER PRINT (All Tabs Forced by Body Class) */
+      body.print-all-mode .tab-content { display: block !important; border: none !important; padding: 0 !important; page-break-after: always !important; }
+      body.print-all-mode .tab-content.restricted-tab { display: none !important; }
+      body.print-all-mode .tab-content:last-of-type { page-break-after: avoid !important; }
+
+      /* STANDARDIZED HEADERS FOR PRINT */
+      h3 { font-size: 11pt !important; color: #000 !important; border-bottom: 1px solid #000 !important; margin: 15px 0 8px 0 !important; font-weight: bold !important; padding-bottom: 3px !important; text-transform: uppercase; background: transparent !important; }
+      h4 { font-size: 10pt !important; color: #000 !important; background-color: #f1f3f5 !important; border: 1px solid #000 !important; margin: 10px 0 5px 0 !important; padding: 4px 8px !important; }
+
+      /* FORM 1 COMPACT PRINT LAYOUT */
+      #form1 .form-header { margin-bottom: 5px; padding-bottom: 2px; }
+      #form1 h3 { margin-top: 5px; margin-bottom: 5px !important; }
+      #form1 .grid-3, #form1 .grid-4, #form1 .grid-2 { margin-bottom: 2px !important; gap: 6px !important; }
+      #form1 .field-group { margin-bottom: 2px !important; }
+      #form1 .handover-note { padding: 10px !important; margin-top: 5px !important; border: 1px dashed #000 !important; }
+      #form1 .handover-note p { margin: 4px 0; font-size: 10pt; line-height: 1.1; }
+      #form1 .office-use-box { margin-bottom: 5px !important; padding: 5px 10px !important; }
+
+      /* FORM 2 CLEAN 2-PAGE PRINT LAYOUT */
+      #form2 .grid-4, #form2 .grid-3, #form2 .grid-2 { margin-bottom: 6px !important; gap: 8px !important; }
+      #form2 .field-group { margin-bottom: 4px !important; }
+      #form2 table { margin-top: 6px !important; margin-bottom: 6px !important; }
+      #form2 table td { padding: 3px 5px !important; }
+      .form2-page2-start { page-break-before: always !important; break-before: page !important; margin-top: 0 !important; padding-top: 0 !important; }
+
+      /* HRP CHIPS PRINT FORMATTING */
+      .hrp-print-container { display: block !important; }
+      .hrp-chip { background: transparent !important; color: #000 !important; border: 1px solid #000 !important; padding: 2px 6px !important; border-radius: 4px !important; box-shadow: none !important; font-weight: normal !important; display: inline-block !important; margin: 2px 4px !important; }
+      .hrp-chip button { display: none !important; }
+
+      /* SPACING & ORPHAN CONTROLS */
+      .grid-5, .sub-q-row { margin-bottom: 12px !important; }
+      .keep-together { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+      /* Visual cleanup for printing */
+      .sub-q-row, .office-use-box { background: transparent !important; border: none !important; padding: 0 !important; gap: 8px; }
+      .office-use-box { border: 1px solid #000 !important; padding: 8px !important; margin-bottom: 10px !important; }
+      .office-use-box h4 { color: #000 !important; margin-bottom: 5px !important; background: transparent !important; border: none !important; }
+      
+      /* PRINT MIRROR ENGINE: Solves the Textarea Cutoff/Ghost Space bug */
+      textarea { display: none !important; }
+      .print-mirror { 
+          display: block !important; 
+          white-space: pre-wrap !important; 
+          word-wrap: break-word !important; 
+          border-bottom: 1px dotted #000; 
+          font-weight: bold; 
+          font-size: 11pt; 
+          line-height: 1.6; 
+          padding: 2px 0; 
+          min-height: 1.6em;
+      }
+      
+      input[type="text"], input[type="date"], input[type="time"], input[type="number"], select { 
+        border: none !important; border-bottom: 1px dotted #000 !important; background: transparent !important; color: #000 !important; font-weight: bold; padding: 2px 0; font-size: 11pt; line-height: 1.6;
+      }
+      select { appearance: none; -webkit-appearance: none; }
+      input[readonly], input[disabled], select[disabled] { background: transparent !important; border-bottom: 1px dotted #000 !important; color: #000 !important; }
+      select.cause-box { padding: 2px 0 !important; height: auto !important; }
+      
+      .table-responsive { border: none !important; overflow: visible !important; }
+      table { min-width: 100% !important; }
+      table, tr, td, th { page-break-inside: avoid !important; break-inside: avoid !important; border: 1px solid #000 !important; padding: 4px; }
+      th { background-color: transparent !important; }
+      .form-header { page-break-after: avoid !important; break-after: avoid !important; margin-top: 10px; margin-bottom: 10px; }
+      .handover-note, .checkbox-grid, .checkbox-grid-2col { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+      /* Signature Block Strict Print Borders */
+      .signature-block { border-top: 2px solid #000 !important; }
+      .sig-grid { border: 1px solid #000 !important; background: transparent !important; padding: 10px !important; gap: 10px !important; }
+      .thumb-box { border: 1px solid #000 !important; background: transparent !important; }
+      .cause-box { border: 1px solid #000 !important; background: transparent !important; border-bottom: 1px solid #000 !important; }
+      .signature-block p, .signature-block label { color: #000 !important; }
+
+      /* FULL BLEED MEDIA UPLOAD PRINT STYLING */
+      #mediaTab .form-header { display: none !important; }
+      .media-card { display: none !important; }
+      .preview-grid { display: block !important; margin-top: 0; }
+      .preview-item { 
+        display: block !important; 
+        width: 100% !important; 
+        page-break-inside: avoid !important; 
+        break-inside: avoid !important; 
+        border: none !important; 
+        margin-bottom: 20px !important; 
+        text-align: left; 
+      }
+      .preview-item img { 
+        width: 100% !important; 
+        max-height: 26cm !important; 
+        height: auto !important; 
+        object-fit: contain !important; 
+        display: block; 
+        margin: 0 auto; 
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .preview-label { 
+        font-size: 14pt !important; 
+        font-weight: bold; 
+        margin-bottom: 10px; 
+        text-align: left; 
+        border-bottom: 2px solid #000; 
+        padding-bottom: 5px; 
+        color: #000 !important; 
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <div id="printBanner">
+    MASTER PDF MODE ACTIVE: The entire document is unfolded. After saving the PDF, tap any Tab Button below to restore normal view.
+  </div>
+
+  <!-- Navigation -->
+  <div class="tab-navigation no-print">
+    <button class="tab-btn active" onclick="switchTab('form1')">Form 1: Notification</button>
+    <button class="tab-btn" onclick="switchTab('form2')">Form 2: First Brief</button>
+    <button class="tab-btn" onclick="switchTab('form3a')" id="btn_3a">Form 3a: Neonatal</button>
+    <button class="tab-btn" onclick="switchTab('form3b')" id="btn_3b">Form 3b: Post-Neonatal</button>
+    <button class="tab-btn" onclick="switchTab('form3c')">Form 3c: Social</button>
+    <button class="tab-btn" onclick="switchTab('form4')" style="background-color: #e2e3e5;">Maternal History</button>
+    <button class="tab-btn" onclick="switchTab('mediaTab')" style="background-color: #cce5ff;">Media Upload</button>
+  </div>
+
+  <form id="cdrMasterForm">
+
+    <!-- ==========================================
+         FORM 1: NOTIFICATION CARD
+         ========================================== -->
+    <div id="form1" class="tab-content active">
+      <div class="form-header"><h2>FORM 1: NOTIFICATION CARD</h2></div>
+      
+      <div class="office-use-box">
+        <h4>For Office Use Only</h4>
+        <div class="grid-2">
+          <div class="field-group"><label>Date on which notification was received:</label><input type="date" id="f1_notif_date"></div>
+          <div class="field-group"><label>Name of the person who received the notification:</label><input type="text" id="f1_received_by"></div>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="field-group"><label>1. Child's Name:</label><input type="text" class="sync-child" id="f1_child" oninput="sync('sync-child', this.value)"></div>
+        <div class="field-group"><label>2. Date of Birth:</label><input type="date" class="sync-dob" id="f1_dob" onchange="enforceDateLogic(); sync('sync-dob', this.value); calculateChildAge(); calculateGestation(); calculateUSGestation();"></div>
+        <div class="field-group"><label>Time of Birth:</label><input type="time" class="sync-tob" id="f1_tob" oninput="sync('sync-tob', this.value)"></div>
+        <div class="field-group"><label>3. Age:</label><input type="text" class="sync-age" id="f1_age" oninput="sync('sync-age', this.value)" placeholder="Auto"></div>
+      </div>
+      <div class="grid-3">
+        <div class="field-group"><label>3(b). Sex:</label><select class="sync-sex" id="f1_sex" onchange="sync('sync-sex', this.value)"><option></option><option>Male</option><option>Female</option></select></div>
+        <div class="field-group"><label>4. Mother's Name:</label><input type="text" class="sync-mother" id="f1_mother" oninput="sync('sync-mother', this.value)"></div>
+        <div class="field-group"><label>5. Father's Name:</label><input type="text" id="f1_father"></div>
+      </div>
+      
+      <h3>6. Complete Address</h3>
+      <div class="grid-4">
+        <div class="field-group"><label>House Number:</label><input type="text" id="f1_house" oninput="compileAddress()"></div>
+        <div class="field-group"><label>Mohalla/Colony:</label><input type="text" id="f1_mohalla" oninput="compileAddress()"></div>
+        <div class="field-group"><label>Village/Town:</label><input type="text" class="sync-village" id="f1_village" oninput="compileAddress()"></div>
+        <div class="field-group"><label>Block:</label><input type="text" class="sync-block" id="f1_block" oninput="compileAddress()"></div>
+        <div class="field-group"><label>District:</label><input type="text" class="sync-district" id="f1_district" oninput="compileAddress()"></div>
+        <div class="field-group"><label>State:</label><input type="text" id="f1_state" oninput="compileAddress()"></div>
+        <div class="field-group"><label>Pincode:</label><input type="text" class="sync-pin" id="f1_pin" oninput="compileAddress()"></div>
+        <div class="field-group"><label>7. Landmarks:</label><input type="text" id="f1_landmark"></div>
+      </div>
+      
+      <div class="grid-4">
+        <div class="field-group"><label>8. Phone Number:</label><input type="text" class="sync-phone" id="f1_phone"></div>
+        <div class="field-group"><label>9. Date of Death:</label><input type="date" class="sync-dod" id="f1_dod" onchange="enforceDateLogic(); sync('sync-dod', this.value); calculateChildAge();"></div>
+        <div class="field-group"><label>Time of Death:</label><input type="time" class="sync-tod" id="f1_tod" oninput="sync('sync-tod', this.value)"></div>
+        <div class="field-group"><label>10. Place of Death:</label><select class="sync-pod2" id="f1_pod" onchange="sync('sync-pod2', this.value)"><option></option><option>Home</option><option>Hospital</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option><option>Other</option></select></div>
+      </div>
+      
+      <div class="grid-4" style="margin-top: 10px;">
+        <div class="field-group"><label>Name of First Informant:</label><input type="text" class="sync-informant" id="f1_informant_name" oninput="sync('sync-informant', this.value)"></div>
+        <div class="field-group"><label>Signature:</label><input type="text" id="f1_informant_sig"></div>
+        <div class="field-group"><label>Time:</label><input type="time" id="f1_informant_time"></div>
+        <div class="field-group"><label>Date of Notification:</label><input type="date" id="f1_informant_date"></div>
+      </div>
+
+      <div class="handover-note">
+        <h3 style="margin-top: 0; border: none; padding: 0;">Dear Parents,</h3>
+        <p>We express our profound grief on the loss of your child. We will like to know more from you about the factors that could have contributed to the death of your baby so that steps can be taken to prevent such deaths in the future. In this context, some of health staff members may visit you in coming weeks.</p>
+        <p>You are requested to please retain all the documents pertaining to the health condition of the baby and the mother.</p>
+        <p>Please show this card to the health staff, who comes to collect further details about the illness.</p>
+        <div class="grid-3" style="margin-top: 10px;">
+          <div class="field-group"><label>Signature of the Informant:</label><input type="text" id="f1_note_sig"></div>
+          <div class="field-group"><label>Designation:</label><input type="text" id="f1_note_desig"></div>
+          <div class="field-group"><label>Date:</label><input type="date" id="f1_note_date"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         FORM 2: FIRST BRIEF INVESTIGATION REPORT
+         ========================================== -->
+    <div id="form2" class="tab-content">
+      <div class="form-header"><h2>FORM 2: FIRST BRIEF INVESTIGATION REPORT</h2></div>
+      
+      <h3>Section A. Background Information</h3>
+      <div class="grid-5">
+        <div class="field-group"><label>1. Child Name:</label><input type="text" class="sync-child" id="f2_child" readonly></div>
+        <div class="field-group"><label>2. Date of Birth:</label><input type="date" class="sync-dob" id="f2_dob" readonly></div>
+        <div class="field-group"><label>Time of Birth:</label><input type="time" class="sync-tob" id="f2_tob" readonly></div>
+        <div class="field-group"><label>3. Age:</label><input type="text" class="sync-age" id="f2_age" readonly></div>
+        <div class="field-group"><label>4. Sex:</label><select class="sync-sex" id="f2_sex" disabled><option></option><option>Male</option><option>Female</option></select></div>
+      </div>
+      <div class="field-group"><label>5. Address:</label><input type="text" id="f2_address" readonly placeholder="Auto-compiled from Form 1"></div>
+      <div class="grid-4">
+        <div class="field-group"><label>6. Area PHC:</label><input type="text" class="sync-phc" id="f2_phc" oninput="sync('sync-phc', this.value)"></div>
+        <div class="field-group"><label>7. Area Sub-center:</label><input type="text" class="sync-sub" id="f2_subcenter" oninput="sync('sync-sub', this.value)"></div>
+        <div class="field-group"><label>8. Order of Birth:</label><select id="f2_birth_order"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5 or more</option></select></div>
+        <div class="field-group"><label>9. Category:</label><select class="sync-cat" id="f2_category" onchange="sync('sync-cat', this.value)"><option></option><option>SC/ST</option><option>OBC</option><option>General</option></select></div>
+      </div>
+      
+      <div class="sub-q-row">
+        <div class="field-group"><label>10. BPL Card:</label><select class="sync-bpl" id="f2_bpl" onchange="sync('sync-bpl', this.value)"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>12. Weight (Kg):</label><input type="text" id="f2_weight"></div>
+        <div class="field-group"><label>13. Growth Curve:</label><select id="f2_growth"><option></option><option>Green Zone</option><option>Yellow Zone</option><option>Orange Zone</option></select></div>
+      </div>
+      
+      <div class="field-group"><label>14/15. History of Illness/Injury:</label><input type="text" id="f2_hx"></div>
+      
+      <h4>11. Immunization Status</h4>
+      <div class="checkbox-grid">
+        <label><input type="checkbox" id="f2_imm_bcg"> BCG</label><label><input type="checkbox" id="f2_imm_dpt1"> DPT 1</label>
+        <label><input type="checkbox" id="f2_imm_dpt2"> DPT 2</label><label><input type="checkbox" id="f2_imm_dpt3"> DPT 3</label>
+        <label><input type="checkbox" id="f2_imm_measles"> Measles</label><label><input type="checkbox" id="f2_imm_booster"> Measles Booster</label>
+        <label><input type="checkbox" id="f2_imm_hib1"> HiB 1</label><label><input type="checkbox" id="f2_imm_hib2"> HiB 2</label>
+        <label><input type="checkbox" id="f2_imm_hib3"> HiB 3</label>
+      </div>
+
+      <div class="keep-together">
+        <h4>16. Symptoms during illness</h4>
+        <table>
+          <tr><th>Symptom</th><th>Response</th><th>Duration</th></tr>
+          <tr><td>a. Inability to feed</td><td><select id="f2_16a"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16a_d"></td></tr>
+          <tr><td>b. Fever</td><td><select id="f2_16b"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16b_d"></td></tr>
+          <tr><td>c. Loose stools</td><td><select id="f2_16c"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16c_d"></td></tr>
+          <tr><td>d. Vomiting</td><td><select id="f2_16d"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16d_d"></td></tr>
+          <tr><td>e. Fast breathing</td><td><select id="f2_16e"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16e_d"></td></tr>
+          <tr><td>f. Convulsions</td><td><select id="f2_16f"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16f_d"></td></tr>
+          <tr><td>g. Skin rashes</td><td><select id="f2_16g"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16g_d"></td></tr>
+          <tr><td>h. Injury (fracture/wound)</td><td><select id="f2_16h"><option></option><option>Yes</option><option>No</option></select></td><td><input type="number" id="f2_16h_d"></td></tr>
+          <tr><td>i. Any other symptom</td><td><input type="text" id="f2_16i"></td><td><input type="number" id="f2_16i_d"></td></tr>
+        </table>
+      </div>
+
+      <div class="form2-page2-start field-group">
+        <label>17. Treated Where:</label>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <select id="f2_treat" style="flex:1;"><option></option><option>Public Health Facility</option><option>Private Hospital / Nursing Home</option><option>Qualified allopathic practitioner</option><option>AYUSH practitioner</option><option>Unqualified provider</option><option>Traditional healer</option></select>
+          <input type="text" id="f2_treat_name" placeholder="Name of Facility/Provider" style="flex:1;">
+        </div>
+      </div>
+        
+      <h3>Section B. Probable Cause</h3>
+      <div class="field-group"><select id="f2_cause"><option></option><option>Diarrhoea</option><option>Pneumonia</option><option>Malaria</option><option>Measles</option><option>Septicemia (Infection)</option><option>Meningitis</option><option>Injury</option><option>Any other cause</option><option>No identifiable cause</option></select></div>
+      
+      <h3>Section C. Respondent's presumed Cause</h3>
+      <div class="field-group"><input type="text" id="f2_resp_cause"></div>
+      
+      <h3>Section D. Delay Level</h3>
+      <div class="checkbox-grid">
+        <label><input type="checkbox" id="f2_d1"> 1. Delay at home</label>
+        <label><input type="checkbox" id="f2_d2"> 2. Delay in transportation</label>
+        <label><input type="checkbox" id="f2_d3"> 3. Delay at facility level</label>
+      </div>
+      
+      <h3>Section E. Actions that could have averted death</h3>
+      <div class="field-group"><textarea id="f2_avert" rows="2"></textarea></div>
+      
+      <div class="grid-3" style="margin-top: 20px;">
+        <div class="field-group"><label>ANM Name:</label><input type="text" id="f2_anm"></div>
+        <div class="field-group"><label>Health Centre:</label><input type="text" id="f2_hc"></div>
+        <div class="field-group"><label>Date:</label><input type="date" id="f2_date"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         FORM 3A: NEONATAL (0-28 days)
+         ========================================== -->
+    <div id="form3a" class="tab-content">
+      <div id="warning_3a" class="age-warning">Form Locked: The child's calculated age is > 28 days. Please use Form 3b.</div>
+      <div class="form-header"><h2>FORM 3a: VERBAL AUTOPSY FORM: NEONATAL DEATHS (0-28 days)</h2></div>
+      
+      <div class="grid-5">
+        <div class="field-group"><label>District:</label><input type="text" class="sync-district" id="f3a_head_dist" readonly></div>
+        <div class="field-group"><label>Block:</label><input type="text" class="sync-block" id="f3a_head_block" readonly></div>
+        <div class="field-group"><label>Village:</label><input type="text" class="sync-village" id="f3a_head_vill" readonly></div>
+        <div class="field-group"><label>PHC:</label><input type="text" class="sync-phc" id="f3a_head_phc" readonly></div>
+        <div class="field-group"><label>Sub-Centre:</label><input type="text" class="sync-sub" id="f3a_head_sub" readonly></div>
+      </div>
+      <div class="grid-4">
+        <div class="field-group"><label>ABHA/MCTS No:</label><input type="text" class="sync-mcts" id="f3a_mcts" oninput="sync('sync-mcts', this.value)"></div>
+        <div class="field-group"><label>Date:</label><input type="date" id="f3a_date"></div>
+        <div class="field-group"><label>Head of Household:</label><input type="text" id="f3a_hoh"></div>
+        <div class="field-group"><label>Mother of deceased:</label><input type="text" class="sync-mother" id="f3a_head_mother" readonly></div>
+      </div>
+
+      <h3>Section A: Details of Respondent and Deceased</h3>
+      <h4>A1. Details of Respondent</h4>
+      <div class="grid-3">
+        <div class="field-group"><label>1. Respondent Name:</label><input type="text" class="sync-resp" id="f3a_resp" oninput="sync('sync-resp', this.value)"></div>
+        <div class="field-group"><label>2. Relationship:</label><select class="sync-rel" id="f3a_rel" onchange="sync('sync-rel', this.value)"><option></option><option>Brother/Sister</option><option>Mother/Father</option><option>Neighbour</option><option>Grandfather/Grandmother</option><option>Other relative</option></select></div>
+        <div class="field-group"><label>3. Lived with deceased?</label><select id="f3a_lived"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>4. Education:</label><select id="f3a_edu"><option></option><option>Illiterate</option><option>Primary or below</option><option>Middle</option><option>Matric</option><option>Class XII</option><option>Graduate & above</option></select></div>
+        <div class="field-group"><label>5. Category:</label><select class="sync-cat" id="f3a_cat" onchange="sync('sync-cat', this.value)"><option></option><option>SC/ST</option><option>OBC</option><option>General</option></select></div>
+        <div class="field-group"><label>6. Religion:</label><select class="sync-relig" id="f3a_relig" onchange="sync('sync-relig', this.value)"><option></option><option>Hindu</option><option>Muslim</option><option>Christian</option><option>Sikh</option><option>Buddhist</option><option>Jain</option><option>No religion</option><option>Other</option></select></div>
+      </div>
+
+      <h4>A2. Details of Deceased</h4>
+      <div class="grid-4">
+        <div class="field-group"><label>7. Full Name:</label><input type="text" class="sync-child" id="f3a_child_name" readonly></div>
+        <div class="field-group"><label>8. Sex:</label><select class="sync-sex" id="f3a_child_sex" disabled><option></option><option>Male</option><option>Female</option></select></div>
+        <div class="field-group"><label>9. Age:</label><input type="text" class="sync-age" id="f3a_child_age" readonly></div>
+        <div class="field-group"><label>12. Place of death:</label><select class="sync-pod2" id="f3a_pod" disabled><option></option><option>Home</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option><option>Other</option></select></div>
+      </div>
+      <div class="grid-4">
+        <div class="field-group"><label>10. Date of Birth:</label><input type="date" class="sync-dob" id="f3a_child_dob" readonly></div>
+        <div class="field-group"><label>Time of Birth:</label><input type="time" class="sync-tob" id="f3a_child_tob" readonly></div>
+        <div class="field-group"><label>11. Date of Death:</label><input type="date" class="sync-dod" id="f3a_child_dod" readonly></div>
+        <div class="field-group"><label>Time of Death:</label><input type="time" class="sync-tod" id="f3a_child_tod" readonly></div>
+      </div>
+      <div class="sub-q-row">
+        <div class="field-group"><label>13A. House Address:</label><input type="text" id="f3a_add" readonly placeholder="Auto-compiled from Form 1"></div>
+        <div class="field-group"><label>13B. PIN Code:</label><input type="text" class="sync-pin" id="f3a_pin" readonly></div>
+      </div>
+
+      <h3>Section B: Neonatal Death Details</h3>
+      <h4>B1. History of Accident / Injury</h4>
+      <div class="sub-q-row">
+        <div class="field-group"><label>13A. Met with accident?</label><select id="f3a_13a"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>13B. Kind of injury?</label><select id="f3a_13b"><option></option><option>Road traffic</option><option>Falls</option><option>Fall of objects</option><option>Burns</option><option>Drowning</option><option>Poisoning</option><option>Bite/sting</option><option>Natural disaster</option><option>Homicide</option><option>Other</option></select></div>
+        <div class="field-group"><label>13C. Died from injury?</label><select id="f3a_13c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+      
+      <h4>B2. Details of Pregnancy and Delivery</h4>
+      <div class="sub-q-row">
+        <div class="field-group"><label>14A. Pregnancy length (Months):</label><input type="number" id="f3a_14a"></div>
+        <div class="field-group"><label>14B. Mother's Age:</label><input type="text" id="f3a_14b" readonly placeholder="Auto-calculated from Maternal Tab"></div>
+      </div>
+
+      <div class="sub-q-row">
+        <div class="field-group"><label>15. 2 doses TT vaccine?</label><select id="f3a_15"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>16A. Pregnancy Complications?</label><select id="f3a_16a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>16B. What complication?</label><select id="f3a_16b"><option></option><option>Fits</option><option>Excessive bleeding</option><option>Water broke early</option><option>Prolonged labour</option><option>Operative (C-Section)</option><option>Fever</option><option>Cord around neck</option><option>Assisted Delivery</option></select></div>
+      </div>
+      
+      <div class="grid-4">
+        <div class="field-group"><label>17. Single or Multiple Birth?</label><select id="f3a_17"><option></option><option>Single</option><option>Multiple</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>18. Where was baby born?</label><select id="f3a_18"><option></option><option>Home</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option></select></div>
+        <div class="field-group"><label>19. Who attended delivery:</label><select id="f3a_19"><option></option><option>Untrained traditional attendant</option><option>Trained traditional attendant</option><option>ANM / Nurse</option><option>Allopathic Doctor</option><option>None</option></select></div>
+        <div class="field-group"><label>20. Disinfected blade used?</label><select id="f3a_20"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+      
+      <h4>B3. Condition of Baby at Birth and Afterwards</h4>
+      <div class="grid-3">
+        <div class="field-group"><label>21. Live or Still birth?</label><select id="f3a_21"><option></option><option>Live</option><option>Still</option></select></div>
+        <div class="field-group"><label>22. Cry, move or breathe?</label><select id="f3a_22"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>23. Bruises or signs of injury?</label><select id="f3a_23"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+
+      <div class="sub-q-row">
+        <div class="field-group"><label>24A. Visible malformations?</label><select id="f3a_24a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>24B. Size at birth?</label><select id="f3a_24b"><option></option><option>Very small</option><option>Smaller than average</option><option>Average</option><option>Larger than average</option></select></div>
+        <div class="field-group"><label>24C. Birth weight (Kg):</label><input type="text" id="f3a_24c"></div>
+      </div>
+      
+      <div class="sub-q-row">
+        <div class="field-group"><label>25A. Stopped crying?</label><select id="f3a_25a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>25B. Days until stopped crying:</label><input type="number" id="f3a_25b"></div>
+      </div>
+      
+      <div class="sub-q-row">
+        <div class="field-group"><label>26A. First breastfed?</label><select id="f3a_26a"><option></option><option>Immediately</option><option>Same day</option><option>Second day or later</option><option>Never breastfed</option></select></div>
+        <div class="field-group"><label>26B. Suckle normally initially?</label><select id="f3a_26b"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>26C. Stopped sucking normally?</label><select id="f3a_26c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>26D. Days to stop sucking:</label><input type="number" id="f3a_26d"></div>
+      </div>
+      
+      <div class="sub-q-row">
+        <div class="field-group"><label>27A. Drink other than milk?</label><select id="f3a_27a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>27B. What was given:</label><input type="text" id="f3a_27b"></div>
+      </div>
+
+      <div class="keep-together">
+        <h4>B4. Sickness Details</h4>
+        <table>
+          <tr>
+            <td>28A. Fever? <select id="f3a_28a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>28B. Days: <input type="number" id="f3a_28b" style="width:60px;"></td>
+            <td>29A. Difficulty breathing? <select id="f3a_29a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>29B. Days: <input type="number" id="f3a_29b" style="width:60px;"></td>
+          </tr>
+          <tr>
+            <td>30A. Fast breathing? <select id="f3a_30a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>30B. Days: <input type="number" id="f3a_30b" style="width:60px;"></td>
+            <td>31. In-drawing of chest? <select id="f3a_31"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>32A. Cough? <select id="f3a_32a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>32B. Grunting? <select id="f3a_32b"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>32C. Nostrils flare? <select id="f3a_32c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>33A. Diarrhoea? <select id="f3a_33a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>33B. Days: <input type="number" id="f3a_33b" style="width:60px;"></td>
+          </tr>
+          <tr>
+            <td>34A. Vomit? <select id="f3a_34a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>34B. Days: <input type="number" id="f3a_34b" style="width:60px;"></td>
+            <td>35A. Redness around cord? <select id="f3a_35a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>36. Yellow skin/eyes? <select id="f3a_36"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>37. Spasms/Fits? <select id="f3a_37"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>38. Unconscious? <select id="f3a_38"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>39. Bulging Fontanelle? <select id="f3a_39"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>40. Cold to touch? <select id="f3a_40"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>41. Discoloured lips? <select id="f3a_41"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>42. Yellow palms/soles? <select id="f3a_42"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>43. Blood in stools? <select id="f3a_43"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>Section C: Written Narrative</h3>
+      <div class="field-group"><label>44. Please describe the symptoms in order of appearance, doctor consulted or health facility visited, what the respondent was told about the illness, treatment received, etc.</label><textarea id="f3a_44" rows="3"></textarea></div>
+      <div class="field-group"><label>45. What did the respondent think the newborn died of? (Allow the respondent to tell the illness in his or her own words)</label><textarea id="f3a_45" rows="2"></textarea></div>
+
+      <!-- FORM 3A SIGNATURE BLOCK -->
+      <div class="signature-block keep-together">
+        <div class="sig-grid">
+          <div>
+            <div class="field-group"><label>Interviewer's Signature:</label><input type="text" id="f3a_int_sig"></div>
+            <div class="field-group"><label>Interviewer Name:</label><input type="text" id="f3a_int_name"></div>
+            <div class="field-group"><label>Designation:</label><input type="text" id="f3a_int_desig"></div>
+            <div class="field-group"><label>Date:</label><input type="date" id="f3a_int_date"></div>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <div class="thumb-box"></div>
+            <label style="font-weight: bold; font-size: 0.85rem; color: #34495e;">Signature/Left thumb impression of respondent:</label>
+          </div>
+        </div>
+        
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 15px;">
+          <label style="font-weight: bold; font-size: 0.95rem; color: #2c3e50;">Assigned cause of death*</label>
+          <select id="f3a_assigned_cause" class="cause-box sync-assigned-cause" style="flex: 1; min-width: 250px; max-width: 100%; white-space: normal; padding: 10px; font-size: 0.85rem;">
+            <option value="">-- Select Cause of Death --</option>
+            <option value="A09 - Diarrhoea and gastroenteritis of presumed infectious origin">A09 - Diarrhoea and gastroenteritis of presumed infectious origin</option>
+            <option value="A00-A08 - Other intestinal infectious diseases">A00-A08 - Other intestinal infectious diseases</option>
+            <option value="A15-A19 - Tuberculosis">A15-A19 - Tuberculosis</option>
+            <option value="A33, A35 - Tetanus">A33, A35 - Tetanus</option>
+            <option value="A36 - Diphtheria">A36 - Diphtheria</option>
+            <option value="A37 - Whooping cough">A37 - Whooping cough</option>
+            <option value="A39 - Meningococcal infection">A39 - Meningococcal infection</option>
+            <option value="A40-A41 - Septicaemia">A40-A41 - Septicaemia</option>
+            <option value="A80 - Acute poliomyelitis">A80 - Acute poliomyelitis</option>
+            <option value="B05 - Measles">B05 - Measles</option>
+            <option value="B20-B24 - Human immunodeficiency virus [HIV] disease">B20-B24 - Human immunodeficiency virus [HIV] disease</option>
+            <option value="A81-B04, B06-B19, B25-B34 - Other viral diseases">A81-B04, B06-B19, B25-B34 - Other viral diseases</option>
+            <option value="B50-B54 - Malaria">B50-B54 - Malaria</option>
+            <option value="A20-A32, A38, A42-A79, B35-B49, B55-B94, B99 - Remainder of certain infectious and parasitic diseases">A20-A32, A38, A42-A79, B35-B49, B55-B94, B99 - Remainder of certain infectious and parasitic diseases</option>
+            <option value="C91-C95 - Leukaemia">C91-C95 - Leukaemia</option>
+            <option value="C00-C90, C96-C97 - Remainder of malignant neoplasms">C00-C90, C96-C97 - Remainder of malignant neoplasms</option>
+            <option value="D50-D64 - Anaemias">D50-D64 - Anaemias</option>
+            <option value="D65-D89 - Remainder of diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism">D65-D89 - Remainder of diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism</option>
+            <option value="E40-E64 - Malnutrition and other nutritional deficiencies">E40-E64 - Malnutrition and other nutritional deficiencies</option>
+            <option value="G00, G03 - Meningitis">G00, G03 - Meningitis</option>
+            <option value="G04-G98 - Remainder of diseases of the nervous system">G04-G98 - Remainder of diseases of the nervous system</option>
+            <option value="J12-J18 - Pneumonia">J12-J18 - Pneumonia</option>
+            <option value="J00-J11, J20-J22 - Other acute respiratory infections">J00-J11, J20-J22 - Other acute respiratory infections</option>
+            <option value="K00-K92 - Diseases of the digestive system">K00-K92 - Diseases of the digestive system</option>
+            <option value="P00-P04 - Fetus and newborn affected by maternal factors and by complications of pregnancy, labour and delivery">P00-P04 - Fetus and newborn affected by maternal factors and by complications of pregnancy, labour and delivery</option>
+            <option value="P05-P08 - Disorders relating to length of gestation and fetal growth">P05-P08 - Disorders relating to length of gestation and fetal growth</option>
+            <option value="P10-P15 - Birth trauma">P10-P15 - Birth trauma</option>
+            <option value="P20-P21 - Intrauterine hypoxia and birth asphyxia">P20-P21 - Intrauterine hypoxia and birth asphyxia</option>
+            <option value="P22 - Respiratory distress of newborn">P22 - Respiratory distress of newborn</option>
+            <option value="P23 - Congenital pneumonia">P23 - Congenital pneumonia</option>
+            <option value="P24-P28 - Other respiratory conditions of newborn">P24-P28 - Other respiratory conditions of newborn</option>
+            <option value="P36 - Bacterial sepsis of newborn">P36 - Bacterial sepsis of newborn</option>
+            <option value="P38 - Omphalitis of newborn with or without mild haemorrhage">P38 - Omphalitis of newborn with or without mild haemorrhage</option>
+            <option value="P50-P61 - Haemorrhagic and haematological disorders of fetus and newborn">P50-P61 - Haemorrhagic and haematological disorders of fetus and newborn</option>
+            <option value="P29, P35, P37, P39, P70-P96 - Remainder of perinatal conditions">P29, P35, P37, P39, P70-P96 - Remainder of perinatal conditions</option>
+            <option value="Q03, Q05 - Congenital hydrocephalus and spina bifida">Q03, Q05 - Congenital hydrocephalus and spina bifida</option>
+            <option value="Q00-Q02, Q04, Q06-Q07 - Other congenital malformations of the nervous system">Q00-Q02, Q04, Q06-Q07 - Other congenital malformations of the nervous system</option>
+            <option value="Q20-Q24 - Congenital malformations of the heart">Q20-Q24 - Congenital malformations of the heart</option>
+            <option value="Q25-Q28 - Other congenital malformations of the circulatory system">Q25-Q28 - Other congenital malformations of the circulatory system</option>
+            <option value="Q90-Q99 - Down's syndrome and other chromosomal abnormalities">Q90-Q99 - Down's syndrome and other chromosomal abnormalities</option>
+            <option value="Q10-Q18, Q30-Q89 - Other congenital malformations">Q10-Q18, Q30-Q89 - Other congenital malformations</option>
+            <option value="R95 - Sudden infant death syndrome">R95 - Sudden infant death syndrome</option>
+            <option value="R00-R94, R96-R99 - Other symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified">R00-R94, R96-R99 - Other symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified</option>
+            <option value="D00-D48, E00-E34, E65-E88, F01-F99, H00-H95, I00-I99, J30-J98, L00-L98, M00-M99, N00-N98 - All other diseases">D00-D48, E00-E34, E65-E88, F01-F99, H00-H95, I00-I99, J30-J98, L00-L98, M00-M99, N00-N98 - All other diseases</option>
+            <option value="V01-V99 - Transport accidents">V01-V99 - Transport accidents</option>
+            <option value="W65-W74 - Accidental drowning and submersion">W65-W74 - Accidental drowning and submersion</option>
+            <option value="W75-W84 - Other accidental threats to breathing">W75-W84 - Other accidental threats to breathing</option>
+            <option value="X00-X09 - Exposure to smoke, fire and flames">X00-X09 - Exposure to smoke, fire and flames</option>
+            <option value="X40-X49 - Accidental poisoning by and exposure to noxious substances">X40-X49 - Accidental poisoning by and exposure to noxious substances</option>
+            <option value="X85-Y09 - Assault">X85-Y09 - Assault</option>
+            <option value="W00-W64, W85-W99, X10-X39, X50-X84, Y10-Y89 - All other external causes">W00-W64, W85-W99, X10-X39, X50-X84, Y10-Y89 - All other external causes</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 10px;">
+          <label style="font-weight: bold; font-size: 0.95rem; color: #2c3e50;">Specific 3-Digit ICD-10 Subcode <span style="font-weight: normal; font-size: 0.8rem; color: #6c757d;">(May be optional)</span></label>
+          <textarea id="f3a_icd_subcode" rows="1" style="flex: 1; min-width: 150px;" data-ailabel="Form 3a Specific ICD-10 Subcode"></textarea>
+        </div>
+        <p style="font-size: 0.8rem; font-weight: bold; line-height: 1.3; color: #333; margin-top: 8px;">
+          *Assigned at the district level<br>
+          DNO will have to communicate the assigned cause of death to the respective block
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ==========================================
+         FORM 3B: POST-NEONATAL (29d - 5y)
+         ========================================== -->
+    <div id="form3b" class="tab-content">
+      <div id="warning_3b" class="age-warning">Form Locked: The child's calculated age is 0-28 days. Please use Form 3a.</div>
+      <div class="form-header"><h2>FORM 3b: VERBAL AUTOPSY FORM: POST-NEONATAL DEATHS (29 days - 5 years)</h2></div>
+      
+      <div class="grid-5">
+        <div class="field-group"><label>District:</label><input type="text" class="sync-district" id="f3b_head_dist" readonly></div>
+        <div class="field-group"><label>Block:</label><input type="text" class="sync-block" id="f3b_head_block" readonly></div>
+        <div class="field-group"><label>Village:</label><input type="text" class="sync-village" id="f3b_head_vill" readonly></div>
+        <div class="field-group"><label>PHC:</label><input type="text" class="sync-phc" id="f3b_head_phc" readonly></div>
+        <div class="field-group"><label>Sub-Centre:</label><input type="text" class="sync-sub" id="f3b_head_sub" readonly></div>
+      </div>
+      <div class="grid-4">
+        <div class="field-group"><label>ABHA/MCTS No:</label><input type="text" class="sync-mcts" id="f3b_mcts" oninput="sync('sync-mcts', this.value)"></div>
+        <div class="field-group"><label>Date:</label><input type="date" id="f3b_date"></div>
+        <div class="field-group"><label>Head of Household:</label><input type="text" id="f3b_hoh"></div>
+        <div class="field-group"><label>Mother of deceased:</label><input type="text" class="sync-mother" id="f3b_head_mother" readonly></div>
+      </div>
+
+      <h3>Section A: Details of Respondent and Deceased</h3>
+      <h4>A1. Details of Respondent</h4>
+      <div class="grid-3">
+        <div class="field-group"><label>1. Respondent Name:</label><input type="text" class="sync-resp" id="f3b_resp" oninput="sync('sync-resp', this.value)"></div>
+        <div class="field-group"><label>2. Relationship:</label><select class="sync-rel" id="f3b_rel" onchange="sync('sync-rel', this.value)"><option></option><option>Brother/Sister</option><option>Mother/Father</option><option>Neighbour</option><option>Grandparent</option><option>Other</option></select></div>
+        <div class="field-group"><label>3. Lived with deceased?</label><select id="f3b_lived"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>4. Education:</label><select id="f3b_edu"><option></option><option>Illiterate</option><option>Primary or below</option><option>Middle</option><option>Matric</option><option>Class XII</option><option>Graduate & above</option></select></div>
+        <div class="field-group"><label>5. Category:</label><select class="sync-cat" id="f3b_cat" onchange="sync('sync-cat', this.value)"><option></option><option>SC/ST</option><option>OBC</option><option>General</option></select></div>
+        <div class="field-group"><label>6. Religion:</label><select class="sync-relig" id="f3b_relig" onchange="sync('sync-relig', this.value)"><option></option><option>Hindu</option><option>Muslim</option><option>Christian</option><option>Sikh</option><option>Buddhist</option><option>Jain</option><option>No religion</option><option>Other</option></select></div>
+      </div>
+      
+      <h4>A2. Details of Deceased</h4>
+      <div class="grid-4">
+        <div class="field-group"><label>7. Full Name:</label><input type="text" class="sync-child" id="f3b_child_name" readonly></div>
+        <div class="field-group"><label>8. Sex:</label><select class="sync-sex" id="f3b_child_sex" disabled><option></option><option>Male</option><option>Female</option></select></div>
+        <div class="field-group"><label>9. Age:</label><input type="text" class="sync-age" id="f3b_child_age" readonly></div>
+        <div class="field-group"><label>12. Place of death:</label><select class="sync-pod2" id="f3b_pod" onchange="sync('sync-pod2', this.value)"><option></option><option>Home</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option><option>Other</option></select></div>
+      </div>
+      <div class="grid-4">
+        <div class="field-group"><label>10. Date of Birth:</label><input type="date" class="sync-dob" id="f3b_child_dob" readonly></div>
+        <div class="field-group"><label>Time of Birth:</label><input type="time" class="sync-tob" id="f3b_child_tob" readonly></div>
+        <div class="field-group"><label>11. Date of Death:</label><input type="date" class="sync-dod" id="f3b_child_dod" readonly></div>
+        <div class="field-group"><label>Time of Death:</label><input type="time" class="sync-tod" id="f3b_child_tod" readonly></div>
+      </div>
+      <div class="sub-q-row">
+        <div class="field-group"><label>13A. House Address:</label><input type="text" id="f3b_add" readonly placeholder="Auto-compiled from Form 1"></div>
+        <div class="field-group"><label>13B. PIN Code:</label><input type="text" class="sync-pin" id="f3b_pin" readonly></div>
+      </div>
+
+      <h3>Section B: Post-Neonatal Death Details</h3>
+      <h4>B1. History of Accident / Injury</h4>
+      <div class="sub-q-row">
+        <div class="field-group"><label>13A. Accident?</label><select id="f3b_13a"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>13B. Injury Kind?</label><select id="f3b_13b"><option></option><option>Traffic</option><option>Falls</option><option>Fall obj</option><option>Burns</option><option>Drown</option><option>Poison</option><option>Bite</option><option>Disaster</option><option>Homicide</option><option>Other</option></select></div>
+        <div class="field-group"><label>13C. Died of injury?</label><select id="f3b_13c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+      
+      <h4>B2. Feeding History</h4>
+      <div class="sub-q-row">
+        <div class="field-group"><label>14A. First breastfed?</label><select id="f3b_14a"><option></option><option>Immediately</option><option>Same day</option><option>Second day</option><option>Never breastfed</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>14B. Other feed 0-6m?</label><select id="f3b_14b2"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>14C. Breastfeeding during illness?</label><select id="f3b_14c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+      
+      <div class="keep-together">
+        <h4>B3. Sickness Details</h4>
+        <table>
+          <tr>
+            <td>15A. Fever? <select id="f3b_15a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>15B. Days: <input type="number" id="f3b_15b" style="width:60px;"></td>
+            <td>15C. Chills/rigors? <select id="f3b_15c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>16. Convulsions? <select id="f3b_16"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>17. Unconscious? <select id="f3b_17"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>18. Stiff body? <select id="f3b_18"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>19. Stiff neck? <select id="f3b_19"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>20A. Diarrhoea? <select id="f3b_20a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>20B. Days: <input type="number" id="f3b_20b" style="width:60px;"></td>
+            <td>20C. Blood stool? <select id="f3b_20c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>21A. Cough? <select id="f3b_21a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>21B. Days: <input type="number" id="f3b_21b" style="width:60px;"></td>
+          </tr>
+          <tr>
+            <td>21C. Blood cough? <select id="f3b_21c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>22A. Breathing difficulty? <select id="f3b_22a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>22B. Days: <input type="number" id="f3b_22b" style="width:60px;"></td>
+            <td>22C. Fast breath? <select id="f3b_22c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>22D. In-drawing? <select id="f3b_22d"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>22E. Wheezing? <select id="f3b_22e"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>23A. Abdominal pain? <select id="f3b_23a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>23B. Abdominal distention? <select id="f3b_23b"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>24A. Vomiting? <select id="f3b_24a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>24B. Days: <input type="number" id="f3b_24b" style="width:60px;"></td>
+            <td>25. Yellow skin? <select id="f3b_25"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>26A. Rash all over? <select id="f3b_26a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>26B. Red eyes? <select id="f3b_26b"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>26C. Measles? <select id="f3b_26c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>27. Very thin? <select id="f3b_27"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>28. Swelling? <select id="f3b_28"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+          </tr>
+          <tr>
+            <td>29. Pale/lack blood? <select id="f3b_29"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>30. Growing normally? <select id="f3b_30"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>31A. Multiple illnesses? <select id="f3b_31a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
+            <td>31B. Symptoms: <input type="text" id="f3b_31b" style="width:120px;"></td>
+          </tr>
+        </table>
+      </div>
+
+      <h4>B4. Immunization Details</h4>
+      <div class="sub-q-row">
+        <div class="field-group"><label>32A. BCG Injection?</label><select id="f3b_32a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>32B. DPT doses?</label><input type="text" id="f3b_32b"></div>
+        <div class="field-group"><label>32C. Polio drops?</label><select id="f3b_32c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>32D. Measles Injection?</label><select id="f3b_32d"><option></option><option>Yes only one</option><option>Yes more than one</option><option>No - did not receive any</option><option>Do Not Know</option></select></div>
+      </div>
+
+      <h3>Section C: Written Narrative</h3>
+      <div class="field-group"><label>33. Please describe the symptoms in order of appearance, doctor consulted or health facility visited, what the respondent was told about the illness, treatment received, etc.</label><textarea id="f3b_33" rows="3"></textarea></div>
+      <div class="field-group"><label>34. What did the respondent think the child died of? (Allow the respondent to tell the illness in his or her own words)</label><textarea id="f3b_34" rows="2"></textarea></div>
+
+      <!-- FORM 3B SIGNATURE BLOCK -->
+      <div class="signature-block keep-together">
+        <div class="sig-grid">
+          <div>
+            <div class="field-group"><label>Interviewer's Signature:</label><input type="text" id="f3b_int_sig"></div>
+            <div class="field-group"><label>Interviewer Name:</label><input type="text" id="f3b_int_name"></div>
+            <div class="field-group"><label>Designation:</label><input type="text" id="f3b_int_desig"></div>
+            <div class="field-group"><label>Date:</label><input type="date" id="f3b_int_date"></div>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <div class="thumb-box"></div>
+            <label style="font-weight: bold; font-size: 0.85rem; color: #34495e;">Signature/Left thumb impression of respondent:</label>
+          </div>
+        </div>
+        
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 15px;">
+          <label style="font-weight: bold; font-size: 0.95rem; color: #2c3e50;">Assigned cause of death*</label>
+          <select id="f3b_assigned_cause" class="cause-box sync-assigned-cause" style="flex: 1; min-width: 250px; max-width: 100%; white-space: normal; padding: 10px; font-size: 0.85rem;">
+            <option value="">-- Select Cause of Death --</option>
+            <option value="A09 - Diarrhoea and gastroenteritis of presumed infectious origin">A09 - Diarrhoea and gastroenteritis of presumed infectious origin</option>
+            <option value="A00-A08 - Other intestinal infectious diseases">A00-A08 - Other intestinal infectious diseases</option>
+            <option value="A15-A19 - Tuberculosis">A15-A19 - Tuberculosis</option>
+            <option value="A33, A35 - Tetanus">A33, A35 - Tetanus</option>
+            <option value="A36 - Diphtheria">A36 - Diphtheria</option>
+            <option value="A37 - Whooping cough">A37 - Whooping cough</option>
+            <option value="A39 - Meningococcal infection">A39 - Meningococcal infection</option>
+            <option value="A40-A41 - Septicaemia">A40-A41 - Septicaemia</option>
+            <option value="A80 - Acute poliomyelitis">A80 - Acute poliomyelitis</option>
+            <option value="B05 - Measles">B05 - Measles</option>
+            <option value="B20-B24 - Human immunodeficiency virus [HIV] disease">B20-B24 - Human immunodeficiency virus [HIV] disease</option>
+            <option value="A81-B04, B06-B19, B25-B34 - Other viral diseases">A81-B04, B06-B19, B25-B34 - Other viral diseases</option>
+            <option value="B50-B54 - Malaria">B50-B54 - Malaria</option>
+            <option value="A20-A32, A38, A42-A79, B35-B49, B55-B94, B99 - Remainder of certain infectious and parasitic diseases">A20-A32, A38, A42-A79, B35-B49, B55-B94, B99 - Remainder of certain infectious and parasitic diseases</option>
+            <option value="C91-C95 - Leukaemia">C91-C95 - Leukaemia</option>
+            <option value="C00-C90, C96-C97 - Remainder of malignant neoplasms">C00-C90, C96-C97 - Remainder of malignant neoplasms</option>
+            <option value="D50-D64 - Anaemias">D50-D64 - Anaemias</option>
+            <option value="D65-D89 - Remainder of diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism">D65-D89 - Remainder of diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism</option>
+            <option value="E40-E64 - Malnutrition and other nutritional deficiencies">E40-E64 - Malnutrition and other nutritional deficiencies</option>
+            <option value="G00, G03 - Meningitis">G00, G03 - Meningitis</option>
+            <option value="G04-G98 - Remainder of diseases of the nervous system">G04-G98 - Remainder of diseases of the nervous system</option>
+            <option value="J12-J18 - Pneumonia">J12-J18 - Pneumonia</option>
+            <option value="J00-J11, J20-J22 - Other acute respiratory infections">J00-J11, J20-J22 - Other acute respiratory infections</option>
+            <option value="K00-K92 - Diseases of the digestive system">K00-K92 - Diseases of the digestive system</option>
+            <option value="P00-P04 - Fetus and newborn affected by maternal factors and by complications of pregnancy, labour and delivery">P00-P04 - Fetus and newborn affected by maternal factors and by complications of pregnancy, labour and delivery</option>
+            <option value="P05-P08 - Disorders relating to length of gestation and fetal growth">P05-P08 - Disorders relating to length of gestation and fetal growth</option>
+            <option value="P10-P15 - Birth trauma">P10-P15 - Birth trauma</option>
+            <option value="P20-P21 - Intrauterine hypoxia and birth asphyxia">P20-P21 - Intrauterine hypoxia and birth asphyxia</option>
+            <option value="P22 - Respiratory distress of newborn">P22 - Respiratory distress of newborn</option>
+            <option value="P23 - Congenital pneumonia">P23 - Congenital pneumonia</option>
+            <option value="P24-P28 - Other respiratory conditions of newborn">P24-P28 - Other respiratory conditions of newborn</option>
+            <option value="P36 - Bacterial sepsis of newborn">P36 - Bacterial sepsis of newborn</option>
+            <option value="P38 - Omphalitis of newborn with or without mild haemorrhage">P38 - Omphalitis of newborn with or without mild haemorrhage</option>
+            <option value="P50-P61 - Haemorrhagic and haematological disorders of fetus and newborn">P50-P61 - Haemorrhagic and haematological disorders of fetus and newborn</option>
+            <option value="P29, P35, P37, P39, P70-P96 - Remainder of perinatal conditions">P29, P35, P37, P39, P70-P96 - Remainder of perinatal conditions</option>
+            <option value="Q03, Q05 - Congenital hydrocephalus and spina bifida">Q03, Q05 - Congenital hydrocephalus and spina bifida</option>
+            <option value="Q00-Q02, Q04, Q06-Q07 - Other congenital malformations of the nervous system">Q00-Q02, Q04, Q06-Q07 - Other congenital malformations of the nervous system</option>
+            <option value="Q20-Q24 - Congenital malformations of the heart">Q20-Q24 - Congenital malformations of the heart</option>
+            <option value="Q25-Q28 - Other congenital malformations of the circulatory system">Q25-Q28 - Other congenital malformations of the circulatory system</option>
+            <option value="Q90-Q99 - Down's syndrome and other chromosomal abnormalities">Q90-Q99 - Down's syndrome and other chromosomal abnormalities</option>
+            <option value="Q10-Q18, Q30-Q89 - Other congenital malformations">Q10-Q18, Q30-Q89 - Other congenital malformations</option>
+            <option value="R95 - Sudden infant death syndrome">R95 - Sudden infant death syndrome</option>
+            <option value="R00-R94, R96-R99 - Other symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified">R00-R94, R96-R99 - Other symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified</option>
+            <option value="D00-D48, E00-E34, E65-E88, F01-F99, H00-H95, I00-I99, J30-J98, L00-L98, M00-M99, N00-N98 - All other diseases">D00-D48, E00-E34, E65-E88, F01-F99, H00-H95, I00-I99, J30-J98, L00-L98, M00-M99, N00-N98 - All other diseases</option>
+            <option value="V01-V99 - Transport accidents">V01-V99 - Transport accidents</option>
+            <option value="W65-W74 - Accidental drowning and submersion">W65-W74 - Accidental drowning and submersion</option>
+            <option value="W75-W84 - Other accidental threats to breathing">W75-W84 - Other accidental threats to breathing</option>
+            <option value="X00-X09 - Exposure to smoke, fire and flames">X00-X09 - Exposure to smoke, fire and flames</option>
+            <option value="X40-X49 - Accidental poisoning by and exposure to noxious substances">X40-X49 - Accidental poisoning by and exposure to noxious substances</option>
+            <option value="X85-Y09 - Assault">X85-Y09 - Assault</option>
+            <option value="W00-W64, W85-W99, X10-X39, X50-X84, Y10-Y89 - All other external causes">W00-W64, W85-W99, X10-X39, X50-X84, Y10-Y89 - All other external causes</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 10px;">
+          <label style="font-weight: bold; font-size: 0.95rem; color: #2c3e50;">Specific 3-Digit ICD-10 Subcode <span style="font-weight: normal; font-size: 0.8rem; color: #6c757d;">(May be optional)</span></label>
+          <textarea id="f3b_icd_subcode" rows="1" style="flex: 1; min-width: 150px;" data-ailabel="Form 3b Specific ICD-10 Subcode"></textarea>
+        </div>
+        <p style="font-size: 0.8rem; font-weight: bold; line-height: 1.3; color: #333; margin-top: 8px;">
+          *Assigned at the district level<br>
+          DNO will have to communicate the assigned cause of death to the respective block
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ==========================================
+         FORM 3C: SOCIAL AUTOPSY
+         ========================================== -->
+    <div id="form3c" class="tab-content">
+      <div class="form-header"><h2>FORM 3c: SOCIAL AUTOPSY FORM</h2></div>
+      
+      <h3>Section A: Background Information</h3>
+      <div class="grid-4">
+        <div class="field-group"><label>ABHA/MCTS No:</label><input type="text" class="sync-mcts" id="f3c_mcts" oninput="sync('sync-mcts', this.value)"></div>
+        <div class="field-group"><label>1. Key Informant:</label><input type="text" class="sync-informant" id="f3c_1" oninput="sync('sync-informant', this.value)"></div>
+        <div class="field-group"><label>2. Relation to deceased:</label><input type="text" id="f3c_2"></div>
+        <div class="field-group"><label>3. Place of death:</label><select class="sync-pod2" id="f3c_3" onchange="sync('sync-pod2', this.value)"><option></option><option>Home</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option><option>Other</option></select></div>
+        <div class="field-group"><label>4. Mobile Number:</label><input type="text" id="f3c_4"></div>
+        <div class="field-group"><label>5. Total family members:</label><input type="number" id="f3c_5"></div>
+        <div class="field-group"><label>6. Children under 5 years:</label><input type="number" id="f3c_6"></div>
+        <div class="field-group"><label>7. Caste:</label><select class="sync-cat" id="f3c_7" onchange="sync('sync-cat', this.value)"><option></option><option>SC/ST</option><option>OBC</option><option>General</option></select></div>
+        <div class="field-group"><label>8. BPL Card:</label><select id="f3c_8"><option></option><option>Yes</option><option>No</option></select></div>
+      </div>
+      
+      <h4>9. Key Assets:</h4>
+      <div class="checkbox-grid">
+        <label><input type="checkbox" id="f3c_9a"> Vehicle (motorised)</label>
+        <label><input type="checkbox" id="f3c_9b"> Television</label>
+        <label><input type="checkbox" id="f3c_9c"> Own House</label>
+        <label><input type="checkbox" id="f3c_9d"> Own Land</label>
+        <label><input type="checkbox" id="f3c_9e"> Cattles</label>
+        <label><input type="checkbox" id="f3c_9f"> Telephone</label>
+      </div>
+
+      <h3>Section B: Treatment Seeking History</h3>
+      <div class="sub-q-row">
+        <div class="field-group"><label>10.1 ASHA/AWW advice?</label><select id="f3c_101"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>10.2 Who advised?</label><select id="f3c_102"><option></option><option>ASHA</option><option>ANM</option><option>Link worker</option><option>Other</option></select></div>
+        <div class="field-group"><label>11. Seek care outside home?</label><select id="f3c_11"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+
+      <h4>12. If "NO", reasons for not seeking care:</h4>
+      <div class="checkbox-grid-2col">
+        <label><input type="checkbox" id="f3c_12a"> 12.1 Not serious</label>
+        <label><input type="checkbox" id="f3c_12b"> 12.2 Money not available</label>
+        <label><input type="checkbox" id="f3c_12c"> 12.3 Family unable to accompany</label>
+        <label><input type="checkbox" id="f3c_12d"> 12.4 Bad weather</label>
+        <label><input type="checkbox" id="f3c_12e"> 12.5 Didn't know where to take</label>
+        <label><input type="checkbox" id="f3c_12f"> 12.6 No hope for survival</label>
+        <label><input type="checkbox" id="f3c_12g"> 12.7 Transport not available</label>
+        <label><input type="checkbox" id="f3c_12h"> 12.8 Other (specify)</label>
+      </div>
+
+      <div class="field-group"><label>13. Condition when medical consultation decided:</label><select id="f3c_13"><option></option><option>Alert/Active/feeding</option><option>Conscious but Drowsy/Inactive</option><option>Unconscious</option></select></div>
+      
+      <h4>14. From where or from whom did you seek care?</h4>
+      <div class="checkbox-grid-2col">
+        <label><input type="checkbox" id="f3c_14a"> Quack/informal provider</label>
+        <label><input type="checkbox" id="f3c_14b"> Traditional/Religious healer</label>
+        <label><input type="checkbox" id="f3c_14c"> Sub centre</label>
+        <label><input type="checkbox" id="f3c_14d"> Primary Health Centre (PHC)</label>
+        <label><input type="checkbox" id="f3c_14e"> Community Health Centre (CHC)</label>
+        <label><input type="checkbox" id="f3c_14f"> Sub-district Hospital</label>
+        <label><input type="checkbox" id="f3c_14g"> District (Govt.) Hospital</label>
+        <label><input type="checkbox" id="f3c_14h"> Private allopathic doctor</label>
+      </div>
+
+      <div class="keep-together table-responsive">
+        <h4>15. Problems faced Matrix:</h4>
+        <table>
+          <tr><th style="min-width: 250px;">Details</th><th>First Health Facility</th><th>Referral Institution I</th><th>Referral Institution II</th><th>Referral Institution III</th></tr>
+          <tr><td>15.1 Name / Type of facility visited</td><td><input type="text" id="f3c_15_1a"></td><td><input type="text" id="f3c_15_1b"></td><td><input type="text" id="f3c_15_1c"></td><td><input type="text" id="f3c_15_1d"></td></tr>
+          <tr><td>15.2 Complications faced during transport or at facility</td><td><input type="text" id="f3c_15_2a"></td><td><input type="text" id="f3c_15_2b"></td><td><input type="text" id="f3c_15_2c"></td><td><input type="text" id="f3c_15_2d"></td></tr>
+          <tr><td>15.3 Time taken to reach the facility (Hours)</td><td><input type="number" id="f3c_15_3a"></td><td><input type="number" id="f3c_15_3b"></td><td><input type="number" id="f3c_15_3c"></td><td><input type="number" id="f3c_15_3d"></td></tr>
+          <tr><td>15.4 Treatment received at the facility</td><td><input type="text" id="f3c_15_4a"></td><td><input type="text" id="f3c_15_4b"></td><td><input type="text" id="f3c_15_4c"></td><td><input type="text" id="f3c_15_4d"></td></tr>
+          <tr><td>15.5 Reason for referring to another facility</td><td><input type="text" id="f3c_15_5a"></td><td><input type="text" id="f3c_15_5b"></td><td><input type="text" id="f3c_15_5c"></td><td><input type="text" id="f3c_15_5d"></td></tr>
+          <tr><td>15.6 Mode of transport used for referral</td><td><input type="text" id="f3c_15_6a"></td><td><input type="text" id="f3c_15_6b"></td><td><input type="text" id="f3c_15_6c"></td><td><input type="text" id="f3c_15_6d"></td></tr>
+          <tr><td>15.7 Distance to the referral facility (Kms)</td><td><input type="number" id="f3c_15_7a"></td><td><input type="number" id="f3c_15_7b"></td><td><input type="number" id="f3c_15_7c"></td><td><input type="number" id="f3c_15_7d"></td></tr>
+          <tr><td>15.10 Was the child attended immediately?</td><td><select id="f3c_15_10a"><option></option><option>Yes</option><option>No</option></select></td><td><select id="f3c_15_10b"><option></option><option>Yes</option><option>No</option></select></td><td><select id="f3c_15_10c"><option></option><option>Yes</option><option>No</option></select></td><td><select id="f3c_15_10d"><option></option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td>15.11 If no, delay in receiving treatment (Mins)</td><td><input type="number" id="f3c_15_11a"></td><td><input type="number" id="f3c_15_11b"></td><td><input type="number" id="f3c_15_11c"></td><td><input type="number" id="f3c_15_11d"></td></tr>
+          <tr><td>15.12 Main reason for the delay in treatment</td><td><input type="text" id="f3c_15_12a"></td><td><input type="text" id="f3c_15_12b"></td><td><input type="text" id="f3c_15_12c"></td><td><input type="text" id="f3c_15_12d"></td></tr>
+        </table>
+      </div>
+
+      <div class="sub-q-row">
+        <div class="field-group"><label>16.1 Discharge against medical advice (LAMA) Reasons:</label><input type="text" id="f3c_161"></div>
+        <div class="field-group"><label>16.2 Dissatisfied with treatment?</label><select id="f3c_162"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>16.3 State of child at discharge:</label><input type="text" id="f3c_163"></div>
+      </div>
+
+      <h3>Section C: Social History / Section D: Expenditure</h3>
+      <div class="sub-q-row">
+        <div class="field-group"><label>17.1 Alcoholism in family?</label><select id="f3c_171"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>17.2 Smoking in family?</label><select id="f3c_172"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+        <div class="field-group"><label>17.3 Domestic Violence in family?</label><select id="f3c_173"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
+      </div>
+      <div class="sub-q-row">
+        <div class="field-group"><label>18.1 Know danger signs?</label><select id="f3c_181"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>18.2 If yes, name conditions:</label><input type="text" id="f3c_182"></div>
+        <div class="field-group"><label>18.3 Know admitting hospital?</label><select id="f3c_183"><option></option><option>Yes</option><option>No</option></select></div>
+      </div>
+      <div class="sub-q-row">
+        <div class="field-group"><label>19a. Total Amount Spent (Rs):</label><input type="number" id="f3c_19a"></div>
+        <div class="field-group"><label>19b. Treatment cost:</label><input type="number" id="f3c_19b"></div>
+        <div class="field-group"><label>19c. Transport cost:</label><input type="number" id="f3c_19c"></div>
+      </div>
+      <div class="field-group">
+        <label>20. How money was arranged:</label>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="f3c_20a"> Available / Savings</label>
+          <label><input type="checkbox" id="f3c_20b"> Borrowed</label>
+          <label><input type="checkbox" id="f3c_20c"> Sold assets</label>
+          <label><input type="checkbox" id="f3c_20d"> Community fund</label>
+          <label><input type="checkbox" id="f3c_20e"> Government scheme</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MATERNAL HISTORY
+         ========================================== -->
+    <div id="form4" class="tab-content">
+      <div class="form-header"><h2>MATERNAL HISTORY & PREGNANCY OUTCOME</h2></div>
+      
+      <h3>Section A: Antenatal Care (ANC) & Profile</h3>
+      <h4>A1. Obstetric Profile & Dates</h4>
+      <div class="sub-q-row" style="background-color: #f1f8ff; border-left-color: #17a2b8; display: flex; flex-wrap: nowrap; overflow-x: auto;">
+        <div class="field-group" style="flex: 1; min-width: 80px;">
+            <label>Gravida (G):</label>
+            <input type="number" id="f4_g" oninput="evaluateAllTriggers()">
+            <div id="f4_g_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+        </div>
+        <div class="field-group" style="flex: 1; min-width: 80px;">
+            <label>Parity (P):</label>
+            <input type="number" id="f4_p">
+        </div>
+        <div class="field-group" style="flex: 1; min-width: 80px;">
+            <label>Abortion (A):</label>
+            <input type="number" id="f4_a" oninput="evaluateAllTriggers()">
+            <div id="f4_a_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+        </div>
+        <div class="field-group" style="flex: 1; min-width: 80px;">
+            <label>Living (L):</label>
+            <input type="number" id="f4_l">
+        </div>
+        <div class="field-group" style="flex: 1; min-width: 80px;">
+            <label>IPI (Months):</label>
+            <input type="number" id="f4_ipi" oninput="evaluateAllTriggers()" placeholder="If G>1">
+            <div id="f4_ipi_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+        </div>
+      </div>
+
+      <div class="grid-5">
+        <div class="field-group">
+          <label>Mother's DOB:</label>
+          <input type="date" id="f4_mother_dob" onchange="calculateMotherAge()">
+        </div>
+        <div class="field-group">
+          <label>LMP:</label>
+          <input type="date" id="f4_lmp" onchange="enforceDateLogic(); calculateGestation(); calculateMotherAge(); calculateVisitGAs();">
+        </div>
+        <div class="field-group">
+          <label>Age:</label>
+          <input type="text" id="f4_mother_age" readonly placeholder="Auto">
+          <div id="f4_age_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+        </div>
+        <div class="field-group">
+          <label>EDD (by LMP):</label>
+          <input type="date" id="f4_edd" readonly>
+        </div>
+        <div class="field-group">
+          <label>GA at Birth (LMP):</label>
+          <input type="text" id="f4_ga" readonly placeholder="Auto">
+        </div>
+      </div>
+      
+      <div class="grid-2">
+        <div class="field-group">
+          <label>US-EDD (Dating Scan):</label>
+          <input type="date" id="f4_us_edd" onchange="calculateUSGestation()">
+        </div>
+        <div class="field-group">
+          <label>US-GA at Birth:</label>
+          <input type="text" id="f4_us_ga" readonly placeholder="Auto-calculated if DOB & US-EDD entered">
+        </div>
+      </div>
+
+      <h4>A2. Overarching ANC Details</h4>
+      <div class="grid-3">
+        <div class="field-group"><label>ANC Registered?</label><select id="f4_anc_reg"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>Trimester of Reg:</label><select id="f4_anc_tri"><option></option><option>1st Trimester</option><option>2nd Trimester</option><option>3rd Trimester</option><option>Unregistered</option></select></div>
+        <div class="field-group"><label>Total ANC Visits:</label><input type="number" id="f4_anc_visits"></div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field-group"><label>IFA Tablets Consumed:</label><input type="number" id="f4_ifa" placeholder="e.g., 180"></div>
+        <div class="field-group"><label>Calcium Tablets Consumed:</label><input type="number" id="f4_calcium" placeholder="e.g., 360"></div>
+        <div class="field-group"><label>Weight Gain in Pregnancy (Kg):</label><input type="number" id="f4_wt_gain"></div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field-group"><label>Total VHNDs Attended:</label><input type="number" id="f4_vhnd"></div>
+        <div class="field-group"><label>Total PMSMAs Attended:</label><input type="number" id="f4_pmsma"></div>
+        <div class="field-group"><label>Significant Findings (VHND/PMSMA):</label><input type="text" id="f4_anc_findings" placeholder="BP spikes, anemia, etc."></div>
+      </div>
+
+      <h3>Section B: Investigations & VHSND/PMSMA Visits</h3>
+      <h4>B1. Routine Panel (One-Time/Booking)</h4>
+      <div class="grid-4">
+        <div class="field-group">
+            <label>Mother's Height (cm):</label>
+            <input type="number" id="f4_height" placeholder="e.g., 150" oninput="recheckAllVitals();">
+            <div id="f4_height_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+        </div>
+        <div class="field-group"><label>TT/Td Doses:</label><select id="f4_anc_tt"><option></option><option>None</option><option>1 Dose</option><option>2 Doses / Booster</option></select></div>
+        <div class="field-group"><label>Blood Group & Rh:</label><select id="f4_bg" onchange="evaluateAllTriggers()"><option></option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="field-group"><label>Sickling:</label><select id="f4_sickle" onchange="evaluateAllTriggers()"><option></option><option>Negative</option><option>Positive (Trait)</option><option>Positive (Disease)</option><option>Not Done</option></select></div>
+      </div>
+      <div class="grid-3">
+        <div class="field-group"><label>HIV:</label><select id="f4_hiv" onchange="evaluateAllTriggers()"><option></option><option>Non-Reactive</option><option>Reactive</option><option>Not Done</option></select></div>
+        <div class="field-group"><label>VDRL/Syphilis:</label><select id="f4_vdrl" onchange="evaluateAllTriggers()"><option></option><option>Non-Reactive</option><option>Reactive</option><option>Not Done</option></select></div>
+        <div class="field-group"><label>HBsAg:</label><select id="f4_hbsag" onchange="evaluateAllTriggers()"><option></option><option>Non-Reactive</option><option>Reactive</option><option>Not Done</option></select></div>
+      </div>
+
+      <h4>B2. Visit Matrix (From MCP Card)</h4>
+      <div class="table-responsive keep-together">
+        <table>
+          <tr>
+            <th style="width: 50px;">Visit</th>
+            <th>Date</th>
+            <th style="min-width: 70px;">GA at ANC</th>
+            <th>Weight (kg)</th>
+            <th style="min-width: 140px; text-align: center;">BP (Sys/Dia)</th>
+            <th>Hb (g/dL)</th>
+            <th>Urine Dipstick</th>
+            <th>RBS/OGTT (mg/dL)</th>
+            <th>FHR (bpm)</th>
+          </tr>
+          <!-- Visit 1 -->
+          <tr id="anc_row_1">
+            <td>
+                <strong>1st</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(1)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v1_date" data-ailabel="ANC Visit 1 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v1_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 1 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v1_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Weight">
+              <div id="f4_v1_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v1_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 1 BP Systolic"> / 
+                <input type="number" id="f4_v1_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 1 BP Diastolic">
+              </div>
+              <div id="f4_v1_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v1_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Hemoglobin">
+              <div id="f4_v1_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v1_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Urine">
+                <div id="f4_v1_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v1_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 RBS/OGTT">
+                <div id="f4_v1_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v1_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Fetal Heart Rate">
+                <div id="f4_v1_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 2 -->
+          <tr id="anc_row_2">
+            <td>
+                <strong>2nd</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(2)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v2_date" data-ailabel="ANC Visit 2 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v2_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 2 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v2_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Weight">
+              <div id="f4_v2_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v2_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 2 BP Systolic"> / 
+                <input type="number" id="f4_v2_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 2 BP Diastolic">
+              </div>
+              <div id="f4_v2_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v2_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Hemoglobin">
+              <div id="f4_v2_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v2_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Urine">
+                <div id="f4_v2_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v2_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 RBS/OGTT">
+                <div id="f4_v2_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v2_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Fetal Heart Rate">
+                <div id="f4_v2_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 3 -->
+          <tr id="anc_row_3">
+            <td>
+                <strong>3rd</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(3)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v3_date" data-ailabel="ANC Visit 3 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v3_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 3 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v3_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Weight">
+              <div id="f4_v3_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v3_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 3 BP Systolic"> / 
+                <input type="number" id="f4_v3_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 3 BP Diastolic">
+              </div>
+              <div id="f4_v3_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v3_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Hemoglobin">
+              <div id="f4_v3_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v3_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Urine">
+                <div id="f4_v3_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v3_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 RBS/OGTT">
+                <div id="f4_v3_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v3_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Fetal Heart Rate">
+                <div id="f4_v3_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 4 -->
+          <tr id="anc_row_4">
+            <td>
+                <strong>4th</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(4)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v4_date" data-ailabel="ANC Visit 4 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v4_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 4 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v4_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Weight">
+              <div id="f4_v4_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v4_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 4 BP Systolic"> / 
+                <input type="number" id="f4_v4_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 4 BP Diastolic">
+              </div>
+              <div id="f4_v4_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v4_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Hemoglobin">
+              <div id="f4_v4_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v4_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Urine">
+                <div id="f4_v4_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v4_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 RBS/OGTT">
+                <div id="f4_v4_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v4_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Fetal Heart Rate">
+                <div id="f4_v4_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 5 (Hidden by default) -->
+          <tr id="anc_row_5" style="display: none;">
+            <td>
+                <strong>5th</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(5)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v5_date" data-ailabel="ANC Visit 5 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v5_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 5 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v5_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Weight">
+              <div id="f4_v5_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v5_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 5 BP Systolic"> / 
+                <input type="number" id="f4_v5_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 5 BP Diastolic">
+              </div>
+              <div id="f4_v5_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v5_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Hemoglobin">
+              <div id="f4_v5_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v5_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Urine">
+                <div id="f4_v5_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v5_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 RBS/OGTT">
+                <div id="f4_v5_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v5_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Fetal Heart Rate">
+                <div id="f4_v5_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 6 (Hidden by default) -->
+          <tr id="anc_row_6" style="display: none;">
+            <td>
+                <strong>6th</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(6)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v6_date" data-ailabel="ANC Visit 6 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v6_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 6 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v6_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Weight">
+              <div id="f4_v6_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v6_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 6 BP Systolic"> / 
+                <input type="number" id="f4_v6_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 6 BP Diastolic">
+              </div>
+              <div id="f4_v6_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v6_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Hemoglobin">
+              <div id="f4_v6_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v6_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Urine">
+                <div id="f4_v6_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v6_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 RBS/OGTT">
+                <div id="f4_v6_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v6_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Fetal Heart Rate">
+                <div id="f4_v6_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 7 (Hidden by default) -->
+          <tr id="anc_row_7" style="display: none;">
+            <td>
+                <strong>7th</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(7)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v7_date" data-ailabel="ANC Visit 7 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v7_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 7 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v7_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Weight">
+              <div id="f4_v7_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v7_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 7 BP Systolic"> / 
+                <input type="number" id="f4_v7_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 7 BP Diastolic">
+              </div>
+              <div id="f4_v7_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v7_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Hemoglobin">
+              <div id="f4_v7_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v7_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Urine">
+                <div id="f4_v7_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v7_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 RBS/OGTT">
+                <div id="f4_v7_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v7_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Fetal Heart Rate">
+                <div id="f4_v7_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+          <!-- Visit 8 (Hidden by default) -->
+          <tr id="anc_row_8" style="display: none;">
+            <td>
+                <strong>8th</strong><br>
+                <button type="button" class="no-print" onclick="removeLastAncRow(8)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+            </td>
+            <td><input type="date" id="f4_v8_date" data-ailabel="ANC Visit 8 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+            <td><input type="text" id="f4_v8_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 8 Gestational Age"></td>
+            <td>
+              <input type="number" id="f4_v8_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Weight">
+              <div id="f4_v8_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
+                <input type="number" id="f4_v8_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 8 BP Systolic"> / 
+                <input type="number" id="f4_v8_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 8 BP Diastolic">
+              </div>
+              <div id="f4_v8_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
+            </td>
+            <td>
+              <input type="number" id="f4_v8_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Hemoglobin">
+              <div id="f4_v8_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="text" id="f4_v8_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Urine">
+                <div id="f4_v8_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v8_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 RBS/OGTT">
+                <div id="f4_v8_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+            <td>
+                <input type="number" id="f4_v8_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Fetal Heart Rate">
+                <div id="f4_v8_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
+            </td>
+          </tr>
+        </table>
+        
+        <div style="display:flex; justify-content:space-between; margin-top:8px;">
+            <button type="button" class="btn btn-add-row no-print" onclick="showNextAncRow()" style="width:100%; margin-top:0;">+ Add Visit</button>
+        </div>
+      </div>
+
+      <h3>Section C: High-Risk Pregnancy (HRP) Categories</h3>
+      <div class="field-group">
+        <label>Select & Add Identified HRP Categories:</label>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <select id="f4_hrp_dropdown" style="flex:1;">
+            <option value="">-- Select High Risk Condition --</option>
+            <option value="Low Maternal BMI">Low Maternal BMI</option>
+            <option value="Severe Anemia (<7g/dl)">Severe Anemia (<7g/dl)</option>
+            <option value="PIH / Pre-Eclampsia / Eclampsia">PIH / Pre-Eclampsia / Eclampsia</option>
+            <option value="Gestational Diabetes Mellitus (GDM)">Gestational Diabetes Mellitus (GDM)</option>
+            <option value="Hypothyroidism">Hypothyroidism</option>
+            <option value="HIV">HIV</option>
+            <option value="Syphilis">Syphilis</option>
+            <option value="Tuberculosis">Tuberculosis</option>
+            <option value="Malaria">Malaria</option>
+            <option value="Hepatitis B">Hepatitis B</option>
+            <option value="RTI / STI">RTI / STI</option>
+            <option value="High Fever">High Fever</option>
+            <option value="Antepartum Haemorrhage (APH)">Antepartum Haemorrhage (APH)</option>
+            <option value="Previous LSCS">Previous LSCS</option>
+            <option value="Cephalo-pelvic Disproportion (CPD)">Cephalo-pelvic Disproportion (CPD)</option>
+            <option value="Bad Obstetric History (BOH)">Bad Obstetric History (BOH)</option>
+            <option value="Twins / Multiple Pregnancy">Twins / Multiple Pregnancy</option>
+            <option value="Abnormal Fetal Heart Rate">Abnormal Fetal Heart Rate</option>
+            <option value="H/O Still Birth">H/O Still Birth</option>
+            <option value="Congenital Malformation">Congenital Malformation</option>
+            <option value="Negative Blood Group (Rh -ve)">Negative Blood Group (Rh -ve)</option>
+            <option value="Teenage Pregnancy">Teenage Pregnancy</option>
+            <option value="Elderly Primi">Elderly Primi</option>
+            <option value="Grand Multipara">Grand Multipara</option>
+            <option value="Short Stature">Short Stature</option>
+            <option value="Sickle Cell Disease / Trait">Sickle Cell Disease / Trait</option>
+            <option value="Short Birth Spacing (< 24 months)">Short Birth Spacing (< 24 months)</option>
+          </select>
+          <button type="button" class="btn btn-attach" onclick="addHrpFactor()">Add Category</button>
+        </div>
+        
+        <div id="hrp_selected_list" class="hrp-print-container" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:8px;">
+          <!-- Dynamically populated via JS -->
+        </div>
+        <input type="hidden" id="f4_hrp_manual_hidden">
+      </div>
+
+      <div class="field-group" style="margin-top: 10px;">
+        <label>Other HRP Categories (Specify manually):</label>
+        <input type="text" id="f4_hrp_others" placeholder="Specify any other conditions not listed...">
+      </div>
+
+      <h3>Section D: Intrapartum & Postpartum History</h3>
+      <div class="grid-4">
+        <div class="field-group"><label>Onset of Labour:</label><select id="f4_labour_onset"><option></option><option>Spontaneous</option><option>Induced</option><option>Elective LSCS (No Labour)</option></select></div>
+        <div class="field-group"><label>Delivery Location:</label><select id="f4_del_loc"><option></option><option>Home</option><option>In Transit</option><option>Sub-Center / HWC</option><option>PHC / CHC</option><option>District Hospital / Medical College</option><option>Private Hospital</option></select></div>
+        <div class="field-group"><label>Name of Facility/Place:</label><input type="text" id="f4_del_place_name" placeholder="e.g., DHH Rayagada"></div>
+        <div class="field-group"><label>Mode of Delivery:</label><select id="f4_del_mode"><option></option><option>Normal Vaginal Delivery (NVD)</option><option>Assisted (Forceps/Vacuum)</option><option>C-Section (LSCS)</option></select></div>
+      </div>
+
+      <div class="field-group">
+        <label>Labour Complications:</label>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="f4_comp_none"> None</label>
+          <label><input type="checkbox" id="f4_comp_prolonged"> Prolonged Labour</label>
+          <label><input type="checkbox" id="f4_comp_prom"> PROM (>18 hours)</label>
+          <label><input type="checkbox" id="f4_comp_obstructed"> Obstructed Labour</label>
+          <label><input type="checkbox" id="f4_comp_cord"> Cord Prolapse</label>
+          <label><input type="checkbox" id="f4_comp_msaf"> Meconium Stained Fluid</label>
+          <label><input type="checkbox" id="f4_comp_fetal_distress"> Fetal Distress</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Postpartum Complications:</label>
+        <input type="text" id="f4_pp_comp" placeholder="e.g., PPH, Puerperal Sepsis, None">
+      </div>
+
+    </div>
+    
+    <!-- ==========================================
+         MEDIA UPLOAD
+         ========================================== -->
+    <div id="mediaTab" class="tab-content no-print">
+      <div class="form-header"><h2>MEDIA UPLOAD</h2></div>
+      
+      <div class="media-card" style="margin-top: 15px;">
+        <div class="grid-2">
+          <div class="field-group">
+            <label>Select Category:</label>
+            <select id="mediaCategory" onchange="document.getElementById('mediaCategoryOther').style.display = this.value === 'Others...' ? 'block' : 'none';">
+              <option value="MCP Card">MCP Card</option>
+              <option value="VHSND">VHSND</option>
+              <option value="PMSMA">PMSMA</option>
+              <option value="Immunization Card">Immunization Card</option>
+              <option value="Red Card">Red Card</option>
+              <option value="OPD Prescription">OPD Prescription</option>
+              <option value="Discharge/ Referral Slip">Discharge/ Referral Slip</option>
+              <option value="Investigation Reports">Investigation Reports</option>
+              <option value="Site visit by HCW">Site visit by HCW</option>
+              <option value="Undertakings">Undertakings</option>
+              <option value="Others...">Others...</option>
+            </select>
+            <input type="text" id="mediaCategoryOther" style="display:none; margin-top:8px;" placeholder="Type custom media name...">
+          </div>
+          <div class="field-group">
+            <label>Upload File (Images & PDFs):</label>
+            <input type="file" id="mediaUploadInput" accept="image/*,application/pdf" multiple style="padding: 5px;">
+          </div>
+        </div>
+        <button type="button" class="btn btn-attach" onclick="processMediaUpload()" style="margin-top: 10px;">Attach Files to Record</button>
+      </div>
+
+      <div id="mediaPreviewArea" class="preview-grid">
+        <!-- Javascript injects attached files here -->
+      </div>
+    </div>
+
+  </form>
+
+  <div class="actions-bar no-print">
+    <div class="actions-container" id="actionsContainer">
+        <select id="caseSelector" onchange="switchCase(this.value)" style="font-weight:bold; background:#eef2f5;">
+            <!-- IndexedDB cases auto-populated here -->
+        </select>
+        <button class="btn btn-attach" onclick="createNewCase()">+ New Case</button>
+        <button class="btn btn-backup" onclick="exportBackup()">Export Backup</button>
+        <button class="btn btn-backup" onclick="document.getElementById('importDataInput').click()">Restore Backup</button>
+        <input type="file" id="importDataInput" style="display:none;" accept=".json" onchange="importBackup(event)">
+        <button class="btn btn-print" onclick="window.print()">Print Active</button>
+        <button class="btn btn-print-all" onclick="printAllForms()">Print ALL Forms</button>
+        <button class="btn btn-ai" onclick="copyForAI()">Copy for AI</button>
+        <button class="btn btn-clear-single" onclick="clearCurrentTab()">Clear Tab</button>
+        <button class="btn btn-clear-all" onclick="deleteActiveCase()">Delete Case</button>
+    </div>
+    
+    <div class="mobile-actions-header">
+        <span id="autoSaveIndicator">Saved (IndexedDB)</span>
+        <button type="button" class="btn btn-toggle" onclick="toggleActions()">⚙️ Actions ▼</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let hrpFactorsList = [];
+  let manualHrpFactors = [];
+  let visibleAncRows = 4;
+
+  // AUTO-EXPAND TEXTAREAS
+  function autoResizeTextarea(el) {
+      if (el.offsetWidth > 0 || el.offsetHeight > 0) { 
+          el.style.height = 'auto';
+          let newHeight = el.scrollHeight;
+          if (newHeight < 80 && el.id !== 'f3a_icd_subcode' && el.id !== 'f3b_icd_subcode') newHeight = 80;
+          el.style.height = (newHeight + 5) + 'px';
+      }
+  }
+
+  document.querySelectorAll('textarea').forEach(ta => {
+      ta.addEventListener('input', function() {
+          autoResizeTextarea(this);
+      });
+  });
+
+  function resizeAllTextareas() {
+      document.querySelectorAll('textarea').forEach(ta => {
+          if(ta.value) autoResizeTextarea(ta);
+      });
+  }
+
+  // PRINT MIRROR ENGINE
+  window.addEventListener('beforeprint', function() {
+      document.querySelectorAll('textarea').forEach(ta => {
+          let mirror = document.createElement('div');
+          mirror.className = 'print-mirror';
+          mirror.textContent = ta.value;
+          ta.parentNode.insertBefore(mirror, ta.nextSibling);
+      });
+  });
+
+  window.addEventListener('afterprint', function() {
+      document.querySelectorAll('.print-mirror').forEach(m => m.remove());
+  });
+
+  // INDEXEDDB ENGINE
+  let db;
+  const DB_NAME = 'CDR_Field_DB';
+  const STORE_NAME = 'cdr_cases';
+  let activeCaseId = localStorage.getItem('CDR_ACTIVE_CASE_ID') || 'CASE_' + Date.now();
+
+  function initDB(callback) {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+              const store = db.createObjectStore(STORE_NAME, { keyPath: 'caseId' });
+              store.createIndex('childName', 'childName', { unique: false });
+              store.createIndex('updatedAt', 'updatedAt', { unique: false });
+          }
+      };
+      request.onsuccess = function(e) {
+          db = e.target.result;
+          populateCaseList();
+          if (callback) callback();
+      };
+      request.onerror = function(e) {
+          console.error("IndexedDB initialization error:", e.target.error);
+      };
+  }
+
+  function saveDataSilently() {
+      if (!db) return;
+      const data = {};
+      document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
+          if(el.id && el.id !== 'mediaUploadInput' && el.id !== 'mediaCategory' && el.id !== 'mediaCategoryOther' && el.type !== 'file' && el.id !== 'f4_hrp_dropdown' && el.id !== 'caseSelector') {
+              if (el.type === 'checkbox') {
+                  data[el.id] = el.checked;
+              } else {
+                  data[el.id] = el.value;
+              }
+          }
+      });
+      data['visibleAncRows'] = visibleAncRows;
+
+      const childName = (data['f1_child'] || 'Unnamed Child').trim();
+      const caseRecord = {
+          caseId: activeCaseId,
+          childName: childName,
+          updatedAt: new Date().toISOString(),
+          formData: data,
+          mediaHTML: document.getElementById('mediaPreviewArea').innerHTML
+      };
+
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.put(caseRecord);
+
+      localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
+
+      const ind = document.getElementById('autoSaveIndicator');
+      if(ind) {
+          ind.style.opacity = 1;
+          setTimeout(() => ind.style.opacity = 0, 1000);
+      }
+      populateCaseList();
+  }
+
+  function loadCaseFromIndexedDB(caseId) {
+      if (!db) return;
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.get(caseId);
+
+      req.onsuccess = function() {
+          const record = req.result;
+          if (record && record.formData) {
+              activeCaseId = caseId;
+              localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
+              document.getElementById('cdrMasterForm').reset();
+              
+              const data = record.formData;
+              if (data['visibleAncRows']) {
+                  visibleAncRows = parseInt(data['visibleAncRows']);
+                  for(let i = 5; i <= visibleAncRows; i++) {
+                      const row = document.getElementById('anc_row_' + i);
+                      if (row) row.style.display = 'table-row';
+                  }
+              }
+
+              Object.keys(data).forEach(k => {
+                  const el = document.getElementById(k);
+                  if (el) {
+                      if (el.type === 'checkbox') el.checked = data[k];
+                      else el.value = data[k];
+                  }
+              });
+
+              if(record.mediaHTML) {
+                  document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
+                  
+                  // RETROACTIVE MEDIA BUTTON HEALING SCRIPT
+                  document.getElementById('mediaPreviewArea').querySelectorAll('.remove-btn').forEach(btn => {
+                      btn.setAttribute('type', 'button');
+                      btn.setAttribute('onclick', "this.parentElement.remove(); saveDataSilently();");
+                  });
+              }
+
+              const hiddenManual = document.getElementById('f4_hrp_manual_hidden');
+              if (hiddenManual && hiddenManual.value) {
+                  try { manualHrpFactors = JSON.parse(hiddenManual.value); } catch(e) { manualHrpFactors = []; }
+              }
+
+              triggerInitialSync();
+              applyConditionals();
+
+              document.querySelectorAll('.vital-check').forEach(el => {
+                  if (el.value) checkVitals(el);
+              });
+
+              calculateChildAge();
+              calculateMotherAge();
+              calculateGestation();
+              calculateUSGestation();
+              calculateVisitGAs();
+              evaluateAllTriggers();
+              resizeAllTextareas();
+          }
+      };
+  }
+
+  function populateCaseList() {
+      if (!db) return;
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+
+      req.onsuccess = function() {
+          const cases = req.result;
+          const selector = document.getElementById('caseSelector');
+          if(!selector) return;
+
+          selector.innerHTML = '';
+          if (cases.length === 0) {
+              const opt = document.createElement('option');
+              opt.value = activeCaseId;
+              opt.innerText = "Current Active Case";
+              selector.appendChild(opt);
+          } else {
+              cases.forEach(c => {
+                  const opt = document.createElement('option');
+                  opt.value = c.caseId;
+                  const dod = c.formData['f1_dod'];
+                  const dateStr = dod ? new Date(dod).toLocaleDateString() : new Date(c.updatedAt).toLocaleDateString();
+                  opt.innerText = `${c.childName || 'Unnamed'} (${dateStr})`;
+                  if (c.caseId === activeCaseId) opt.selected = true;
+                  selector.appendChild(opt);
+              });
+          }
+      };
+  }
+
+  function switchCase(caseId) {
+      if (caseId && caseId !== activeCaseId) {
+          saveDataSilently();
+          loadCaseFromIndexedDB(caseId);
+      }
+  }
+
+  function createNewCase() {
+      saveDataSilently();
+      activeCaseId = 'CASE_' + Date.now();
+      localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
+      document.getElementById('cdrMasterForm').reset();
+      document.getElementById('mediaPreviewArea').innerHTML = '';
+      manualHrpFactors = [];
+      hrpFactorsList = [];
+      renderHrpFactors();
+      visibleAncRows = 4;
+      for(let i=5; i<=8; i++) {
+          const r = document.getElementById('anc_row_' + i);
+          if(r) r.style.display = 'none';
+      }
+      document.querySelectorAll('div[id$="_inf"]').forEach(el => el.innerText = '');
+      
+      triggerInitialSync();
+      applyConditionals();
+      resizeAllTextareas();
+      saveDataSilently();
+  }
+
+  // ADDRESS COMPILER
+  function compileAddress() {
+      const hNo = document.getElementById('f1_house').value.trim();
+      const moh = document.getElementById('f1_mohalla').value.trim();
+      const vil = document.getElementById('f1_village').value.trim();
+      const blk = document.getElementById('f1_block').value.trim();
+      const dist = document.getElementById('f1_district').value.trim();
+      const st = document.getElementById('f1_state').value.trim();
+      const pin = document.getElementById('f1_pin').value.trim();
+
+      let atParts = [];
+      if(hNo) atParts.push(hNo);
+      if(moh) atParts.push(moh);
+      if(vil) atParts.push(vil);
+      
+      let poParts = [];
+      if(blk) poParts.push(blk);
+      if(dist) poParts.push(dist);
+      if(st) poParts.push(st);
+
+      let addrStr = "";
+      if(atParts.length > 0) addrStr += "At- " + atParts.join(', ');
+      if(poParts.length > 0) addrStr += (addrStr ? "; " : "") + "Po- " + poParts.join(', ');
+      if(pin) addrStr += (addrStr ? ", " : "") + pin;
+
+      ['f2_address', 'f3a_add', 'f3b_add'].forEach(id => {
+          const el = document.getElementById(id);
+          if(el) el.value = addrStr;
+      });
+      saveDataSilently();
+  }
+
+  // GLOBAL SYNC ENGINE
+  function triggerInitialSync() {
+      const syncClasses = [
+          'sync-child', 'sync-dob', 'sync-tob', 'sync-age', 'sync-sex', 
+          'sync-mother', 'sync-dod', 'sync-tod', 'sync-pod', 'sync-pod2', 'sync-district', 
+          'sync-block', 'sync-village', 'sync-phc', 'sync-sub', 
+          'sync-mcts', 'sync-pin', 'sync-resp', 'sync-rel', 'sync-cat', 'sync-informant', 'sync-relig'
+      ];
+
+      syncClasses.forEach(cls => {
+          const elements = document.querySelectorAll('.' + cls);
+          let val = '';
+          for(let el of elements) {
+              if(el.value) { val = el.value; break; }
+          }
+          if(val) {
+              elements.forEach(el => {
+                  if(el.type !== 'checkbox' && el.type !== 'radio') el.value = val;
+              });
+          }
+      });
+      compileAddress();
+  }
+
+  // CONDITIONAL LOCKING (SKIP LOGIC)
+  function applyConditionals() {
+      const rules = [
+          { trigger: 'f3a_13a', val: 'No', targets: ['f3a_13b', 'f3a_13c'] },
+          { trigger: 'f3a_16a', val: 'No', targets: ['f3a_16b'] },
+          { trigger: 'f3a_25a', val: 'No', targets: ['f3a_25b'] },
+          { trigger: 'f3a_26c', val: 'No', targets: ['f3a_26d'] },
+          { trigger: 'f3a_27a', val: 'No', targets: ['f3a_27b'] },
+          { trigger: 'f3a_28a', val: 'No', targets: ['f3a_28b'] },
+          { trigger: 'f3a_29a', val: 'No', targets: ['f3a_29b'] },
+          { trigger: 'f3a_30a', val: 'No', targets: ['f3a_30b'] },
+          { trigger: 'f3a_33a', val: 'No', targets: ['f3a_33b'] },
+          { trigger: 'f3a_34a', val: 'No', targets: ['f3a_34b'] },
+          
+          { trigger: 'f3b_13a', val: 'No', targets: ['f3b_13b', 'f3b_13c'] },
+          { trigger: 'f3b_15a', val: 'No', targets: ['f3b_15b'] },
+          { trigger: 'f3b_20a', val: 'No', targets: ['f3b_20b', 'f3b_20c'] },
+          { trigger: 'f3b_21a', val: 'No', targets: ['f3b_21b', 'f3b_21c'] },
+          { trigger: 'f3b_22a', val: 'No', targets: ['f3b_22b', 'f3b_22c', 'f3b_22d', 'f3b_22e'] },
+          { trigger: 'f3b_23a', val: 'No', targets: ['f3b_23b'] },
+          { trigger: 'f3b_24a', val: 'No', targets: ['f3b_24b'] },
+          { trigger: 'f3b_26a', val: 'No', targets: ['f3b_26c'] }, 
+          { trigger: 'f3b_31a', val: 'No', targets: ['f3b_31b'] }
+      ];
+
+      rules.forEach(r => {
+          const triggerEl = document.getElementById(r.trigger);
+          if (triggerEl) {
+              const shouldLock = (triggerEl.value === r.val);
+              r.targets.forEach(tid => {
+                  const targetEl = document.getElementById(tid);
+                  if (targetEl) {
+                      targetEl.disabled = shouldLock;
+                      if (shouldLock) {
+                          if (targetEl.type === 'checkbox') targetEl.checked = false;
+                          else targetEl.value = '';
+                      }
+                  }
+              });
+          }
+      });
+  }
+
+  // HARD DATE VALIDATION ENGINE
+  function enforceDateLogic() {
+      const lmpEl = document.getElementById('f4_lmp');
+      const dobEl = document.getElementById('f1_dob');
+      const dodEl = document.getElementById('f1_dod');
+      
+      const lmp = lmpEl && lmpEl.value ? new Date(lmpEl.value) : null;
+      const dob = dobEl && dobEl.value ? new Date(dobEl.value) : null;
+      const dod = dodEl && dodEl.value ? new Date(dodEl.value) : null;
+      const today = new Date();
+
+      if (dob && lmp && dob < lmp) {
+          alert("Clinical Error: Date of Birth cannot be earlier than Last Menstrual Period (LMP).");
+          dobEl.value = '';
+          document.querySelectorAll('.sync-dob').forEach(el => el.value = '');
+      }
+      if (dod && dob && dod < dob) {
+          alert("Clinical Error: Date of Death cannot be earlier than Date of Birth.");
+          dodEl.value = '';
+          document.querySelectorAll('.sync-dod').forEach(el => el.value = '');
+      }
+      
+      if (dob && dob > today) { alert("Error: DOB cannot be in the future."); dobEl.value = ''; document.querySelectorAll('.sync-dob').forEach(el => el.value = ''); }
+      if (dod && dod > today) { alert("Error: DOD cannot be in the future."); dodEl.value = ''; document.querySelectorAll('.sync-dod').forEach(el => el.value = ''); }
+      if (lmp && lmp > today) { alert("Error: LMP cannot be in the future."); lmpEl.value = ''; }
+
+      for(let i=1; i<=8; i++) {
+          const vEl = document.getElementById('f4_v' + i + '_date');
+          if(vEl && vEl.value) {
+              const vDate = new Date(vEl.value);
+              if (vDate > today) {
+                  alert(`Error: ANC Visit ${i} cannot be in the future.`);
+                  vEl.value = '';
+              } else if (lmp && vDate < lmp) {
+                  alert(`Clinical Error: ANC Visit ${i} cannot be earlier than LMP.`);
+                  vEl.value = '';
+              } else if (dob && vDate > dob) {
+                  alert(`Clinical Error: ANC Visit ${i} cannot be later than Date of Birth.`);
+                  vEl.value = '';
+              }
+          }
+      }
+  }
+
+  document.getElementById('cdrMasterForm').addEventListener('input', () => {
+      saveDataSilently();
+      applyConditionals();
+      evaluateAllTriggers();
+  });
+  document.getElementById('cdrMasterForm').addEventListener('change', () => {
+      saveDataSilently();
+      applyConditionals();
+      evaluateAllTriggers();
+  });
+
+  // AUTO-LOAD ON STARTUP
+  window.addEventListener('DOMContentLoaded', () => {
+      initDB(() => {
+          loadCaseFromIndexedDB(activeCaseId);
+      });
+  });
+
+  // ACTION MENU TOGGLE
+  function toggleActions() {
+    const container = document.getElementById('actionsContainer');
+    const btn = document.querySelector('.btn-toggle');
+    if (container.classList.contains('expanded')) {
+        container.classList.remove('expanded');
+        btn.innerText = '⚙️ Actions ▼';
+    } else {
+        container.classList.add('expanded');
+        btn.innerText = '⚙️ Close ▲';
+    }
+  }
+
+  // DYNAMIC ANC ROWS
+  function showNextAncRow() {
+      if(visibleAncRows < 8) {
+          visibleAncRows++;
+          document.getElementById('anc_row_' + visibleAncRows).style.display = 'table-row';
+          saveDataSilently();
+      } else {
+          alert("Maximum 8 ANC visits are supported in this view.");
+      }
+  }
+
+  function removeLastAncRow(rowIndex) {
+      if(visibleAncRows > 1) {
+          if(confirm(`Are you sure you want to permanently delete Visit ${rowIndex}?`)) {
+              
+              for(let i = rowIndex; i < visibleAncRows; i++) {
+                  let currentRow = document.getElementById('anc_row_' + i);
+                  let nextRow = document.getElementById('anc_row_' + (i + 1));
+                  let currInputs = currentRow.querySelectorAll('input, select');
+                  let nextInputs = nextRow.querySelectorAll('input, select');
+                  
+                  for(let j=0; j<currInputs.length; j++) {
+                      currInputs[j].value = nextInputs[j].value;
+                      if (currInputs[j].classList.contains('vital-check')) {
+                          checkVitals(currInputs[j]);
+                      }
+                  }
+              }
+              
+              let lastRow = document.getElementById('anc_row_' + visibleAncRows);
+              lastRow.querySelectorAll('input, select').forEach(el => {
+                  el.value = '';
+                  if (el.classList.contains('vital-check')) {
+                      el.style.backgroundColor = '#fbfcff';
+                      el.style.color = '#004085';
+                  }
+              });
+              lastRow.querySelectorAll('div[id$="_inf"]').forEach(el => el.innerText = '');
+              
+              lastRow.style.display = 'none';
+              visibleAncRows--;
+              
+              saveDataSilently();
+              evaluateAllTriggers();
+          }
+      } else {
+          alert("Cannot remove the 1st ANC visit.");
+      }
+  }
+
+  // SMART VITAL INDICATORS & INFERENCES
+  function recheckAllVitals() {
+      for(let i=1; i<=8; i++) {
+          const wtEl = document.getElementById('f4_v' + i + '_wt');
+          if(wtEl && wtEl.value) checkVitals(wtEl);
+      }
+  }
+
+  function checkVitals(el) {
+      if (el.id.includes('_bp_s') || el.id.includes('_bp_d')) {
+          const row = el.id.split('_bp_')[0];
+          const sys = parseFloat(document.getElementById(row + '_bp_s').value);
+          const dia = parseFloat(document.getElementById(row + '_bp_d').value);
+          const inf = document.getElementById(row + '_bp_inf');
+          
+          let isHigh = (sys >= 140 || dia >= 90);
+          let isLow = (sys < 90 || dia < 60);
+
+          let bg = '#fbfcff', col = '#004085', text = '';
+          if (isHigh) { bg = '#f8d7da'; col = '#721c24'; text = 'High BP'; }
+          else if (isLow && (sys > 0 || dia > 0)) { bg = '#cce5ff'; col = '#004085'; text = 'Low BP'; }
+          else if (!isNaN(sys) && !isNaN(dia)) { bg = '#d4edda'; col = '#155724'; text = 'Normal'; }
+
+          document.getElementById(row + '_bp_s').style.backgroundColor = bg;
+          document.getElementById(row + '_bp_s').style.color = col;
+          document.getElementById(row + '_bp_d').style.backgroundColor = bg;
+          document.getElementById(row + '_bp_d').style.color = col;
+          
+          if(inf) { inf.innerText = text; inf.style.color = col; }
+      } 
+      else if (el.id.includes('_hb')) {
+          const row = el.id.split('_hb')[0];
+          const inf = document.getElementById(row + '_hb_inf');
+          const hb = parseFloat(el.value);
+          
+          if (isNaN(hb)) {
+              el.style.backgroundColor = '#fbfcff'; el.style.color = '#004085';
+              if(inf) inf.innerText = '';
+          } else if (hb < 7.0) {
+              el.style.backgroundColor = '#f8d7da'; el.style.color = '#721c24';
+              if(inf) { inf.innerText = 'Severe Anemia'; inf.style.color = '#721c24'; }
+          } else if (hb >= 7.0 && hb <= 9.9) {
+              el.style.backgroundColor = '#ffeeba'; el.style.color = '#856404';
+              if(inf) { inf.innerText = 'Moderate Anemia'; inf.style.color = '#856404'; }
+          } else if (hb >= 10.0 && hb <= 10.9) {
+              el.style.backgroundColor = '#fff3cd'; el.style.color = '#856404';
+              if(inf) { inf.innerText = 'Mild Anemia'; inf.style.color = '#856404'; }
+          } else {
+              el.style.backgroundColor = '#d4edda'; el.style.color = '#155724';
+              if(inf) { inf.innerText = 'Normal'; inf.style.color = '#155724'; }
+          }
+      }
+      else if (el.id.includes('_rbs')) {
+          const row = el.id.split('_rbs')[0];
+          const inf = document.getElementById(row + '_rbs_inf');
+          const rbs = parseFloat(el.value);
+          
+          if (isNaN(rbs)) {
+              el.style.backgroundColor = '#fbfcff'; el.style.color = '#004085';
+              if(inf) inf.innerText = '';
+          } else if (rbs >= 140) {
+              el.style.backgroundColor = '#f8d7da'; el.style.color = '#721c24';
+              if(inf) { inf.innerText = 'High (GDM Risk)'; inf.style.color = '#721c24'; }
+          } else {
+              el.style.backgroundColor = '#d4edda'; el.style.color = '#155724';
+              if(inf) { inf.innerText = 'Normal'; inf.style.color = '#155724'; }
+          }
+      }
+      else if (el.id.includes('_fhr')) {
+          const row = el.id.split('_fhr')[0];
+          const inf = document.getElementById(row + '_fhr_inf');
+          const fhr = parseFloat(el.value);
+
+          if (isNaN(fhr)) {
+              el.style.backgroundColor = '#fbfcff'; el.style.color = '#004085';
+              if(inf) inf.innerText = '';
+          } else if (fhr < 120 || fhr > 160) {
+              el.style.backgroundColor = '#f8d7da'; el.style.color = '#721c24';
+              if(inf) { inf.innerText = 'Abnormal'; inf.style.color = '#721c24'; }
+          } else {
+              el.style.backgroundColor = '#d4edda'; el.style.color = '#155724';
+              if(inf) { inf.innerText = 'Normal'; inf.style.color = '#155724'; }
+          }
+      }
+      else if (el.id.includes('_urine')) {
+          const row = el.id.split('_urine')[0];
+          const inf = document.getElementById(row + '_urine_inf');
+          const val = el.value.trim().toLowerCase();
+
+          if (val.includes('+')) {
+              el.style.backgroundColor = '#f8d7da'; el.style.color = '#721c24';
+              if(inf) { inf.innerText = 'Albuminuria'; inf.style.color = '#721c24'; }
+          } else if (val === '0' || val.includes('nil') || val.includes('neg')) {
+              el.style.backgroundColor = '#d4edda'; el.style.color = '#155724';
+              if(inf) { inf.innerText = 'Normal'; inf.style.color = '#155724'; }
+          } else {
+              el.style.backgroundColor = '#fbfcff'; el.style.color = '#004085';
+              if(inf) inf.innerText = '';
+          }
+      }
+      else if (el.id.includes('_wt')) {
+          const row = el.id.split('_wt')[0];
+          const inf = document.getElementById(row + '_wt_inf');
+          const wt = parseFloat(el.value);
+          const htCm = parseFloat(document.getElementById('f4_height').value);
+          
+          if (isNaN(wt)) {
+              el.style.backgroundColor = '#fbfcff'; el.style.color = '#004085';
+              if(inf) inf.innerText = '';
+              return;
+          }
+
+          let warnings = [];
+          let isWarning = false;
+
+          if (wt < 40) {
+              warnings.push('Wt <40kg');
+              isWarning = true;
+          }
+
+          if (!isNaN(htCm) && htCm > 0) {
+              const htM = htCm / 100;
+              const bmi = wt / (htM * htM);
+              if (bmi < 18.5) {
+                  warnings.push(`BMI Low (${bmi.toFixed(1)})`);
+                  isWarning = true;
+              }
+          }
+
+          if (isWarning) {
+              el.style.backgroundColor = '#f8d7da'; el.style.color = '#721c24';
+              if(inf) { inf.innerText = warnings.join(', '); inf.style.color = '#721c24'; }
+          } else {
+              el.style.backgroundColor = '#d4edda'; el.style.color = '#155724';
+              if(inf) { inf.innerText = 'Normal'; inf.style.color = '#155724'; }
+          }
+      }
+
+      evaluateAllTriggers();
+  }
+
+  // AUTO-TRIGGER HRP ENGINE
+  function evaluateAllTriggers() {
+      let autoFactors = new Set();
+      
+      const g = parseFloat(document.getElementById('f4_g').value);
+      const a = parseFloat(document.getElementById('f4_a').value);
+      const ht = parseFloat(document.getElementById('f4_height').value);
+      const ipi = parseFloat(document.getElementById('f4_ipi').value);
+      
+      const gEl = document.getElementById('f4_g');
+      const gInf = document.getElementById('f4_g_inf');
+      if (!isNaN(g) && g >= 5) {
+          autoFactors.add("Grand Multipara");
+          gEl.style.backgroundColor = '#f8d7da'; gEl.style.color = '#721c24';
+          if(gInf) { gInf.innerText = 'Grand Multipara'; gInf.style.color = '#721c24'; }
+      } else {
+          gEl.style.backgroundColor = '#fbfcff'; gEl.style.color = '#004085';
+          if(gInf) gInf.innerText = '';
+      }
+
+      const aEl = document.getElementById('f4_a');
+      const aInf = document.getElementById('f4_a_inf');
+      if (!isNaN(a) && a >= 1) {
+          autoFactors.add("Bad Obstetric History (BOH)");
+          aEl.style.backgroundColor = '#f8d7da'; aEl.style.color = '#721c24';
+          if(aInf) { aInf.innerText = 'Bad Obstetric History'; aInf.style.color = '#721c24'; }
+      } else {
+          aEl.style.backgroundColor = '#fbfcff'; aEl.style.color = '#004085';
+          if(aInf) aInf.innerText = '';
+      }
+
+      const htEl = document.getElementById('f4_height');
+      const htInf = document.getElementById('f4_height_inf');
+      if (!isNaN(ht) && ht < 140) {
+          autoFactors.add("Short Stature");
+          htEl.style.backgroundColor = '#f8d7da'; htEl.style.color = '#721c24';
+          if(htInf) { htInf.innerText = 'Short Stature'; htInf.style.color = '#721c24'; }
+      } else {
+          htEl.style.backgroundColor = '#fbfcff'; htEl.style.color = '#004085';
+          if(htInf) htInf.innerText = '';
+      }
+      
+      const ipiEl = document.getElementById('f4_ipi');
+      const ipiInf = document.getElementById('f4_ipi_inf');
+      if (!isNaN(g) && g > 1 && !isNaN(ipi) && ipi < 24) {
+          autoFactors.add("Short Birth Spacing (< 24 months)");
+          ipiEl.style.backgroundColor = '#f8d7da'; ipiEl.style.color = '#721c24';
+          if(ipiInf) { ipiInf.innerText = '< 24m Spacing'; ipiInf.style.color = '#721c24'; }
+      } else {
+          ipiEl.style.backgroundColor = '#fbfcff'; ipiEl.style.color = '#004085';
+          if(ipiInf) ipiInf.innerText = '';
+      }
+
+      const ageStr = document.getElementById('f4_mother_age').value;
+      const ageMatch = ageStr.match(/\d+/);
+      if (ageMatch) {
+          const mAge = parseInt(ageMatch[0]);
+          if (mAge < 18) autoFactors.add("Teenage Pregnancy");
+          if (mAge >= 35 && (!isNaN(g) && g === 1)) autoFactors.add("Elderly Primi");
+      }
+
+      const bg = document.getElementById('f4_bg').value;
+      if (bg.includes('-')) autoFactors.add("Negative Blood Group (Rh -ve)");
+      
+      if (document.getElementById('f4_hiv').value === 'Reactive') autoFactors.add("HIV");
+      if (document.getElementById('f4_vdrl').value === 'Reactive') autoFactors.add("Syphilis");
+      if (document.getElementById('f4_hbsag').value === 'Reactive') autoFactors.add("Hepatitis B");
+      
+      const sickle = document.getElementById('f4_sickle').value;
+      if (sickle === 'Positive (Trait)' || sickle === 'Positive (Disease)') autoFactors.add("Sickle Cell Disease / Trait");
+
+      for(let i=1; i<=8; i++) {
+          const wt = parseFloat(document.getElementById('f4_v'+i+'_wt')?.value);
+          if (!isNaN(wt) && !isNaN(ht) && ht > 0) {
+              if (wt / ((ht/100)*(ht/100)) < 18.5) autoFactors.add("Low Maternal BMI");
+          }
+          const sys = parseFloat(document.getElementById('f4_v'+i+'_bp_s')?.value);
+          const dia = parseFloat(document.getElementById('f4_v'+i+'_bp_d')?.value);
+          if (sys >= 140 || dia >= 90) autoFactors.add("PIH / Pre-Eclampsia / Eclampsia");
+          
+          const urine = document.getElementById('f4_v'+i+'_urine')?.value || "";
+          if (['1+','2+','3+','4+'].some(val => urine.includes(val))) autoFactors.add("PIH / Pre-Eclampsia / Eclampsia");
+
+          const hb = parseFloat(document.getElementById('f4_v'+i+'_hb')?.value);
+          if (hb < 7.0) autoFactors.add("Severe Anemia (<7g/dl)");
+
+          const fhr = parseFloat(document.getElementById('f4_v'+i+'_fhr')?.value);
+          if (fhr < 120 || fhr > 160) autoFactors.add("Abnormal Fetal Heart Rate");
+
+          const rbs = parseFloat(document.getElementById('f4_v'+i+'_rbs')?.value);
+          if (rbs >= 140) autoFactors.add("Gestational Diabetes Mellitus (GDM)");
+      }
+
+      window.currentAutoFactors = autoFactors; 
+      hrpFactorsList = Array.from(new Set([...manualHrpFactors, ...autoFactors]));
+      renderHrpFactors();
+  }
+
+  // HRP CHIP MANAGEMENT
+  function addHrpFactor() {
+      const sel = document.getElementById('f4_hrp_dropdown');
+      const val = sel.value;
+      if(val && !manualHrpFactors.includes(val)) {
+          manualHrpFactors.push(val);
+          evaluateAllTriggers();
+          saveDataSilently();
+      }
+      sel.value = '';
+  }
+
+  function removeHrpFactor(val) {
+      if (window.currentAutoFactors && window.currentAutoFactors.has(val)) {
+          alert(`"${val}" is currently auto-detected from clinical inputs. Please change the clinical value (e.g., BP, Hb, Weight, Parity) to remove this flag.`);
+          return;
+      }
+      manualHrpFactors = manualHrpFactors.filter(item => item !== val);
+      evaluateAllTriggers();
+      saveDataSilently();
+  }
+
+  function renderHrpFactors() {
+      const container = document.getElementById('hrp_selected_list');
+      container.innerHTML = '';
+      hrpFactorsList.forEach(factor => {
+          const chip = document.createElement('div');
+          chip.className = 'hrp-chip';
+          chip.innerHTML = `<span>${factor}</span> <button type="button" class="no-print" onclick="removeHrpFactor('${factor}')">×</button>`;
+          container.appendChild(chip);
+      });
+      document.getElementById('f4_hrp_manual_hidden').value = JSON.stringify(manualHrpFactors);
+  }
+
+  // EXACT CALENDAR-BASED AGE CALCULATION
+  function calculateChildAge() {
+      const dobStr = document.getElementById('f1_dob').value || document.querySelector('.sync-dob').value;
+      const dodStr = document.getElementById('f1_dod').value || document.querySelector('.sync-dod').value;
+      
+      const form3a = document.getElementById('form3a');
+      const form3b = document.getElementById('form3b');
+      const btn3a = document.getElementById('btn_3a');
+      const btn3b = document.getElementById('btn_3b');
+      const form3aInputs = form3a.querySelectorAll('input, select, textarea');
+      const form3bInputs = form3b.querySelectorAll('input, select, textarea');
+      const warning3a = document.getElementById('warning_3a');
+      const warning3b = document.getElementById('warning_3b');
+
+      if (dobStr && dodStr) {
+          const d1 = new Date(dobStr);
+          const d2 = new Date(dodStr);
+          
+          let diffTime = d2.getTime() - d1.getTime();
+          let totalDays = Math.floor(diffTime / (1000 * 3600 * 24));
+
+          if (totalDays >= 0) {
+              let years = d2.getFullYear() - d1.getFullYear();
+              let months = d2.getMonth() - d1.getMonth();
+              let days = d2.getDate() - d1.getDate();
+
+              if (days < 0) {
+                  months--;
+                  let prevMonth = new Date(d2.getFullYear(), d2.getMonth(), 0).getDate();
+                  days += prevMonth;
+              }
+              if (months < 0) {
+                  years--;
+                  months += 12;
+              }
+
+              let ageParts = [];
+              if(years > 0) ageParts.push(`${years} Years`);
+              if(months > 0) ageParts.push(`${months} Months`);
+              ageParts.push(`${days} Days`);
+              
+              let ageStr = ageParts.join(', ');
+              
+              document.querySelectorAll('.sync-age').forEach(el => { el.value = ageStr; });
+
+              if (totalDays <= 28) {
+                  form3bInputs.forEach(el => el.disabled = true);
+                  form3aInputs.forEach(el => el.disabled = false);
+                  form3b.classList.add('restricted-tab');
+                  form3a.classList.remove('restricted-tab');
+                  if(btn3b) btn3b.style.display = 'none';
+                  if(btn3a) btn3a.style.display = 'block';
+                  if(warning3b) warning3b.style.display = 'block';
+                  if(warning3a) warning3a.style.display = 'none';
+              } else {
+                  form3aInputs.forEach(el => el.disabled = true);
+                  form3bInputs.forEach(el => el.disabled = false);
+                  form3a.classList.add('restricted-tab');
+                  form3b.classList.remove('restricted-tab');
+                  if(btn3a) btn3a.style.display = 'none';
+                  if(btn3b) btn3b.style.display = 'block';
+                  if(warning3a) warning3a.style.display = 'block';
+                  if(warning3b) warning3b.style.display = 'none';
+              }
+              saveDataSilently();
+          }
+      } else {
+          form3aInputs.forEach(el => el.disabled = false);
+          form3bInputs.forEach(el => el.disabled = false);
+          form3a.classList.remove('restricted-tab');
+          form3b.classList.remove('restricted-tab');
+          if(btn3a) btn3a.style.display = 'block';
+          if(btn3b) btn3b.style.display = 'block';
+          if(warning3a) warning3a.style.display = 'none';
+          if(warning3b) warning3b.style.display = 'none';
+      }
+  }
+
+  // AUTO-CALCULATE MOTHER'S AGE AT LMP
+  function calculateMotherAge() {
+      const dobStr = document.getElementById('f4_mother_dob').value;
+      const lmpStr = document.getElementById('f4_lmp').value;
+      if(dobStr && lmpStr) {
+          const dob = new Date(dobStr);
+          const lmp = new Date(lmpStr);
+          let age = lmp.getFullYear() - dob.getFullYear();
+          const m = lmp.getMonth() - dob.getMonth();
+          if (m < 0 || (m === 0 && lmp.getDate() < dob.getDate())) {
+              age--;
+          }
+          const ageText = age > 0 ? age + " Years" : "";
+          const mAge4 = document.getElementById('f4_mother_age');
+          const mAge3a = document.getElementById('f3a_14b');
+          if (mAge4) mAge4.value = ageText;
+          if (mAge3a) mAge3a.value = ageText;
+          evaluateAllTriggers();
+          saveDataSilently();
+      }
+  }
+
+  // GA AT ANC VISITS CALCULATOR
+  function calculateVisitGAs() {
+      const lmpStr = document.getElementById('f4_lmp').value;
+      if(!lmpStr) return;
+      const lmp = new Date(lmpStr);
+      
+      for(let i=1; i<=8; i++) {
+          const visitDateStr = document.getElementById('f4_v' + i + '_date').value;
+          const gaField = document.getElementById('f4_v' + i + '_wks');
+          if(visitDateStr && gaField) {
+              const vDate = new Date(visitDateStr);
+              const diffTime = vDate.getTime() - lmp.getTime();
+              if(diffTime >= 0) {
+                  const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+                  const wks = Math.floor(diffDays / 7);
+                  const days = diffDays % 7;
+                  gaField.value = `${wks}w ${days}d`;
+              } else {
+                  gaField.value = "Invalid";
+              }
+          }
+      }
+      saveDataSilently();
+  }
+
+  // US-EDD & US-GA CALCULATOR
+  function calculateUSGestation() {
+      const usEddStr = document.getElementById('f4_us_edd').value;
+      const dobStr = document.getElementById('f1_dob').value || document.querySelector('.sync-dob').value;
+      const usGaField = document.getElementById('f4_us_ga');
+
+      if (usEddStr && dobStr) {
+          const usEdd = new Date(usEddStr);
+          const dob = new Date(dobStr);
+          
+          const usLmp = new Date(usEdd.getTime() - (280 * 24 * 3600 * 1000));
+          let diffTime = dob.getTime() - usLmp.getTime();
+          
+          if (diffTime >= 0) {
+              let diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+              let wks = Math.floor(diffDays / 7);
+              let remDays = diffDays % 7;
+              let status = wks < 37 ? "Preterm" : (wks <= 41 ? "Term" : "Post-term");
+              usGaField.value = `${wks} Weeks, ${remDays} Days (${status})`;
+          } else {
+              usGaField.value = "Invalid (DOB before derived US-LMP)";
+          }
+      } else {
+          usGaField.value = "";
+      }
+      saveDataSilently();
+  }
+
+  // EDD & GESTATIONAL AGE CALCULATOR (LMP BASED)
+  function calculateGestation() {
+    const lmpStr = document.getElementById('f4_lmp').value;
+    const dobStr = document.getElementById('f1_dob').value || document.querySelector('.sync-dob').value;
+    const eddField = document.getElementById('f4_edd');
+    const gaField = document.getElementById('f4_ga');
+
+    if (lmpStr) {
+      let lmp = new Date(lmpStr);
+      let edd = new Date(lmp.getTime());
+      edd.setMonth(edd.getMonth() + 9);
+      edd.setDate(edd.getDate() + 7);
+      eddField.value = edd.toISOString().split('T')[0];
+      
+      if (dobStr) {
+        let dob = new Date(dobStr);
+        let diffTime = dob.getTime() - lmp.getTime();
+        if (diffTime >= 0) {
+          let diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+          let wks = Math.floor(diffDays / 7);
+          let remDays = diffDays % 7;
+          let status = wks < 37 ? "Preterm" : (wks <= 41 ? "Term" : "Post-term");
+          gaField.value = `${wks} Weeks, ${remDays} Days (${status})`;
+        } else {
+          gaField.value = "Invalid (DOB before LMP)";
+        }
+      } else {
+        gaField.value = "Enter Child's DOB in Form 1";
+      }
+    } else {
+        eddField.value = "";
+        gaField.value = "";
+    }
+    saveDataSilently();
+  }
+
+  // HARD BACKUP EXPORT/IMPORT WITH LEGACY WRAPPER
+  function exportBackup() {
+    saveDataSilently();
+    if (!db) return;
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(activeCaseId);
+
+    req.onsuccess = function() {
+        const record = req.result;
+        if (!record) { alert("No active case to export."); return; }
+        const dataStr = JSON.stringify(record);
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CDR_Backup_${record.childName || 'Unnamed'}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+  }
+
+  function importBackup(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let record = JSON.parse(e.target.result);
+            
+            if (!record.caseId || !record.formData) {
+                record = {
+                    caseId: 'CASE_' + Date.now(),
+                    childName: record['f1_child'] || 'Legacy_Restored_Case',
+                    updatedAt: new Date().toISOString(),
+                    formData: record,
+                    mediaHTML: ''
+                };
+            }
+
+            if (record && record.caseId && record.formData) {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                store.put(record);
+                tx.oncomplete = function() {
+                    activeCaseId = record.caseId;
+                    localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
+                    window.location.reload(); 
+                };
+            } else {
+                alert("Invalid CDR backup format.");
+            }
+        } catch(err) {
+            alert("Invalid backup JSON file.");
+        }
+    };
+    reader.readAsText(file);
+  }
+
+  window.addEventListener('beforeunload', function (e) {
+    e.preventDefault(); e.returnValue = '';
+  });
+
+  // Master Sync Engine
+  function sync(cls, val) {
+    document.querySelectorAll('.' + cls).forEach(el => {
+      if(el !== event.target) {
+        if(el.type === 'checkbox') el.checked = event.target.checked;
+        else el.value = val;
+      }
+    });
+    saveDataSilently(); 
+  }
+
+  function switchTab(t) {
+    document.body.classList.remove('print-all-mode');
+    document.getElementById('printBanner').style.display = 'none';
+    
+    document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(t).classList.add('active');
+    
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => {
+        if(btn.getAttribute('onclick') === `switchTab('${t}')`) btn.classList.add('active');
+    });
+    window.scrollTo(0, 0);
+    
+    setTimeout(resizeAllTextareas, 50);
+  }
+
+  // PRINT WYSIWYG FAILSAFE
+  function printAllForms() {
+    const childName = document.getElementById('f1_child').value.trim() || 'Unnamed_Child';
+    document.title = `CDR_${childName}`; 
+
+    document.body.classList.add('print-all-mode');
+    document.getElementById('printBanner').style.display = 'block';
+    
+    setTimeout(() => { 
+        resizeAllTextareas();
+        window.print(); 
+    }, 800);
+  }
+
+  // AI EXPORT FUNCTION
+  function copyForAI() {
+    let aiText = "--- CHILD DEATH REVIEW RAW CLINICAL DATA ---\n\n";
+    const forms = document.querySelectorAll('.tab-content:not(#mediaTab)');
+    
+    forms.forEach(form => {
+        if(form.classList.contains('restricted-tab')) return;
+
+        const header = form.querySelector('h2');
+        if(header) aiText += `\n[${header.innerText}]\n`;
+        
+        if(form.id === 'form4' && hrpFactorsList.length > 0) {
+            aiText += `- Identified HRP Categories: ${hrpFactorsList.join(', ')}\n`;
+        }
+
+        const fields = form.querySelectorAll('input, select, textarea');
+        fields.forEach(f => {
+            if (f.id && f.type !== 'file' && f.type !== 'button' && f.type !== 'hidden' && f.id !== 'f4_hrp_dropdown' && f.id !== 'caseSelector' && f.id !== 'mediaCategoryOther') {
+                
+                let labelText = f.getAttribute('data-ailabel') || "";
+                
+                if (!labelText) {
+                    if (f.type === 'checkbox') {
+                        labelText = f.parentElement.innerText.trim();
+                    } else {
+                        let label = f.previousElementSibling;
+                        if(label && label.tagName === 'LABEL') labelText = label.innerText.trim();
+                        else if (f.parentElement && f.parentElement.tagName === 'LABEL') labelText = f.parentElement.innerText.trim();
+                        else if (f.parentElement && f.parentElement.querySelector('label')) labelText = f.parentElement.querySelector('label').innerText.trim();
+                    }
+                }
+
+                if (f.type === 'checkbox') {
+                    if(f.checked) aiText += `- ${labelText || f.id}: Yes\n`;
+                } else {
+                    let val = f.value.trim();
+                    
+                    if (f.id.includes('_hb')) {
+                        const row = f.id.split('_hb')[0];
+                        const inf = document.getElementById(row + '_hb_inf');
+                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
+                    }
+                    if (f.id.includes('_wt')) {
+                        const row = f.id.split('_wt')[0];
+                        const inf = document.getElementById(row + '_wt_inf');
+                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
+                    }
+                    if (f.id.includes('_bp_s')) {
+                        const row = f.id.split('_bp_s')[0];
+                        const dia = document.getElementById(row + '_bp_d');
+                        const inf = document.getElementById(row + '_bp_inf');
+                        if (dia && dia.value) val += `/${dia.value}`;
+                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
+                    }
+                    if (f.id.includes('_urine') && val) {
+                        const row = f.id.split('_urine')[0];
+                        const inf = document.getElementById(row + '_urine_inf');
+                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
+                    }
+                    if (f.id.includes('_fhr') && val) {
+                        const row = f.id.split('_fhr')[0];
+                        const inf = document.getElementById(row + '_fhr_inf');
+                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
+                    }
+                    if (f.id.includes('_bp_d')) return; 
+                    if (f.id === 'f4_g' || f.id === 'f4_a' || f.id === 'f4_height' || f.id === 'f4_ipi' || f.id === 'f4_mother_age') {
+                        const inf = document.getElementById(f.id + '_inf');
+                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
+                    }
+
+                    if (val) aiText += `- ${labelText || f.id}: ${val}\n`;
+                }
+            }
+        });
+    });
+    
+    navigator.clipboard.writeText(aiText).then(() => {
+        alert("Data copied to clipboard!\n\nYou can now open Gemini or ChatGPT, paste this text, and ask it to summarize the case or generate an action plan.");
+    }).catch(err => {
+        alert("Failed to copy text. Your browser might block clipboard access.");
+    });
+  }
+
+  function clearCurrentTab() {
+    if(confirm('Are you sure you want to clear all data in the currently visible form?')) {
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab) {
+        activeTab.querySelectorAll('input, select, textarea').forEach(el => {
+          if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+          else el.value = '';
+        });
+        if(activeTab.id === 'form4') {
+            manualHrpFactors = [];
+            hrpFactorsList = [];
+            renderHrpFactors();
+            visibleAncRows = 4;
+            for(let i=5; i<=8; i++) {
+                const r = document.getElementById('anc_row_' + i);
+                if(r) r.style.display = 'none';
+            }
+        }
+        
+        activeTab.querySelectorAll('div[id$="_hb_inf"], div[id$="_wt_inf"], div[id$="_bp_inf"], div[id$="_urine_inf"], div[id$="_fhr_inf"], div[id$="_rbs_inf"], div[id$="_g_inf"], div[id$="_a_inf"], div[id$="_height_inf"], div[id$="_ipi_inf"], div[id$="_age_inf"]').forEach(el => { el.innerText = ''; });
+
+        saveDataSilently();
+        applyConditionals();
+        resizeAllTextareas();
+      }
+    }
+  }
+
+  function deleteActiveCase() { 
+    if(confirm('WARNING: Are you sure you want to permanently delete this entire case? This cannot be undone.')) {
+      if(db) {
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          store.delete(activeCaseId);
+          tx.oncomplete = function() {
+              localStorage.removeItem('CDR_ACTIVE_CASE_ID');
+              window.location.reload();
+          };
+      }
+    }
+  }
+
+  // IMAGE COMPRESSION
+  function processMediaUpload() {
+    const fileInput = document.getElementById('mediaUploadInput');
+    let category = document.getElementById('mediaCategory').value;
+    const previewArea = document.getElementById('mediaPreviewArea');
+
+    if (fileInput.files.length === 0) { alert("Please select a file to attach."); return; }
+
+    if (category === 'Others...') {
+        const otherVal = document.getElementById('mediaCategoryOther').value.trim();
+        if (otherVal) category = otherVal;
+    }
+
+    Array.from(fileInput.files).forEach(file => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'preview-item';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.setAttribute('type', 'button');
+      removeBtn.className = 'remove-btn no-print';
+      removeBtn.innerText = 'X';
+      removeBtn.setAttribute('onclick', "this.parentElement.remove(); saveDataSilently();");
+      wrapper.appendChild(removeBtn);
+
+      const label = document.createElement('div');
+      label.className = 'preview-label';
+      label.innerHTML = `<strong>${category}</strong>`;
+      wrapper.appendChild(label);
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(event) {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 2000;
+            const MAX_HEIGHT = 2000;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            } else {
+              if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const compressedImg = document.createElement('img');
+            compressedImg.src = canvas.toDataURL('image/jpeg', 0.85);
+            wrapper.appendChild(compressedImg);
+            previewArea.appendChild(wrapper);
+            saveDataSilently();
+          }
+        };
+      } else {
+        const docIcon = document.createElement('div');
+        docIcon.style.padding = '20px';
+        docIcon.style.background = '#e9ecef';
+        docIcon.style.marginTop = '10px';
+        docIcon.innerText = '📄 PDF Document\n(' + file.name + ')';
+        wrapper.appendChild(docIcon);
+        previewArea.appendChild(wrapper);
+        saveDataSilently();
+      }
+    });
+    fileInput.value = '';
+    document.getElementById('mediaCategoryOther').value = '';
+    document.getElementById('mediaCategoryOther').style.display = 'none';
+    document.getElementById('mediaCategory').value = 'MCP Card';
+  }
+</script>
+</body>
+</html>
