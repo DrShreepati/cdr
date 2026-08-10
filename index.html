@@ -1556,6 +1556,13 @@
 </div>
 
 <script>
+  // REQUEST PERSISTENT STORAGE
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().then(granted => {
+      if (granted) console.log("Persistent storage granted. Data is safe from OS purges.");
+      else console.log("Persistent storage not granted. Data may be cleared under pressure.");
+    });
+  }
   let hrpFactorsList = [];
   let manualHrpFactors = [];
   let visibleAncRows = 4;
