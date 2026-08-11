@@ -13,12 +13,12 @@
     :root {
       --bg-color: #f1f5f9;
       --container-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
+      --text-main: #0f172a; /* Deepened to near-black for absolute clarity */
+      --text-muted: #475569; /* Darkened to eliminate faintness */
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --border-light: #e2e8f0;
-      --border-focus: #93c5fd;
+      --border-light: #cbd5e1; /* Darkened so input boxes have clear boundaries */
+      --border-focus: #2563eb; /* Sharper focus ring */
       --danger: #ef4444;
       --danger-hover: #dc2626;
       --warning: #f59e0b;
@@ -60,11 +60,11 @@
       font-weight: 600; 
       color: var(--text-muted); 
       font-size: 0.9rem; 
-      border-radius: 30px; /* Pill shape */
+      border-radius: 30px; 
       transition: all 0.2s ease; 
       white-space: nowrap; flex-shrink: 0; 
     }
-    .tab-btn:hover { background: #f1f5f9; color: var(--text-main); }
+    .tab-btn:hover { background: #e2e8f0; color: var(--text-main); }
     .tab-btn.active { 
       background: var(--primary); 
       color: #fff; 
@@ -87,18 +87,18 @@
       text-align: center; margin-bottom: 25px; 
     }
     .form-header h2 {
-      font-size: 1.5rem; font-weight: 800; color: #0f172a; 
+      font-size: 1.5rem; font-weight: 800; color: var(--text-main); 
       margin: 0; letter-spacing: -0.5px;
     }
     h3 { 
-      font-size: 1.05rem; color: #0f172a; 
+      font-size: 1.05rem; color: var(--text-main); 
       margin-top: 35px; margin-bottom: 20px; 
-      font-weight: 700; border-bottom: 2px solid var(--border-light); 
+      font-weight: 800; border-bottom: 2px solid var(--border-light); 
       padding-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
     }
     h4 { 
       margin: 20px 0 12px 0; font-size: 0.85rem; color: var(--text-muted); 
-      text-transform: uppercase; letter-spacing: 1px; font-weight: 700; 
+      text-transform: uppercase; letter-spacing: 1px; font-weight: 800; 
     }
     
     /* ==========================================
@@ -124,8 +124,9 @@
 
     .field-group { display: flex; flex-direction: column; margin-bottom: 12px; }
     .field-group label { 
-      font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; 
-      color: var(--text-muted); 
+      font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; 
+      color: #1e293b; /* Crisp, high-contrast anchor color */
+      letter-spacing: 0.3px;
     }
     
     /* ==========================================
@@ -134,15 +135,15 @@
     input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea { 
       width: 100%; padding: 10px 12px; 
       border: 1px solid var(--border-light); border-radius: 6px; box-sizing: border-box; 
-      font-size: 0.95rem; font-family: inherit; font-weight: 500; color: var(--text-main); 
+      font-size: 0.95rem; font-family: inherit; font-weight: 600; color: var(--text-main); 
       background-color: #fff; transition: all 0.2s ease; line-height: 1.6; 
     }
     input:focus, select:focus, textarea:focus { 
       outline: none; border-color: var(--border-focus); 
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); 
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); 
     }
     input[readonly], select[disabled], input[disabled] { 
-      background-color: #f8fafc; color: var(--text-muted); cursor: not-allowed; 
+      background-color: #f1f5f9; color: var(--text-muted); cursor: not-allowed; 
     }
     textarea { resize: vertical; overflow: hidden; min-height: 80px; } 
     textarea[rows="1"] { min-height: 42px; }
@@ -162,12 +163,12 @@
     .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-light); border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; margin: 0; font-size: 0.85rem; background: #fff; min-width: 850px; }
     th, td { border: 1px solid var(--border-light); padding: 10px 12px; text-align: left; vertical-align: top; }
-    th { background-color: #f8fafc; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;}
+    th { background-color: #f8fafc; color: var(--text-main); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;}
     
     /* Checkboxes */
     .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 8px 0 15px 0; }
     .checkbox-grid-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 8px 0 15px 0; }
-    .checkbox-grid label, .checkbox-grid-2col label { display: flex; align-items: center; font-size: 0.9rem; font-weight: 500; cursor: pointer; color: var(--text-main); }
+    .checkbox-grid label, .checkbox-grid-2col label { display: flex; align-items: center; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: var(--text-main); }
     input[type="checkbox"] { width: 18px; height: 18px; margin: 0 10px 0 0; cursor: pointer; flex-shrink: 0; accent-color: var(--primary); border-radius: 4px;}
     
     .handover-note { border: 1px solid var(--border-light); background: #f8fafc; padding: 25px; margin-top: 20px; border-radius: 8px; border-left: 4px solid var(--text-muted); }
@@ -182,7 +183,7 @@
     .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
     .preview-item { border: 1px solid var(--border-light); border-radius: 6px; padding: 8px; text-align: center; position: relative; background: #fff; }
     .preview-item img { max-width: 100%; height: auto; border-radius: 4px; }
-    .preview-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; word-break: break-all; }
+    .preview-label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; word-break: break-all; }
     .remove-btn { position: absolute; top: -10px; right: -10px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
 
     /* Smart Alerts */
@@ -214,12 +215,12 @@
     .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .btn:active { transform: translateY(0); }
     
-    /* Strict Color Hierarchy to stop the "Rainbow Effect" */
+    /* Strict Color Hierarchy */
     .btn-toggle { display: none; background-color: var(--text-main); width: 140px; }
     
     /* Primary Actions */
     .btn-attach { background-color: var(--primary); } 
-    button[onclick="exportAndShareCSV()"] { background-color: #10b981 !important; color: white !important; } /* Success/Data extraction */
+    button[onclick="exportAndShareCSV()"] { background-color: #10b981 !important; color: white !important; } 
     .btn-add-row { background-color: #f1f5f9; color: var(--text-main); border: 1px dashed var(--border-light); margin-top: 8px; width: 100%; display: block; box-shadow: none; }
     .btn-add-row:hover { background-color: #e2e8f0; }
 
@@ -233,8 +234,8 @@
     .btn-clear-all { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; box-shadow: none; }
     .btn-clear-all:hover { background-color: #fee2e2; }
 
-    /* Case Selector Styling inside Action Bar */
-    #caseSelector { border-color: var(--primary); font-weight: 600; color: var(--primary); padding: 9px 12px; }
+    /* Case Selector Styling */
+    #caseSelector { border-color: var(--border-light); font-weight: 700; color: var(--text-main); padding: 9px 12px; }
 
     @media (max-width: 768px) {
       .actions-bar { flex-direction: column; padding: 15px; align-items: stretch; border-radius: 12px 12px 0 0; }
@@ -245,7 +246,7 @@
     }
 
     /* ==========================================
-       STRICT PRINT STYLES (UNCHANGED FUNCTIONALITY)
+       STRICT PRINT STYLES
        ========================================== */
     @media print {
       @page { size: A4 portrait; margin: 12mm 10mm; } 
@@ -253,24 +254,17 @@
       .app-container { max-width: 100%; padding: 0; box-shadow: none; margin: 0; }
       
       .tab-navigation, .actions-bar, #printBanner, .age-warning, .btn-add-row, .no-print { display: none !important; }
-      
-      /* AUTOMATICALLY EXCLUDE RESTRICTED AGE FORMS FROM MASTER PDF */
       .restricted-tab { display: none !important; }
-      
-      /* NORMAL PRINT (Single Active Tab) */
       .tab-content { display: none !important; } 
       .tab-content.active { display: block !important; }
 
-      /* MASTER PRINT (All Tabs Forced by Body Class) */
       body.print-all-mode .tab-content { display: block !important; border: none !important; padding: 0 !important; page-break-after: always !important; }
       body.print-all-mode .tab-content.restricted-tab { display: none !important; }
       body.print-all-mode .tab-content:last-of-type { page-break-after: avoid !important; }
 
-      /* STANDARDIZED HEADERS FOR PRINT */
       h3 { font-size: 11pt !important; color: #000 !important; border-bottom: 1px solid #000 !important; margin: 15px 0 8px 0 !important; font-weight: bold !important; padding-bottom: 3px !important; text-transform: uppercase; background: transparent !important; }
       h4 { font-size: 10pt !important; color: #000 !important; background-color: #f1f3f5 !important; border: 1px solid #000 !important; margin: 10px 0 5px 0 !important; padding: 4px 8px !important; }
 
-      /* FORM 1 COMPACT PRINT LAYOUT */
       #form1 .form-header { margin-bottom: 5px; padding-bottom: 2px; }
       #form1 h3 { margin-top: 5px; margin-bottom: 5px !important; }
       #form1 .grid-3, #form1 .grid-4, #form1 .grid-2 { margin-bottom: 2px !important; gap: 6px !important; }
@@ -279,28 +273,23 @@
       #form1 .handover-note p { margin: 4px 0; font-size: 10pt; line-height: 1.1; }
       #form1 .office-use-box { margin-bottom: 5px !important; padding: 5px 10px !important; }
 
-      /* FORM 2 CLEAN 2-PAGE PRINT LAYOUT */
       #form2 .grid-4, #form2 .grid-3, #form2 .grid-2 { margin-bottom: 6px !important; gap: 8px !important; }
       #form2 .field-group { margin-bottom: 4px !important; }
       #form2 table { margin-top: 6px !important; margin-bottom: 6px !important; }
       #form2 table td { padding: 3px 5px !important; }
       .form2-page2-start { page-break-before: always !important; break-before: page !important; margin-top: 0 !important; padding-top: 0 !important; }
 
-      /* HRP CHIPS PRINT FORMATTING */
       .hrp-print-container { display: block !important; }
       .hrp-chip { background: transparent !important; color: #000 !important; border: 1px solid #000 !important; padding: 2px 6px !important; border-radius: 4px !important; box-shadow: none !important; font-weight: normal !important; display: inline-block !important; margin: 2px 4px !important; }
       .hrp-chip button { display: none !important; }
 
-      /* SPACING & ORPHAN CONTROLS */
       .grid-5, .sub-q-row { margin-bottom: 12px !important; }
       .keep-together { page-break-inside: avoid !important; break-inside: avoid !important; }
 
-      /* Visual cleanup for printing */
       .sub-q-row, .office-use-box { background: transparent !important; border: none !important; padding: 0 !important; gap: 8px; }
       .office-use-box { border: 1px solid #000 !important; padding: 8px !important; margin-bottom: 10px !important; }
       .office-use-box h4 { color: #000 !important; margin-bottom: 5px !important; background: transparent !important; border: none !important; }
       
-      /* PRINT MIRROR ENGINE: Solves the Textarea Cutoff/Ghost Space bug */
       textarea { display: none !important; }
       .print-mirror { 
           display: block !important; 
@@ -328,14 +317,12 @@
       .form-header { page-break-after: avoid !important; break-after: avoid !important; margin-top: 10px; margin-bottom: 10px; }
       .handover-note, .checkbox-grid, .checkbox-grid-2col { page-break-inside: avoid !important; break-inside: avoid !important; }
 
-      /* Signature Block Strict Print Borders */
       .signature-block { border-top: 2px solid #000 !important; }
       .sig-grid { border: 1px solid #000 !important; background: transparent !important; padding: 10px !important; gap: 10px !important; }
       .thumb-box { border: 1px solid #000 !important; background: transparent !important; }
       .cause-box { border: 1px solid #000 !important; background: transparent !important; border-bottom: 1px solid #000 !important; }
       .signature-block p, .signature-block label { color: #000 !important; }
 
-      /* FULL BLEED MEDIA UPLOAD PRINT STYLING */
       #mediaTab .form-header { display: none !important; }
       .media-card { display: none !important; }
       .preview-grid { display: block !important; margin-top: 0; }
