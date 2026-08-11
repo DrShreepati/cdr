@@ -1545,7 +1545,7 @@
         <input type="file" id="importDataInput" style="display:none;" accept=".json" onchange="importBackup(event)">
         <button class="btn btn-print" onclick="window.print()">Print Active</button>
         <button class="btn btn-print-all" onclick="printAllForms()">Print ALL Forms</button>
-        <button class="btn btn-ai" onclick="copyForAI()">Copy for AI</button>
+        <button type="button" class="btn btn-backup" style="background-color: #28a745;" onclick="exportAndShareCSV()">Share Analytics CSV</button>
         <button class="btn btn-clear-single" onclick="clearCurrentTab()">Clear Tab</button>
         <button class="btn btn-clear-all" onclick="deleteActiveCase()">Delete Case</button>
     </div>
@@ -2591,89 +2591,64 @@
     }, 800);
   }
 
-  // AI EXPORT FUNCTION
-  function copyForAI() {
-    let aiText = "--- CHILD DEATH REVIEW RAW CLINICAL DATA ---\n\n";
-    const forms = document.querySelectorAll('.tab-content:not(#mediaTab)');
-    
-    forms.forEach(form => {
-        if(form.classList.contains('restricted-tab')) return;
+  // CSV SHARE & EXPORT ENGINE (ANALYTICS OPTIMIZED)
+  function exportAndShareCSV() {
+    if (!db) return;
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(activeCaseId);
 
-        const header = form.querySelector('h2');
-        if(header) aiText += `\n[${header.innerText}]\n`;
+    req.onsuccess = function() {
+        const record = req.result;
+        if (!record || !record.formData) { alert("No data to export."); return; }
         
-        if(form.id === 'form4' && hrpFactorsList.length > 0) {
-            aiText += `- Identified HRP Categories: ${hrpFactorsList.join(', ')}\n`;
-        }
+        // BI-Ready Headers
+        let csvContent = "Case_ID,Child_Name,Age,Sex,Village,Block,District,Assigned_Cause,ICD_10,Variable_ID,Value\n"; 
 
-        const fields = form.querySelectorAll('input, select, textarea');
-        fields.forEach(f => {
-            if (f.id && f.type !== 'file' && f.type !== 'button' && f.type !== 'hidden' && f.id !== 'f4_hrp_dropdown' && f.id !== 'caseSelector' && f.id !== 'mediaCategoryOther') {
-                
-                let labelText = f.getAttribute('data-ailabel') || "";
-                
-                if (!labelText) {
-                    if (f.type === 'checkbox') {
-                        labelText = f.parentElement.innerText.trim();
-                    } else {
-                        let label = f.previousElementSibling;
-                        if(label && label.tagName === 'LABEL') labelText = label.innerText.trim();
-                        else if (f.parentElement && f.parentElement.tagName === 'LABEL') labelText = f.parentElement.innerText.trim();
-                        else if (f.parentElement && f.parentElement.querySelector('label')) labelText = f.parentElement.querySelector('label').innerText.trim();
-                    }
-                }
+        // Extract Core Demographics
+        const cId = record.caseId;
+        const cName = String(record.childName || "Unnamed").replace(/"/g, '""');
+        const cAge = String(record.formData['f1_age'] || "").replace(/"/g, '""');
+        const cSex = String(record.formData['f1_sex'] || "").replace(/"/g, '""');
+        const cVill = String(record.formData['f1_village'] || "").replace(/"/g, '""');
+        const cBlk = String(record.formData['f1_block'] || "").replace(/"/g, '""');
+        const cDist = String(record.formData['f1_district'] || "").replace(/"/g, '""');
+        const cause = String(document.getElementById('f3a_assigned_cause').value || document.getElementById('f3b_assigned_cause').value || "Pending").replace(/"/g, '""');
+        const icd = String(document.getElementById('f3a_icd_subcode').value || document.getElementById('f3b_icd_subcode').value || "None").replace(/"/g, '""');
 
-                if (f.type === 'checkbox') {
-                    if(f.checked) aiText += `- ${labelText || f.id}: Yes\n`;
-                } else {
-                    let val = f.value.trim();
-                    
-                    if (f.id.includes('_hb')) {
-                        const row = f.id.split('_hb')[0];
-                        const inf = document.getElementById(row + '_hb_inf');
-                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
-                    }
-                    if (f.id.includes('_wt')) {
-                        const row = f.id.split('_wt')[0];
-                        const inf = document.getElementById(row + '_wt_inf');
-                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
-                    }
-                    if (f.id.includes('_bp_s')) {
-                        const row = f.id.split('_bp_s')[0];
-                        const dia = document.getElementById(row + '_bp_d');
-                        const inf = document.getElementById(row + '_bp_inf');
-                        if (dia && dia.value) val += `/${dia.value}`;
-                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
-                    }
-                    if (f.id.includes('_urine') && val) {
-                        const row = f.id.split('_urine')[0];
-                        const inf = document.getElementById(row + '_urine_inf');
-                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
-                    }
-                    if (f.id.includes('_fhr') && val) {
-                        const row = f.id.split('_fhr')[0];
-                        const inf = document.getElementById(row + '_fhr_inf');
-                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
-                    }
-                    if (f.id.includes('_bp_d')) return; 
-                    if (f.id === 'f4_g' || f.id === 'f4_a' || f.id === 'f4_height' || f.id === 'f4_ipi' || f.id === 'f4_mother_age') {
-                        const inf = document.getElementById(f.id + '_inf');
-                        if (inf && inf.innerText) val += ` (${inf.innerText})`;
-                    }
-
-                    if (val) aiText += `- ${labelText || f.id}: ${val}\n`;
-                }
+        // Loop through saved data points, strip media, and attach demographics to every row
+        Object.keys(record.formData).forEach(key => {
+            let val = record.formData[key];
+            if (val === true) val = "Yes";
+            if (val === false) val = "No";
+            if (val !== "" && val !== undefined) {
+                let cleanVal = String(val).replace(/"/g, '""');
+                csvContent += `"${cId}","${cName}","${cAge}","${cSex}","${cVill}","${cBlk}","${cDist}","${cause}","${icd}","${key}","${cleanVal}"\n`;
             }
         });
-    });
-    
-    navigator.clipboard.writeText(aiText).then(() => {
-        alert("Data copied to clipboard!\n\nYou can now open Gemini or ChatGPT, paste this text, and ask it to summarize the case or generate an action plan.");
-    }).catch(err => {
-        alert("Failed to copy text. Your browser might block clipboard access.");
-    });
-  }
 
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const fileName = `CDR_Analytics_${cName.replace(/\s+/g, '_')}.csv`;
+
+        // Native Mobile Share Trigger
+        if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: blob.type })] })) {
+            const file = new File([blob], fileName, { type: blob.type });
+            navigator.share({
+                title: 'CDR Case Data',
+                text: `Analytics Data for ${cName}`,
+                files: [file]
+            }).catch(err => console.log('Share failed or cancelled.', err));
+        } else {
+            // Fallback for Mac/PC environments
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+  }
   function clearCurrentTab() {
     if(confirm('Are you sure you want to clear all data in the currently visible form?')) {
       const activeTab = document.querySelector('.tab-content.active');
