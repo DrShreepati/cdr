@@ -2638,12 +2638,16 @@
       try {
           const file = new File([blob], fileName, { type: "text/csv" });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              // Passing ONLY files prevents macOS/iOS from duplicating clipboard items
               navigator.share({
-                  title: 'CDR Case Data',
                   files: [file]
               }).catch(err => {
-                  console.log('Share aborted by OS or user:', err);
-                  forceDownload();
+                  console.log('Share result:', err.name);
+                  // Only force a download if it's a system failure. 
+                  // If the user manually cancels (AbortError), do nothing.
+                  if (err.name !== 'AbortError') {
+                      forceDownload();
+                  }
               });
           } else {
               forceDownload();
@@ -2652,48 +2656,6 @@
           console.log('Mobile share not supported on this device:', error);
           forceDownload();
       }
-  }
-  function clearCurrentTab() {
-    if(confirm('Are you sure you want to clear all data in the currently visible form?')) {
-      const activeTab = document.querySelector('.tab-content.active');
-      if (activeTab) {
-        activeTab.querySelectorAll('input, select, textarea').forEach(el => {
-          if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
-          else el.value = '';
-        });
-        if(activeTab.id === 'form4') {
-            manualHrpFactors = [];
-            hrpFactorsList = [];
-            renderHrpFactors();
-            visibleAncRows = 4;
-            for(let i=5; i<=8; i++) {
-                const r = document.getElementById('anc_row_' + i);
-                if(r) r.style.display = 'none';
-            }
-        }
-        
-        activeTab.querySelectorAll('div[id$="_hb_inf"], div[id$="_wt_inf"], div[id$="_bp_inf"], div[id$="_urine_inf"], div[id$="_fhr_inf"], div[id$="_rbs_inf"], div[id$="_g_inf"], div[id$="_a_inf"], div[id$="_height_inf"], div[id$="_ipi_inf"], div[id$="_age_inf"]').forEach(el => { el.innerText = ''; });
-
-        saveDataSilently();
-        applyConditionals();
-        resizeAllTextareas();
-      }
-    }
-  }
-
-  function deleteActiveCase() { 
-    if(confirm('WARNING: Are you sure you want to permanently delete this entire case? This cannot be undone.')) {
-      if(db) {
-          const tx = db.transaction(STORE_NAME, 'readwrite');
-          const store = tx.objectStore(STORE_NAME);
-          store.delete(activeCaseId);
-          tx.oncomplete = function() {
-              localStorage.removeItem('CDR_ACTIVE_CASE_ID');
-              window.location.reload();
-          };
-      }
-    }
-  }
 
   // IMAGE COMPRESSION
   function processMediaUpload() {
