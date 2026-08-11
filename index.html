@@ -1778,31 +1778,49 @@
           if (cases.length === 0) {
               const opt = document.createElement('option');
               opt.value = activeCaseId;
-              opt.innerText = "Current Active Case";
+              opt.innerText = "New Unsaved Case";
               selector.appendChild(opt);
           } else {
+              let activeFound = false;
               cases.forEach(c => {
                   const opt = document.createElement('option');
                   opt.value = c.caseId;
                   const dod = c.formData['f1_dod'];
                   const dateStr = dod ? new Date(dod).toLocaleDateString() : new Date(c.updatedAt).toLocaleDateString();
                   opt.innerText = `${c.childName || 'Unnamed'} (${dateStr})`;
-                  if (c.caseId === activeCaseId) opt.selected = true;
+                  
+                  if (c.caseId === activeCaseId) {
+                      opt.selected = true;
+                      activeFound = true;
+                  }
                   selector.appendChild(opt);
               });
+              
+              // Prevent dropdown from blanking out if active case isn't in DB yet
+              if (!activeFound) {
+                  const opt = document.createElement('option');
+                  opt.value = activeCaseId;
+                  opt.innerText = "New Unsaved Case";
+                  opt.selected = true;
+                  selector.prepend(opt);
+              }
           }
       };
   }
 
   function switchCase(caseId) {
       if (caseId && caseId !== activeCaseId) {
-          debouncedSave();
+          clearTimeout(saveTimeout); // FATAL FIX: Kill delayed saves before switching
+          saveDataSilently(); // Force instant, synchronous save of the current case
           loadCaseFromIndexedDB(caseId);
       }
   }
 
-  function createNewCase() {
-      debouncedSave();
+  function createNewCase(skipSave = false) {
+      if (!skipSave) {
+          clearTimeout(saveTimeout);
+          saveDataSilently(); // Hard save the previous case before wiping screen
+      }
       activeCaseId = 'CASE_' + Date.now();
       localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
       document.getElementById('cdrMasterForm').reset();
@@ -1820,10 +1838,12 @@
       triggerInitialSync();
       applyConditionals();
       resizeAllTextareas();
-      debouncedSave();
+      
+      // FATAL FIX: Do NOT trigger a save here. 
+      // The blank case will only write to the DB when the user actually types data.
+      populateCaseList(); 
   }
   
-  // TAB & CASE DELETION ENGINE
   function clearCurrentTab() {
       if(!confirm("Are you sure you want to clear all data in the current tab?")) return;
       const activeTab = document.querySelector('.tab-content.active');
@@ -1842,19 +1862,20 @@
       if(!confirm("CRITICAL WARNING: Are you sure you want to permanently delete this entire case? This cannot be undone.")) return;
       if (!db) return;
       
+      clearTimeout(saveTimeout); // FATAL FIX: Prevent the ghost-save of the deleted case
+      
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
       store.delete(activeCaseId);
       
       tx.oncomplete = function() {
           alert("Case deleted successfully.");
-          createNewCase(); // Immediately boot into a fresh, blank case
+          createNewCase(true); // 'true' skips saving the ghost data we just deleted
       };
       tx.onerror = function() {
           alert("Error deleting case.");
       };
   }
-
   // ADDRESS COMPILER (NULL-SAFE)
   function compileAddress() {
       const hNo = document.getElementById('f1_house')?.value?.trim() || '';
