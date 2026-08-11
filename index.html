@@ -1613,6 +1613,10 @@
 
   window.addEventListener('afterprint', function() {
       document.querySelectorAll('.print-mirror').forEach(m => m.remove());
+      // AUTOMATIC UI RESTORE
+      document.body.classList.remove('print-all-mode');
+      const banner = document.getElementById('printBanner');
+      if(banner) banner.style.display = 'none';
   });
 
   // INDEXEDDB ENGINE
@@ -1710,6 +1714,38 @@
 
               if(record.mediaHTML) {
                   document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
+                  document.getElementById('mediaPreviewArea').querySelectorAll('.remove-btn').forEach(btn => {
+                      btn.setAttribute('type', 'button');
+                      btn.setAttribute('onclick', "this.parentElement.remove(); saveDataSilently();");
+                  });
+              }
+
+              const hiddenManual = document.getElementById('f4_hrp_manual_hidden');
+              if (hiddenManual && hiddenManual.value) {
+                  try { manualHrpFactors = JSON.parse(hiddenManual.value); } catch(e) { manualHrpFactors = []; }
+              }
+
+              triggerInitialSync();
+              applyConditionals();
+              document.querySelectorAll('.vital-check').forEach(el => { if (el.value) checkVitals(el); });
+              
+              calculateChildAge();
+              calculateMotherAge();
+              calculateGestation();
+              calculateUSGestation();
+              calculateVisitGAs();
+              evaluateAllTriggers();
+              resizeAllTextareas();
+          } else {
+              // FAILSAFE: If case is missing/corrupted, break the boot-loop immediately.
+              console.warn("Ghost case detected. Rebooting environment.");
+              localStorage.removeItem('CDR_ACTIVE_CASE_ID');
+              createNewCase();
+          }
+      };
+
+              if(record.mediaHTML) {
+                  document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
                   
                   // RETROACTIVE MEDIA BUTTON HEALING SCRIPT
                   document.getElementById('mediaPreviewArea').querySelectorAll('.remove-btn').forEach(btn => {
@@ -1800,16 +1836,47 @@
       resizeAllTextareas();
       saveDataSilently();
   }
+  // TAB & CASE DELETION ENGINE
+  function clearCurrentTab() {
+      if(!confirm("Are you sure you want to clear all data in the current tab?")) return;
+      const activeTab = document.querySelector('.tab-content.active');
+      if(!activeTab) return;
+      
+      activeTab.querySelectorAll('input, select, textarea').forEach(el => {
+          if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+          else if(!el.readOnly && !el.disabled) el.value = '';
+      });
+      
+      saveDataSilently();
+      calculateChildAge();
+  }
 
-  // ADDRESS COMPILER
+  function deleteActiveCase() {
+      if(!confirm("CRITICAL WARNING: Are you sure you want to permanently delete this entire case? This cannot be undone.")) return;
+      if (!db) return;
+      
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.delete(activeCaseId);
+      
+      tx.oncomplete = function() {
+          alert("Case deleted successfully.");
+          createNewCase(); // Immediately boot into a fresh, blank case
+      };
+      tx.onerror = function() {
+          alert("Error deleting case.");
+      };
+  }
+
+  // ADDRESS COMPILER (NULL-SAFE)
   function compileAddress() {
-      const hNo = document.getElementById('f1_house').value.trim();
-      const moh = document.getElementById('f1_mohalla').value.trim();
-      const vil = document.getElementById('f1_village').value.trim();
-      const blk = document.getElementById('f1_block').value.trim();
-      const dist = document.getElementById('f1_district').value.trim();
-      const st = document.getElementById('f1_state').value.trim();
-      const pin = document.getElementById('f1_pin').value.trim();
+      const hNo = document.getElementById('f1_house')?.value?.trim() || '';
+      const moh = document.getElementById('f1_mohalla')?.value?.trim() || '';
+      const vil = document.getElementById('f1_village')?.value?.trim() || '';
+      const blk = document.getElementById('f1_block')?.value?.trim() || '';
+      const dist = document.getElementById('f1_district')?.value?.trim() || '';
+      const st = document.getElementById('f1_state')?.value?.trim() || '';
+      const pin = document.getElementById('f1_pin')?.value?.trim() || '';
 
       let atParts = [];
       if(hNo) atParts.push(hNo);
@@ -1901,49 +1968,66 @@
   }
 
   // HARD DATE VALIDATION ENGINE
+  // HARD DATE VALIDATION ENGINE (UPGRADED & STRICT)
   function enforceDateLogic() {
-      const lmpEl = document.getElementById('f4_lmp');
+      const today = new Date();
+      today.setHours(0,0,0,0); // Strip time to ensure exact day comparisons
+
+      // Helper to parse dates without timezone bleed
+      const parseDate = (val) => {
+          if (!val) return null;
+          const d = new Date(val);
+          d.setHours(0,0,0,0);
+          return d;
+      };
+
       const dobEl = document.getElementById('f1_dob');
       const dodEl = document.getElementById('f1_dod');
-      
-      const lmp = lmpEl && lmpEl.value ? new Date(lmpEl.value) : null;
-      const dob = dobEl && dobEl.value ? new Date(dobEl.value) : null;
-      const dod = dodEl && dodEl.value ? new Date(dodEl.value) : null;
-      const today = new Date();
+      const lmpEl = document.getElementById('f4_lmp');
 
-      if (dob && lmp && dob < lmp) {
-          alert("Clinical Error: Date of Birth cannot be earlier than Last Menstrual Period (LMP).");
-          dobEl.value = '';
-          document.querySelectorAll('.sync-dob').forEach(el => el.value = '');
-      }
-      if (dod && dob && dod < dob) {
-          alert("Clinical Error: Date of Death cannot be earlier than Date of Birth.");
-          dodEl.value = '';
-          document.querySelectorAll('.sync-dod').forEach(el => el.value = '');
-      }
-      
-      if (dob && dob > today) { alert("Error: DOB cannot be in the future."); dobEl.value = ''; document.querySelectorAll('.sync-dob').forEach(el => el.value = ''); }
-      if (dod && dod > today) { alert("Error: DOD cannot be in the future."); dodEl.value = ''; document.querySelectorAll('.sync-dod').forEach(el => el.value = ''); }
+      const dob = parseDate(dobEl?.value);
+      const dod = parseDate(dodEl?.value);
+      const lmp = parseDate(lmpEl?.value);
+
+      // 1. Future Dates Check (Nothing can happen tomorrow)
+      if (dob && dob > today) { alert("Error: DOB cannot be in the future."); dobEl.value = ''; sync('sync-dob', ''); }
+      if (dod && dod > today) { alert("Error: Date of Death cannot be in the future."); dodEl.value = ''; sync('sync-dod', ''); }
       if (lmp && lmp > today) { alert("Error: LMP cannot be in the future."); lmpEl.value = ''; }
 
-      for(let i=1; i<=8; i++) {
+      // Refresh parsed values in case they were just wiped
+      const validDob = parseDate(dobEl?.value);
+      const validDod = parseDate(dodEl?.value);
+      const validLmp = parseDate(lmpEl?.value);
+
+      // 2. Logical Sequencing
+      if (validDob && validDod && validDod < validDob) {
+          alert("Clinical Error: Date of Death cannot be earlier than Date of Birth.");
+          dodEl.value = ''; sync('sync-dod', '');
+      }
+
+      if (validLmp && validDob && validDob < validLmp) {
+          alert("Clinical Error: Date of Birth cannot be earlier than Last Menstrual Period (LMP).");
+          dobEl.value = ''; sync('sync-dob', '');
+      }
+
+      // 3. ANC Visits Sequencing
+      for (let i = 1; i <= 8; i++) {
           const vEl = document.getElementById('f4_v' + i + '_date');
-          if(vEl && vEl.value) {
-              const vDate = new Date(vEl.value);
+          if (vEl && vEl.value) {
+              const vDate = parseDate(vEl.value);
               if (vDate > today) {
                   alert(`Error: ANC Visit ${i} cannot be in the future.`);
                   vEl.value = '';
-              } else if (lmp && vDate < lmp) {
+              } else if (validLmp && vDate < validLmp) {
                   alert(`Clinical Error: ANC Visit ${i} cannot be earlier than LMP.`);
                   vEl.value = '';
-              } else if (dob && vDate > dob) {
+              } else if (validDob && vDate > validDob) {
                   alert(`Clinical Error: ANC Visit ${i} cannot be later than Date of Birth.`);
                   vEl.value = '';
               }
           }
       }
   }
-
   document.getElementById('cdrMasterForm').addEventListener('input', () => {
       saveDataSilently();
       applyConditionals();
@@ -2298,23 +2382,24 @@
       document.getElementById('f4_hrp_manual_hidden').value = JSON.stringify(manualHrpFactors);
   }
 
-  // EXACT CALENDAR-BASED AGE CALCULATION
+  // EXACT CALENDAR-BASED AGE CALCULATION (TIMEZONE-LOCKED)
   function calculateChildAge() {
-      const dobStr = document.getElementById('f1_dob').value || document.querySelector('.sync-dob').value;
-      const dodStr = document.getElementById('f1_dod').value || document.querySelector('.sync-dod').value;
+      const dobStr = document.getElementById('f1_dob')?.value || document.querySelector('.sync-dob')?.value;
+      const dodStr = document.getElementById('f1_dod')?.value || document.querySelector('.sync-dod')?.value;
       
       const form3a = document.getElementById('form3a');
       const form3b = document.getElementById('form3b');
       const btn3a = document.getElementById('btn_3a');
       const btn3b = document.getElementById('btn_3b');
-      const form3aInputs = form3a.querySelectorAll('input, select, textarea');
-      const form3bInputs = form3b.querySelectorAll('input, select, textarea');
       const warning3a = document.getElementById('warning_3a');
       const warning3b = document.getElementById('warning_3b');
 
       if (dobStr && dodStr) {
-          const d1 = new Date(dobStr);
-          const d2 = new Date(dodStr);
+          // Force local time parsing to prevent UTC drift
+          const [bYear, bMonth, bDay] = dobStr.split('-');
+          const [dYear, dMonth, dDay] = dodStr.split('-');
+          const d1 = new Date(bYear, bMonth - 1, bDay);
+          const d2 = new Date(dYear, dMonth - 1, dDay);
           
           let diffTime = d2.getTime() - d1.getTime();
           let totalDays = Math.floor(diffTime / (1000 * 3600 * 24));
@@ -2550,33 +2635,17 @@
     e.preventDefault(); e.returnValue = '';
   });
 
-  // Master Sync Engine
+  // Master Sync Engine (CRASH-PROOF UPGRADE)
   function sync(cls, val) {
     document.querySelectorAll('.' + cls).forEach(el => {
-      if(el !== event.target) {
-        if(el.type === 'checkbox') el.checked = event.target.checked;
+      // document.activeElement prevents cursor jumping without relying on fragile window.event
+      if (el !== document.activeElement) { 
+        if (el.type === 'checkbox') el.checked = (val === true || val === 'true');
         else el.value = val;
       }
     });
     saveDataSilently(); 
   }
-
-  function switchTab(t) {
-    document.body.classList.remove('print-all-mode');
-    document.getElementById('printBanner').style.display = 'none';
-    
-    document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
-    
-    const buttons = document.querySelectorAll('.tab-btn');
-    buttons.forEach(btn => {
-        if(btn.getAttribute('onclick') === `switchTab('${t}')`) btn.classList.add('active');
-    });
-    window.scrollTo(0, 0);
-    
-    setTimeout(resizeAllTextareas, 50);
-  }
-
   // PRINT WYSIWYG FAILSAFE
   function printAllForms() {
     const childName = document.getElementById('f1_child').value.trim() || 'Unnamed_Child';
@@ -2591,7 +2660,6 @@
     }, 800);
   }
 
-  // CSV SHARE & EXPORT ENGINE (ANALYTICS OPTIMIZED)
   // CSV SHARE & EXPORT ENGINE (BULLETPROOF DOM FIX)
   function exportAndShareCSV() {
       // 1. Generate Headers
