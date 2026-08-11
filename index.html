@@ -1720,6 +1720,7 @@
       }
       populateCaseList();
   }
+
   function loadCaseFromIndexedDB(caseId) {
       if (!db) return;
       const tx = db.transaction(STORE_NAME, 'readonly');
@@ -1734,11 +1735,16 @@
               document.getElementById('cdrMasterForm').reset();
               
               const data = record.formData;
-              if (data['visibleAncRows']) {
-                  visibleAncRows = parseInt(data['visibleAncRows']);
-                  for(let i = 5; i <= visibleAncRows; i++) {
-                      const row = document.getElementById('anc_row_' + i);
-                      if (row) row.style.display = 'table-row';
+              
+              visibleAncRows = parseInt(data['visibleAncRows']) || 4;
+              for(let i = 1; i <= 8; i++) {
+                  const row = document.getElementById('anc_row_' + i);
+                  if (row) {
+                      if (i <= visibleAncRows) {
+                          row.style.display = 'table-row';
+                      } else {
+                          row.style.display = 'none';
+                      }
                   }
               }
 
@@ -1765,7 +1771,7 @@
 
               triggerInitialSync();
               applyConditionals();
-              document.querySelectorAll('.vital-check').forEach(el => { if (el.value) checkVitals(el); });
+              document.querySelectorAll('.vital-check').forEach(el => { checkVitals(el); });
               
               calculateChildAge();
               calculateMotherAge();
@@ -1815,7 +1821,6 @@
                   selector.appendChild(opt);
               });
               
-              // Prevent dropdown from blanking out if active case isn't in DB yet
               if (!activeFound) {
                   const opt = document.createElement('option');
                   opt.value = activeCaseId;
@@ -1829,8 +1834,8 @@
 
   function switchCase(caseId) {
       if (caseId && caseId !== activeCaseId) {
-          clearTimeout(saveTimeout); // FATAL FIX: Kill delayed saves before switching
-          saveDataSilently(); // Force instant, synchronous save of the current case
+          clearTimeout(saveTimeout); 
+          saveDataSilently(); 
           loadCaseFromIndexedDB(caseId);
       }
   }
@@ -1838,11 +1843,11 @@
   function createNewCase(skipSave = false) {
       if (!skipSave && !isResetting) {
           clearTimeout(saveTimeout);
-          saveDataSilently(); // Save current work before abandoning it
+          saveDataSilently(); 
       }
       
-      isResetting = true; // LOCK THE DATABASE
-      clearTimeout(saveTimeout); // Force kill pending operations
+      isResetting = true; 
+      clearTimeout(saveTimeout); 
       
       activeCaseId = 'CASE_' + Date.now();
       localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
@@ -1851,22 +1856,27 @@
       manualHrpFactors = [];
       hrpFactorsList = [];
       renderHrpFactors();
+      
       visibleAncRows = 4;
-      for(let i=5; i<=8; i++) {
+      for(let i=1; i<=8; i++) {
           const r = document.getElementById('anc_row_' + i);
-          if(r) r.style.display = 'none';
+          if (r) {
+              if (i <= 4) r.style.display = 'table-row';
+              else r.style.display = 'none';
+          }
       }
+      
       document.querySelectorAll('div[id$="_inf"]').forEach(el => el.innerText = '');
       
       triggerInitialSync();
       applyConditionals();
       resizeAllTextareas();
+      document.querySelectorAll('.vital-check').forEach(el => checkVitals(el));
       
       populateCaseList();
       
-      // UNLOCK THE DATABASE ONLY AFTER THE UI SETTLES
       setTimeout(() => { 
-          clearTimeout(saveTimeout); // Annihilate any ghost timeouts created during setup
+          clearTimeout(saveTimeout); 
           isResetting = false; 
       }, 500); 
   }
@@ -1889,8 +1899,8 @@
       if(!confirm("CRITICAL WARNING: Are you sure you want to permanently delete this entire case? This cannot be undone.")) return;
       if (!db) return;
       
-      isResetting = true; // LOCK DATABASE IMMEDIATELY
-      clearTimeout(saveTimeout); // Kill any ghost saves queuing up
+      isResetting = true; 
+      clearTimeout(saveTimeout); 
       
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
@@ -1902,7 +1912,7 @@
       };
       tx.onerror = function() {
           alert("Error deleting case.");
-          isResetting = false; // Unlock if deletion fails
+          isResetting = false; 
       };
   }
 
