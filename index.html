@@ -1668,17 +1668,29 @@
   
   function saveDataSilently() {
       if (!db || isResetting) return; // Block writes if system is locked
+      
       const data = {};
+      let hasMeaningfulData = false; // THE GHOST KILLER
+      
       document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
           if(el.id && el.id !== 'mediaUploadInput' && el.id !== 'mediaCategory' && el.id !== 'mediaCategoryOther' && el.type !== 'file' && el.id !== 'f4_hrp_dropdown' && el.id !== 'caseSelector') {
               if (el.type === 'checkbox') {
                   data[el.id] = el.checked;
+                  if (el.checked) hasMeaningfulData = true;
               } else {
                   data[el.id] = el.value;
+                  if (el.value.trim() !== '') hasMeaningfulData = true;
               }
           }
       });
       data['visibleAncRows'] = visibleAncRows;
+
+      const mediaHTML = document.getElementById('mediaPreviewArea').innerHTML.trim();
+      if (mediaHTML !== '') hasMeaningfulData = true;
+
+      // FATAL FIX: If the entire form is completely blank, abort the save. 
+      // This makes it physically impossible to write a blank "Unnamed Child" to the database.
+      if (!hasMeaningfulData) return;
 
       const childName = (data['f1_child'] || 'Unnamed Child').trim();
       const caseRecord = {
@@ -1686,7 +1698,7 @@
           childName: childName,
           updatedAt: new Date().toISOString(),
           formData: data,
-          mediaHTML: document.getElementById('mediaPreviewArea').innerHTML
+          mediaHTML: mediaHTML
       };
 
       const tx = db.transaction(STORE_NAME, 'readwrite');
