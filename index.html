@@ -1702,30 +1702,6 @@
       }
       populateCaseList();
   }
-      data['visibleAncRows'] = visibleAncRows;
-
-      const childName = (data['f1_child'] || 'Unnamed Child').trim();
-      const caseRecord = {
-          caseId: activeCaseId,
-          childName: childName,
-          updatedAt: new Date().toISOString(),
-          formData: data,
-          mediaHTML: document.getElementById('mediaPreviewArea').innerHTML
-      };
-
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      store.put(caseRecord);
-
-      localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
-
-      const ind = document.getElementById('autoSaveIndicator');
-      if(ind) {
-          ind.style.opacity = 1;
-          setTimeout(() => ind.style.opacity = 0, 1000);
-      }
-      populateCaseList();
-  }
 
   function loadCaseFromIndexedDB(caseId) {
       if (!db) return;
@@ -1842,13 +1818,14 @@
       }
   }
 
-  function createNewCase() {
-      if (!isResetting) {
+  function createNewCase(skipSave = false) {
+      if (!skipSave && !isResetting) {
           clearTimeout(saveTimeout);
           saveDataSilently(); // Save current work before abandoning it
       }
       
       isResetting = true; // LOCK THE DATABASE
+      clearTimeout(saveTimeout); // Force kill pending operations
       
       activeCaseId = 'CASE_' + Date.now();
       localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
@@ -1871,7 +1848,10 @@
       populateCaseList();
       
       // UNLOCK THE DATABASE ONLY AFTER THE UI SETTLES
-      setTimeout(() => { isResetting = false; }, 500); 
+      setTimeout(() => { 
+          clearTimeout(saveTimeout); // Annihilate any ghost timeouts created during setup
+          isResetting = false; 
+      }, 500); 
   }
   
   function clearCurrentTab() {
@@ -1901,13 +1881,14 @@
       
       tx.oncomplete = function() {
           alert("Case deleted successfully.");
-          createNewCase(); 
+          createNewCase(true); 
       };
       tx.onerror = function() {
           alert("Error deleting case.");
           isResetting = false; // Unlock if deletion fails
       };
   }
+
   // ADDRESS COMPILER (NULL-SAFE)
   function compileAddress() {
       const hNo = document.getElementById('f1_house')?.value?.trim() || '';
@@ -1937,7 +1918,6 @@
           const el = document.getElementById(id);
           if(el) el.value = addrStr;
       });
-
   }
 
   // GLOBAL SYNC ENGINE
