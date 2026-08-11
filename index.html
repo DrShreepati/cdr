@@ -1667,19 +1667,26 @@
   }
   
   function saveDataSilently() {
-      if (!db || isResetting) return; // Block writes if system is locked
+      if (!db || isResetting) return; 
       
       const data = {};
-      let hasMeaningfulData = false; // THE GHOST KILLER
+      let hasMeaningfulData = false; 
       
       document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
           if(el.id && el.id !== 'mediaUploadInput' && el.id !== 'mediaCategory' && el.id !== 'mediaCategoryOther' && el.type !== 'file' && el.id !== 'f4_hrp_dropdown' && el.id !== 'caseSelector') {
-              if (el.type === 'checkbox') {
-                  data[el.id] = el.checked;
-                  if (el.checked) hasMeaningfulData = true;
-              } else {
-                  data[el.id] = el.value;
-                  if (el.value.trim() !== '') hasMeaningfulData = true;
+              
+              let val = el.type === 'checkbox' ? el.checked : el.value;
+              data[el.id] = val;
+
+              // STRICT MEANINGFUL DATA CHECK
+              if (el.type === 'checkbox' && el.checked) {
+                  hasMeaningfulData = true;
+              } else if (el.type !== 'checkbox') {
+                  let strVal = String(val).trim();
+                  // Force engine to ignore the hidden HRP array and empty strings
+                  if (strVal !== '' && strVal !== '[]' && el.id !== 'f4_hrp_manual_hidden') {
+                      hasMeaningfulData = true;
+                  }
               }
           }
       });
@@ -1688,8 +1695,7 @@
       const mediaHTML = document.getElementById('mediaPreviewArea').innerHTML.trim();
       if (mediaHTML !== '') hasMeaningfulData = true;
 
-      // FATAL FIX: If the entire form is completely blank, abort the save. 
-      // This makes it physically impossible to write a blank "Unnamed Child" to the database.
+      // ABORT SAVE IF FORM IS BLANK
       if (!hasMeaningfulData) return;
 
       const childName = (data['f1_child'] || 'Unnamed Child').trim();
@@ -1714,7 +1720,6 @@
       }
       populateCaseList();
   }
-
   function loadCaseFromIndexedDB(caseId) {
       if (!db) return;
       const tx = db.transaction(STORE_NAME, 'readonly');
