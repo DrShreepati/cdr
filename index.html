@@ -1733,7 +1733,7 @@
                   document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
                   document.getElementById('mediaPreviewArea').querySelectorAll('.remove-btn').forEach(btn => {
                       btn.setAttribute('type', 'button');
-                      btn.setAttribute('onclick', "this.parentElement.remove(); saveDataSilently();");
+                      btn.setAttribute('onclick', "this.parentElement.remove(); debouncedSave();");
                   });
               }
 
@@ -1754,42 +1754,9 @@
               evaluateAllTriggers();
               resizeAllTextareas();
           } else {
-              // FAILSAFE: If case is missing/corrupted, break the boot-loop immediately.
               console.warn("Ghost case detected. Rebooting environment.");
               localStorage.removeItem('CDR_ACTIVE_CASE_ID');
               createNewCase();
-          }
-      };
-
-              if(record.mediaHTML) {
-                  document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
-                  
-                  // RETROACTIVE MEDIA BUTTON HEALING SCRIPT
-                  document.getElementById('mediaPreviewArea').querySelectorAll('.remove-btn').forEach(btn => {
-                      btn.setAttribute('type', 'button');
-                      btn.setAttribute('onclick', "this.parentElement.remove(); saveDataSilently();");
-                  });
-              }
-
-              const hiddenManual = document.getElementById('f4_hrp_manual_hidden');
-              if (hiddenManual && hiddenManual.value) {
-                  try { manualHrpFactors = JSON.parse(hiddenManual.value); } catch(e) { manualHrpFactors = []; }
-              }
-
-              triggerInitialSync();
-              applyConditionals();
-
-              document.querySelectorAll('.vital-check').forEach(el => {
-                  if (el.value) checkVitals(el);
-              });
-
-              calculateChildAge();
-              calculateMotherAge();
-              calculateGestation();
-              calculateUSGestation();
-              calculateVisitGAs();
-              evaluateAllTriggers();
-              resizeAllTextareas();
           }
       };
   }
@@ -1914,7 +1881,7 @@
           const el = document.getElementById(id);
           if(el) el.value = addrStr;
       });
-      saveDataSilently();
+      debouncedSave(); // Replaced saveDataSilently()
   }
 
   // GLOBAL SYNC ENGINE
@@ -2671,7 +2638,7 @@
         else el.value = val;
       }
     });
-    saveDataSilently(); 
+    debouncedSave(); 
   }
   // PRINT WYSIWYG FAILSAFE
   function printAllForms() {
@@ -2817,9 +2784,8 @@
         docIcon.innerText = '📄 PDF Document\n(' + file.name + ')';
         wrapper.appendChild(docIcon);
         previewArea.appendChild(wrapper);
-        saveDataSilently();
+        debouncedSave(); // Replaced saveDataSilently()
       }
-    });
     fileInput.value = '';
     document.getElementById('mediaCategoryOther').value = '';
     document.getElementById('mediaCategoryOther').style.display = 'none';
