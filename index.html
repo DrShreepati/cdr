@@ -2592,62 +2592,66 @@
   }
 
   // CSV SHARE & EXPORT ENGINE (ANALYTICS OPTIMIZED)
+  // CSV SHARE & EXPORT ENGINE (BULLETPROOF DOM FIX)
   function exportAndShareCSV() {
-    if (!db) return;
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const req = store.get(activeCaseId);
+      // 1. Generate Headers
+      let csvContent = "Case_ID,Child_Name,Age,Sex,Village,Block,District,Assigned_Cause,ICD_10,Variable_ID,Value\n";
+      
+      // 2. Extract demographics directly from the live DOM
+      const cId = typeof activeCaseId !== 'undefined' ? activeCaseId : 'Unknown_Case';
+      const cName = String(document.getElementById('f1_child')?.value || "Unnamed").replace(/"/g, '""');
+      const cAge = String(document.getElementById('f1_age')?.value || "").replace(/"/g, '""');
+      const cSex = String(document.getElementById('f1_sex')?.value || "").replace(/"/g, '""');
+      const cVill = String(document.getElementById('f1_village')?.value || "").replace(/"/g, '""');
+      const cBlk = String(document.getElementById('f1_block')?.value || "").replace(/"/g, '""');
+      const cDist = String(document.getElementById('f1_district')?.value || "").replace(/"/g, '""');
+      const cause = String(document.getElementById('f3a_assigned_cause')?.value || document.getElementById('f3b_assigned_cause')?.value || "Pending").replace(/"/g, '""');
+      const icd = String(document.getElementById('f3a_icd_subcode')?.value || document.getElementById('f3b_icd_subcode')?.value || "None").replace(/"/g, '""');
 
-    req.onsuccess = function() {
-        const record = req.result;
-        if (!record || !record.formData) { alert("No data to export."); return; }
-        
-        // BI-Ready Headers
-        let csvContent = "Case_ID,Child_Name,Age,Sex,Village,Block,District,Assigned_Cause,ICD_10,Variable_ID,Value\n"; 
+      // 3. Loop through all inputs instantly
+      document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
+          if (el.id && el.type !== 'file' && el.id !== 'f4_hrp_dropdown' && el.id !== 'caseSelector') {
+              let val = el.type === 'checkbox' ? (el.checked ? "Yes" : "No") : el.value;
+              if (val !== "" && val !== undefined) {
+                  let cleanVal = String(val).replace(/"/g, '""');
+                  csvContent += `"${cId}","${cName}","${cAge}","${cSex}","${cVill}","${cBlk}","${cDist}","${cause}","${icd}","${el.id}","${cleanVal}"\n`;
+              }
+          }
+      });
 
-        // Extract Core Demographics
-        const cId = record.caseId;
-        const cName = String(record.childName || "Unnamed").replace(/"/g, '""');
-        const cAge = String(record.formData['f1_age'] || "").replace(/"/g, '""');
-        const cSex = String(record.formData['f1_sex'] || "").replace(/"/g, '""');
-        const cVill = String(record.formData['f1_village'] || "").replace(/"/g, '""');
-        const cBlk = String(record.formData['f1_block'] || "").replace(/"/g, '""');
-        const cDist = String(record.formData['f1_district'] || "").replace(/"/g, '""');
-        const cause = String(document.getElementById('f3a_assigned_cause').value || document.getElementById('f3b_assigned_cause').value || "Pending").replace(/"/g, '""');
-        const icd = String(document.getElementById('f3a_icd_subcode').value || document.getElementById('f3b_icd_subcode').value || "None").replace(/"/g, '""');
+      // 4. Construct the File
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const fileName = `CDR_Analytics_${cName.replace(/\s+/g, '_')}.csv`;
+      
+      // 5. Hard Download Fallback (Mandatory for Mac/PC/Strict Browsers)
+      const forceDownload = () => {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = fileName;
+          link.style.display = 'none';
+          document.body.appendChild(link); // This prevents the silent failure
+          link.click();
+          document.body.removeChild(link);
+      };
 
-        // Loop through saved data points, strip media, and attach demographics to every row
-        Object.keys(record.formData).forEach(key => {
-            let val = record.formData[key];
-            if (val === true) val = "Yes";
-            if (val === false) val = "No";
-            if (val !== "" && val !== undefined) {
-                let cleanVal = String(val).replace(/"/g, '""');
-                csvContent += `"${cId}","${cName}","${cAge}","${cSex}","${cVill}","${cBlk}","${cDist}","${cause}","${icd}","${key}","${cleanVal}"\n`;
-            }
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const fileName = `CDR_Analytics_${cName.replace(/\s+/g, '_')}.csv`;
-
-        // Native Mobile Share Trigger
-        if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: blob.type })] })) {
-            const file = new File([blob], fileName, { type: blob.type });
-            navigator.share({
-                title: 'CDR Case Data',
-                text: `Analytics Data for ${cName}`,
-                files: [file]
-            }).catch(err => console.log('Share failed or cancelled.', err));
-        } else {
-            // Fallback for Mac/PC environments
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    };
+      // 6. Fire Share Menu or Fallback
+      try {
+          const file = new File([blob], fileName, { type: "text/csv" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              navigator.share({
+                  title: 'CDR Case Data',
+                  files: [file]
+              }).catch(err => {
+                  console.log('Share aborted by OS or user:', err);
+                  forceDownload();
+              });
+          } else {
+              forceDownload();
+          }
+      } catch (error) {
+          console.log('Mobile share not supported on this device:', error);
+          forceDownload();
+      }
   }
   function clearCurrentTab() {
     if(confirm('Are you sure you want to clear all data in the currently visible form?')) {
