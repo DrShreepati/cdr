@@ -1649,23 +1649,25 @@
   // SYSTEM ENGINES: DEBOUNCER & DATE PARSER
   // ==========================================
   let saveTimeout = null;
+  let isResetting = false; // THE MASTER DATABASE LOCK
+
   function debouncedSave() {
+      if (isResetting) return; // Block saves while screen is resetting
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
-          saveDataSilently();
-      }, 1000); // Waits 1 second after typing stops to write to disk
+          if (!isResetting) saveDataSilently();
+      }, 1000); // Waits 1 second after typing stops
   }
 
   function parseStrictDate(dateString) {
       if (!dateString) return null;
       const parts = dateString.split('-');
       if (parts.length !== 3) return null;
-      // Forces local midnight, immune to UTC drift
       return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0); 
   }
   
   function saveDataSilently() {
-      if (!db) return;
+      if (!db || isResetting) return; // Block writes if system is locked
       const data = {};
       document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
           if(el.id && el.id !== 'mediaUploadInput' && el.id !== 'mediaCategory' && el.id !== 'mediaCategoryOther' && el.type !== 'file' && el.id !== 'f4_hrp_dropdown' && el.id !== 'caseSelector') {
@@ -1676,6 +1678,30 @@
               }
           }
       });
+      data['visibleAncRows'] = visibleAncRows;
+
+      const childName = (data['f1_child'] || 'Unnamed Child').trim();
+      const caseRecord = {
+          caseId: activeCaseId,
+          childName: childName,
+          updatedAt: new Date().toISOString(),
+          formData: data,
+          mediaHTML: document.getElementById('mediaPreviewArea').innerHTML
+      };
+
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.put(caseRecord);
+
+      localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
+
+      const ind = document.getElementById('autoSaveIndicator');
+      if(ind) {
+          ind.style.opacity = 1;
+          setTimeout(() => ind.style.opacity = 0, 1000);
+      }
+      populateCaseList();
+  }
       data['visibleAncRows'] = visibleAncRows;
 
       const childName = (data['f1_child'] || 'Unnamed Child').trim();
@@ -1816,11 +1842,14 @@
       }
   }
 
-  function createNewCase(skipSave = false) {
-      if (!skipSave) {
+  function createNewCase() {
+      if (!isResetting) {
           clearTimeout(saveTimeout);
-          saveDataSilently(); // Hard save the previous case before wiping screen
+          saveDataSilently(); // Save current work before abandoning it
       }
+      
+      isResetting = true; // LOCK THE DATABASE
+      
       activeCaseId = 'CASE_' + Date.now();
       localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
       document.getElementById('cdrMasterForm').reset();
@@ -1839,9 +1868,10 @@
       applyConditionals();
       resizeAllTextareas();
       
-      // FATAL FIX: Do NOT trigger a save here. 
-      // The blank case will only write to the DB when the user actually types data.
-      populateCaseList(); 
+      populateCaseList();
+      
+      // UNLOCK THE DATABASE ONLY AFTER THE UI SETTLES
+      setTimeout(() => { isResetting = false; }, 500); 
   }
   
   function clearCurrentTab() {
@@ -1862,7 +1892,8 @@
       if(!confirm("CRITICAL WARNING: Are you sure you want to permanently delete this entire case? This cannot be undone.")) return;
       if (!db) return;
       
-      clearTimeout(saveTimeout); // FATAL FIX: Prevent the ghost-save of the deleted case
+      isResetting = true; // LOCK DATABASE IMMEDIATELY
+      clearTimeout(saveTimeout); // Kill any ghost saves queuing up
       
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
@@ -1870,10 +1901,11 @@
       
       tx.oncomplete = function() {
           alert("Case deleted successfully.");
-          createNewCase(true); // 'true' skips saving the ghost data we just deleted
+          createNewCase(); 
       };
       tx.onerror = function() {
           alert("Error deleting case.");
+          isResetting = false; // Unlock if deletion fails
       };
   }
   // ADDRESS COMPILER (NULL-SAFE)
