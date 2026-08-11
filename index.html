@@ -1644,7 +1644,24 @@
           console.error("IndexedDB initialization error:", e.target.error);
       };
   }
+// ==========================================
+  // SYSTEM ENGINES: DEBOUNCER & DATE PARSER
+  // ==========================================
+  let saveTimeout = null;
+  function debouncedSave() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+          saveDataSilently();
+      }, 1000); // Waits 1 second after typing stops to write to disk
+  }
 
+  function parseStrictDate(dateString) {
+      if (!dateString) return null;
+      const parts = dateString.split('-');
+      if (parts.length !== 3) return null;
+      // Forces local midnight, immune to UTC drift
+      return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0); 
+  }
   function saveDataSilently() {
       if (!db) return;
       const data = {};
@@ -2028,17 +2045,28 @@
           }
       }
   }
+  // MASTER FORM LISTENERS (Debounced to prevent I/O crashes)
   document.getElementById('cdrMasterForm').addEventListener('input', () => {
-      saveDataSilently();
+      // Fast UI updates happen instantly
       applyConditionals();
       evaluateAllTriggers();
+      // Heavy database writes wait until the user stops typing
+      if (typeof debouncedSave === 'function') {
+          debouncedSave(); 
+      } else {
+          saveDataSilently(); // Failsafe if Step 1 wasn't applied yet
+      }
   });
+  
   document.getElementById('cdrMasterForm').addEventListener('change', () => {
-      saveDataSilently();
       applyConditionals();
       evaluateAllTriggers();
+      if (typeof debouncedSave === 'function') {
+          debouncedSave(); 
+      } else {
+          saveDataSilently();
+      }
   });
-
   // AUTO-LOAD ON STARTUP
   window.addEventListener('DOMContentLoaded', () => {
       initDB(() => {
@@ -2461,25 +2489,24 @@
       }
   }
 
-  // AUTO-CALCULATE MOTHER'S AGE AT LMP
+// AUTO-CALCULATE MOTHER'S AGE AT LMP
   function calculateMotherAge() {
       const dobStr = document.getElementById('f4_mother_dob').value;
       const lmpStr = document.getElementById('f4_lmp').value;
       if(dobStr && lmpStr) {
-          const dob = new Date(dobStr);
-          const lmp = new Date(lmpStr);
+          const dob = parseStrictDate(dobStr);
+          const lmp = parseStrictDate(lmpStr);
           let age = lmp.getFullYear() - dob.getFullYear();
           const m = lmp.getMonth() - dob.getMonth();
-          if (m < 0 || (m === 0 && lmp.getDate() < dob.getDate())) {
-              age--;
-          }
+          if (m < 0 || (m === 0 && lmp.getDate() < dob.getDate())) age--;
+          
           const ageText = age > 0 ? age + " Years" : "";
           const mAge4 = document.getElementById('f4_mother_age');
           const mAge3a = document.getElementById('f3a_14b');
           if (mAge4) mAge4.value = ageText;
           if (mAge3a) mAge3a.value = ageText;
           evaluateAllTriggers();
-          saveDataSilently();
+          debouncedSave();
       }
   }
 
@@ -2487,13 +2514,13 @@
   function calculateVisitGAs() {
       const lmpStr = document.getElementById('f4_lmp').value;
       if(!lmpStr) return;
-      const lmp = new Date(lmpStr);
+      const lmp = parseStrictDate(lmpStr);
       
       for(let i=1; i<=8; i++) {
           const visitDateStr = document.getElementById('f4_v' + i + '_date').value;
           const gaField = document.getElementById('f4_v' + i + '_wks');
           if(visitDateStr && gaField) {
-              const vDate = new Date(visitDateStr);
+              const vDate = parseStrictDate(visitDateStr);
               const diffTime = vDate.getTime() - lmp.getTime();
               if(diffTime >= 0) {
                   const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
@@ -2505,7 +2532,7 @@
               }
           }
       }
-      saveDataSilently();
+      debouncedSave();
   }
 
   // US-EDD & US-GA CALCULATOR
@@ -2515,9 +2542,8 @@
       const usGaField = document.getElementById('f4_us_ga');
 
       if (usEddStr && dobStr) {
-          const usEdd = new Date(usEddStr);
-          const dob = new Date(dobStr);
-          
+          const usEdd = parseStrictDate(usEddStr);
+          const dob = parseStrictDate(dobStr);
           const usLmp = new Date(usEdd.getTime() - (280 * 24 * 3600 * 1000));
           let diffTime = dob.getTime() - usLmp.getTime();
           
@@ -2533,7 +2559,7 @@
       } else {
           usGaField.value = "";
       }
-      saveDataSilently();
+      debouncedSave();
   }
 
   // EDD & GESTATIONAL AGE CALCULATOR (LMP BASED)
@@ -2544,14 +2570,15 @@
     const gaField = document.getElementById('f4_ga');
 
     if (lmpStr) {
-      let lmp = new Date(lmpStr);
+      let lmp = parseStrictDate(lmpStr);
       let edd = new Date(lmp.getTime());
       edd.setMonth(edd.getMonth() + 9);
       edd.setDate(edd.getDate() + 7);
-      eddField.value = edd.toISOString().split('T')[0];
+      // Ensure the generated string is local, not UTC shifted
+      eddField.value = edd.toLocaleDateString('en-CA'); 
       
       if (dobStr) {
-        let dob = new Date(dobStr);
+        let dob = parseStrictDate(dobStr);
         let diffTime = dob.getTime() - lmp.getTime();
         if (diffTime >= 0) {
           let diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
@@ -2569,7 +2596,7 @@
         eddField.value = "";
         gaField.value = "";
     }
-    saveDataSilently();
+    debouncedSave();
   }
 
   // HARD BACKUP EXPORT/IMPORT WITH LEGACY WRAPPER
@@ -2779,7 +2806,7 @@
             compressedImg.src = canvas.toDataURL('image/jpeg', 0.65);
             wrapper.appendChild(compressedImg);
             previewArea.appendChild(wrapper);
-            saveDataSilently();
+            debouncedSave();
           }
         };
       } else {
