@@ -121,6 +121,9 @@
       border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; 
     }
     .sub-q-row > .field-group { flex: 1; min-width: 180px; margin-bottom: 0; }
+    .address-pin-row { display: flex; flex-wrap: wrap; gap: 15px; }
+    .address-pin-row > .field-address { flex: 4 1 75% !important; min-width: 250px; }
+    .address-pin-row > .field-pin { flex: 1 1 20% !important; max-width: 140px; min-width: 90px; }
 
     .field-group { display: flex; flex-direction: column; margin-bottom: 12px; }
     .field-group label { 
@@ -146,7 +149,7 @@
       background-color: #f1f5f9; color: var(--text-muted); cursor: not-allowed; 
     }
     textarea { resize: vertical; overflow: hidden; min-height: 80px; } 
-    textarea[rows="1"] { min-height: 42px; }
+    textarea[rows="1"] { min-height: 38px; }
     .print-mirror { display: none; } 
 
     select.cause-box { white-space: normal; max-width: 100%; height: auto !important; padding: 12px; font-size: 0.9rem; }
@@ -290,17 +293,22 @@
       .office-use-box { border: 1px solid #000 !important; padding: 8px !important; margin-bottom: 10px !important; }
       .office-use-box h4 { color: #000 !important; margin-bottom: 5px !important; background: transparent !important; border: none !important; }
       
+      .address-pin-row { display: flex !important; flex-wrap: nowrap !important; gap: 10px !important; }
+      .address-pin-row > .field-address { flex: 4 1 75% !important; width: 75% !important; }
+      .address-pin-row > .field-pin { flex: 1 1 20% !important; width: 20% !important; max-width: 140px !important; }
+
       textarea { display: none !important; }
       .print-mirror { 
           display: block !important; 
           white-space: pre-wrap !important; 
           word-wrap: break-word !important; 
+          overflow-wrap: break-word !important;
           border-bottom: 1px dotted #000; 
           font-weight: bold; 
           font-size: 11pt; 
-          line-height: 1.6; 
+          line-height: 1.4; 
           padding: 2px 0; 
-          min-height: 1.6em;
+          min-height: 1.4em;
       }
       
       input[type="text"], input[type="date"], input[type="time"], input[type="number"], select { 
@@ -457,7 +465,7 @@
         <div class="field-group"><label>3. Age:</label><input type="text" class="sync-age" id="f2_age" readonly></div>
         <div class="field-group"><label>4. Sex:</label><select class="sync-sex" id="f2_sex" disabled><option></option><option>Male</option><option>Female</option></select></div>
       </div>
-      <div class="field-group"><label>5. Address:</label><input type="text" id="f2_address" readonly placeholder="Auto-compiled from Form 1"></div>
+      <div class="field-group"><label>5. Address:</label><textarea rows="1" id="f2_address" readonly placeholder="Auto-compiled from Form 1"></textarea></div>
       <div class="grid-4">
         <div class="field-group"><label>6. Area PHC:</label><input type="text" class="sync-phc" id="f2_phc" oninput="sync('sync-phc', this.value)"></div>
         <div class="field-group"><label>7. Area Sub-center:</label><input type="text" class="sync-sub" id="f2_subcenter" oninput="sync('sync-sub', this.value)"></div>
@@ -471,7 +479,7 @@
         <div class="field-group"><label>13. Growth Curve:</label><select id="f2_growth"><option></option><option>Green Zone</option><option>Yellow Zone</option><option>Orange Zone</option></select></div>
       </div>
       
-      <div class="field-group"><label>14/15. History of Illness/Injury:</label><input type="text" id="f2_hx"></div>
+      <div class="field-group"><label>14/15. History of Illness/Injury:</label><textarea rows="1" id="f2_hx"></textarea></div>
       
       <h4>11. Immunization Status</h4>
       <div class="checkbox-grid">
@@ -574,9 +582,9 @@
         <div class="field-group"><label>11. Date of Death:</label><input type="date" class="sync-dod" id="f3a_child_dod" readonly></div>
         <div class="field-group"><label>Time of Death:</label><input type="time" class="sync-tod" id="f3a_child_tod" readonly></div>
       </div>
-      <div class="sub-q-row">
-        <div class="field-group"><label>13A. House Address:</label><input type="text" id="f3a_add" readonly placeholder="Auto-compiled from Form 1"></div>
-        <div class="field-group"><label>13B. PIN Code:</label><input type="text" class="sync-pin" id="f3a_pin" readonly></div>
+      <div class="sub-q-row address-pin-row">
+        <div class="field-group field-address"><label>13A. House Address:</label><textarea rows="1" id="f3a_add" readonly placeholder="Auto-compiled from Form 1"></textarea></div>
+        <div class="field-group field-pin"><label>13B. PIN Code:</label><input type="text" class="sync-pin" id="f3a_pin" readonly></div>
       </div>
 
       <h3>Section B: Neonatal Death Details</h3>
@@ -811,9 +819,9 @@
         <div class="field-group"><label>11. Date of Death:</label><input type="date" class="sync-dod" id="f3b_child_dod" readonly></div>
         <div class="field-group"><label>Time of Death:</label><input type="time" class="sync-tod" id="f3b_child_tod" readonly></div>
       </div>
-      <div class="sub-q-row">
-        <div class="field-group"><label>13A. House Address:</label><input type="text" id="f3b_add" readonly placeholder="Auto-compiled from Form 1"></div>
-        <div class="field-group"><label>13B. PIN Code:</label><input type="text" class="sync-pin" id="f3b_pin" readonly></div>
+      <div class="sub-q-row address-pin-row">
+        <div class="field-group field-address"><label>13A. House Address:</label><textarea rows="1" id="f3b_add" readonly placeholder="Auto-compiled from Form 1"></textarea></div>
+        <div class="field-group field-pin"><label>13B. PIN Code:</label><input type="text" class="sync-pin" id="f3b_pin" readonly></div>
       </div>
 
       <h3>Section B: Post-Neonatal Death Details</h3>
@@ -1672,11 +1680,14 @@
 
   // AUTO-EXPAND TEXTAREAS
   function autoResizeTextarea(el) {
+      if (!el) return;
       if (el.offsetWidth > 0 || el.offsetHeight > 0) { 
           el.style.height = 'auto';
+          let isSingleRow = el.getAttribute('rows') === '1' || el.rows === 1 || el.id === 'f3a_icd_subcode' || el.id === 'f3b_icd_subcode';
+          let minHeight = isSingleRow ? 38 : 80;
           let newHeight = el.scrollHeight;
-          if (newHeight < 80 && el.id !== 'f3a_icd_subcode' && el.id !== 'f3b_icd_subcode') newHeight = 80;
-          el.style.height = (newHeight + 5) + 'px';
+          if (newHeight < minHeight) newHeight = minHeight;
+          el.style.height = (newHeight + 4) + 'px';
       }
   }
 
@@ -1694,10 +1705,11 @@
 
   // PRINT MIRROR ENGINE
   window.addEventListener('beforeprint', function() {
+      document.querySelectorAll('.print-mirror').forEach(m => m.remove());
       document.querySelectorAll('textarea').forEach(ta => {
           let mirror = document.createElement('div');
           mirror.className = 'print-mirror';
-          mirror.textContent = ta.value;
+          mirror.textContent = ta.value ? ta.value : '\u00A0';
           ta.parentNode.insertBefore(mirror, ta.nextSibling);
       });
   });
@@ -2055,7 +2067,10 @@
 
       ['f2_address', 'f3a_add', 'f3b_add'].forEach(id => {
           const el = document.getElementById(id);
-          if(el) el.value = addrStr;
+          if(el) {
+              el.value = addrStr;
+              autoResizeTextarea(el);
+          }
       });
   }
 
