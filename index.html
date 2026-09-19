@@ -1136,14 +1136,10 @@
         </div>
       </div>
 
-      <div class="grid-5">
+      <div class="grid-4">
         <div class="field-group">
           <label>Mother's DOB:</label>
           <input type="date" id="f4_mother_dob" onchange="calculateMotherAge()">
-        </div>
-        <div class="field-group">
-          <label>LMP:</label>
-          <input type="date" id="f4_lmp" onchange="enforceDateLogic(); calculateGestation(); calculateMotherAge(); calculateVisitGAs();">
         </div>
         <div class="field-group">
           <label>Age:</label>
@@ -1151,19 +1147,23 @@
           <div id="f4_age_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
         </div>
         <div class="field-group">
+          <label>LMP:</label>
+          <input type="date" id="f4_lmp" onchange="enforceDateLogic(); calculateGestation(); calculateMotherAge(); calculateVisitGAs();" oninput="calculateGestation(); calculateMotherAge(); calculateVisitGAs();">
+        </div>
+        <div class="field-group">
           <label>EDD (by LMP):</label>
           <input type="date" id="f4_edd" readonly>
         </div>
+      </div>
+      
+      <div class="grid-3">
         <div class="field-group">
           <label>GA at Birth (LMP):</label>
           <input type="text" id="f4_ga" readonly placeholder="Auto">
         </div>
-      </div>
-      
-      <div class="grid-2">
         <div class="field-group">
           <label>US-EDD (Dating Scan):</label>
-          <input type="date" id="f4_us_edd" onchange="calculateUSGestation()">
+          <input type="date" id="f4_us_edd" onchange="calculateUSGestation()" oninput="calculateUSGestation()">
         </div>
         <div class="field-group">
           <label>US-GA at Birth:</label>
@@ -2710,7 +2710,7 @@
               let diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
               let wks = Math.floor(diffDays / 7);
               let remDays = diffDays % 7;
-              let status = wks < 37 ? "Preterm" : (wks <= 41 ? "Term" : "Post-term");
+              let status = wks < 36 ? "Preterm" : (wks <= 41 ? "Term" : "Post-term");
               usGaField.value = `${wks} Weeks, ${remDays} Days (${status})`;
           } else {
               usGaField.value = "Invalid (DOB before derived US-LMP)";
@@ -2745,7 +2745,7 @@
           let diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
           let wks = Math.floor(diffDays / 7);
           let remDays = diffDays % 7;
-          let status = wks < 37 ? "Preterm" : (wks <= 41 ? "Term" : "Post-term");
+          let status = wks < 36 ? "Preterm" : (wks <= 41 ? "Term" : "Post-term");
           gaField.value = `${wks} Weeks, ${remDays} Days (${status})`;
         } else {
           gaField.value = "Invalid (DOB before LMP)";
