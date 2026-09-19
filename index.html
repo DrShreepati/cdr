@@ -189,7 +189,7 @@
     /* Smart Alerts */
     #printBanner { display: none; background: #fef9c3; color: #92400e; padding: 15px; font-weight: 700; text-align: center; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde047; }
     body.print-all-mode #printBanner { display: block; }
-    #autoSaveStatus { display: inline-block; font-size: 0.85rem; color: #10b981; opacity: 0; transition: opacity 0.3s; font-weight: bold; margin-right: 15px; }
+    #autoSaveIndicator, #autoSaveStatus { display: inline-block; font-size: 0.85rem; color: #10b981; opacity: 0; transition: opacity 0.3s; font-weight: bold; margin-right: 15px; }
     .age-warning { display: none; background: #fef2f2; color: #991b1b; padding: 15px; border: 1px solid #fecaca; border-radius: 8px; font-weight: bold; margin-bottom: 20px; text-align: center; }
     .restricted-tab .grid-2, .restricted-tab .grid-3, .restricted-tab .grid-4, .restricted-tab .grid-5, .restricted-tab .sub-q-row, .restricted-tab table, .restricted-tab .signature-block, .restricted-tab .table-responsive { opacity: 0.3; pointer-events: none; }
 
@@ -408,16 +408,16 @@
       <div class="grid-4">
         <div class="field-group"><label>House Number:</label><input type="text" id="f1_house" oninput="compileAddress()"></div>
         <div class="field-group"><label>Mohalla/Colony:</label><input type="text" id="f1_mohalla" oninput="compileAddress()"></div>
-        <div class="field-group"><label>Village/Town:</label><input type="text" class="sync-village" id="f1_village" oninput="compileAddress()"></div>
-        <div class="field-group"><label>Block:</label><input type="text" class="sync-block" id="f1_block" oninput="compileAddress()"></div>
-        <div class="field-group"><label>District:</label><input type="text" class="sync-district" id="f1_district" oninput="compileAddress()"></div>
+        <div class="field-group"><label>Village/Town:</label><input type="text" class="sync-village" id="f1_village" oninput="compileAddress(); sync('sync-village', this.value)"></div>
+        <div class="field-group"><label>Block:</label><input type="text" class="sync-block" id="f1_block" oninput="compileAddress(); sync('sync-block', this.value)"></div>
+        <div class="field-group"><label>District:</label><input type="text" class="sync-district" id="f1_district" oninput="compileAddress(); sync('sync-district', this.value)"></div>
         <div class="field-group"><label>State:</label><input type="text" id="f1_state" oninput="compileAddress()"></div>
-        <div class="field-group"><label>Pincode:</label><input type="text" class="sync-pin" id="f1_pin" oninput="compileAddress()"></div>
+        <div class="field-group"><label>Pincode:</label><input type="text" class="sync-pin" id="f1_pin" oninput="compileAddress(); sync('sync-pin', this.value)"></div>
         <div class="field-group"><label>7. Landmarks:</label><input type="text" id="f1_landmark"></div>
       </div>
       
       <div class="grid-4">
-        <div class="field-group"><label>8. Phone Number:</label><input type="text" class="sync-phone" id="f1_phone"></div>
+        <div class="field-group"><label>8. Phone Number:</label><input type="text" class="sync-phone" id="f1_phone" oninput="sync('sync-phone', this.value)"></div>
         <div class="field-group"><label>9. Date of Death:</label><input type="date" class="sync-dod" id="f1_dod" onchange="enforceDateLogic(); sync('sync-dod', this.value); calculateChildAge();"></div>
         <div class="field-group"><label>Time of Death:</label><input type="time" class="sync-tod" id="f1_tod" oninput="sync('sync-tod', this.value)"></div>
         <div class="field-group"><label>10. Place of Death:</label><select class="sync-pod2" id="f1_pod" onchange="sync('sync-pod2', this.value)"><option></option><option>Home</option><option>Hospital</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option><option>Other</option></select></div>
@@ -993,11 +993,11 @@
         <div class="field-group"><label>1. Key Informant:</label><input type="text" class="sync-informant" id="f3c_1" oninput="sync('sync-informant', this.value)"></div>
         <div class="field-group"><label>2. Relation to deceased:</label><input type="text" id="f3c_2"></div>
         <div class="field-group"><label>3. Place of death:</label><select class="sync-pod2" id="f3c_3" onchange="sync('sync-pod2', this.value)"><option></option><option>Home</option><option>In transit</option><option>Sub Center</option><option>PHC / CHC</option><option>District Hospital</option><option>Medical College</option><option>Private Hospital</option><option>Other</option></select></div>
-        <div class="field-group"><label>4. Mobile Number:</label><input type="text" id="f3c_4"></div>
+        <div class="field-group"><label>4. Mobile Number:</label><input type="text" class="sync-phone" id="f3c_4" oninput="sync('sync-phone', this.value)"></div>
         <div class="field-group"><label>5. Total family members:</label><input type="number" id="f3c_5"></div>
         <div class="field-group"><label>6. Children under 5 years:</label><input type="number" id="f3c_6"></div>
         <div class="field-group"><label>7. Caste:</label><select class="sync-cat" id="f3c_7" onchange="sync('sync-cat', this.value)"><option></option><option>SC/ST</option><option>OBC</option><option>General</option></select></div>
-        <div class="field-group"><label>8. BPL Card:</label><select id="f3c_8"><option></option><option>Yes</option><option>No</option></select></div>
+        <div class="field-group"><label>8. BPL Card:</label><select class="sync-bpl" id="f3c_8" onchange="sync('sync-bpl', this.value)"><option></option><option>Yes</option><option>No</option></select></div>
       </div>
       
       <h4>9. Key Assets:</h4>
@@ -1641,7 +1641,7 @@
         <button class="btn btn-clear-all" onclick="deleteActiveCase()">Delete Case</button>
     </div>
     
-    <div class="mobile-actions-header">
+    <div class="actions-status-bar mobile-actions-header">
         <span id="autoSaveIndicator">Saved (IndexedDB)</span>
         <button type="button" class="btn btn-toggle" onclick="toggleActions()">⚙️ Actions ▼</button>
     </div>
@@ -1861,10 +1861,10 @@
               }
 
               triggerInitialSync();
+              calculateChildAge();
               applyConditionals();
               document.querySelectorAll('.vital-check').forEach(el => { checkVitals(el); });
               
-              calculateChildAge();
               calculateMotherAge();
               calculateGestation();
               calculateUSGestation();
@@ -1883,43 +1883,58 @@
       if (!db) return;
       const tx = db.transaction(STORE_NAME, 'readonly');
       const store = tx.objectStore(STORE_NAME);
-      const req = store.getAll();
+      const cases = [];
+      const req = store.openCursor();
 
-      req.onsuccess = function() {
-          const cases = req.result;
-          const selector = document.getElementById('caseSelector');
-          if(!selector) return;
-
-          selector.innerHTML = '';
-          if (cases.length === 0) {
-              const opt = document.createElement('option');
-              opt.value = activeCaseId;
-              opt.innerText = "New Unsaved Case";
-              selector.appendChild(opt);
-          } else {
-              let activeFound = false;
-              cases.forEach(c => {
-                  const opt = document.createElement('option');
-                  opt.value = c.caseId;
-                  const dod = c.formData['f1_dod'];
-                  const dateStr = dod ? new Date(dod).toLocaleDateString() : new Date(c.updatedAt).toLocaleDateString();
-                  opt.innerText = `${c.childName || 'Unnamed'} (${dateStr})`;
-                  
-                  if (c.caseId === activeCaseId) {
-                      opt.selected = true;
-                      activeFound = true;
-                  }
-                  selector.appendChild(opt);
+      req.onsuccess = function(e) {
+          const cursor = e.target.result;
+          if (cursor) {
+              const val = cursor.value;
+              cases.push({
+                  caseId: val.caseId,
+                  childName: val.childName,
+                  updatedAt: val.updatedAt,
+                  dod: (val.formData && val.formData['f1_dod']) ? val.formData['f1_dod'] : null
               });
-              
-              if (!activeFound) {
+              cursor.continue();
+          } else {
+              const selector = document.getElementById('caseSelector');
+              if(!selector) return;
+
+              selector.innerHTML = '';
+              if (cases.length === 0) {
                   const opt = document.createElement('option');
                   opt.value = activeCaseId;
                   opt.innerText = "New Unsaved Case";
-                  opt.selected = true;
-                  selector.prepend(opt);
+                  selector.appendChild(opt);
+              } else {
+                  let activeFound = false;
+                  cases.forEach(c => {
+                      const opt = document.createElement('option');
+                      opt.value = c.caseId;
+                      const dod = c.dod;
+                      const dateStr = dod ? new Date(dod).toLocaleDateString() : new Date(c.updatedAt).toLocaleDateString();
+                      opt.innerText = `${c.childName || 'Unnamed'} (${dateStr})`;
+                      
+                      if (c.caseId === activeCaseId) {
+                          opt.selected = true;
+                          activeFound = true;
+                      }
+                      selector.appendChild(opt);
+                  });
+                  
+                  if (!activeFound) {
+                      const opt = document.createElement('option');
+                      opt.value = activeCaseId;
+                      opt.innerText = "New Unsaved Case";
+                      opt.selected = true;
+                      selector.prepend(opt);
+                  }
               }
           }
+      };
+      req.onerror = function(e) {
+          console.error("IndexedDB populateCaseList error:", e.target.error);
       };
   }
 
@@ -1960,7 +1975,13 @@
       document.querySelectorAll('div[id$="_inf"]').forEach(el => el.innerText = '');
       
       triggerInitialSync();
+      calculateChildAge();
       applyConditionals();
+      calculateMotherAge();
+      calculateGestation();
+      calculateUSGestation();
+      calculateVisitGAs();
+      evaluateAllTriggers();
       resizeAllTextareas();
       document.querySelectorAll('.vital-check').forEach(el => checkVitals(el));
       
@@ -2044,7 +2065,8 @@
           'sync-child', 'sync-dob', 'sync-tob', 'sync-age', 'sync-sex', 
           'sync-mother', 'sync-dod', 'sync-tod', 'sync-pod', 'sync-pod2', 'sync-district', 
           'sync-block', 'sync-village', 'sync-phc', 'sync-sub', 
-          'sync-mcts', 'sync-pin', 'sync-resp', 'sync-rel', 'sync-cat', 'sync-informant', 'sync-relig'
+          'sync-mcts', 'sync-pin', 'sync-resp', 'sync-rel', 'sync-cat', 'sync-informant', 'sync-relig',
+          'sync-bpl', 'sync-phone'
       ];
 
       syncClasses.forEach(cls => {
@@ -2110,21 +2132,13 @@
       const today = new Date();
       today.setHours(0,0,0,0); // Strip time to ensure exact day comparisons
 
-      // Helper to parse dates without timezone bleed
-      const parseDate = (val) => {
-          if (!val) return null;
-          const d = new Date(val);
-          d.setHours(0,0,0,0);
-          return d;
-      };
-
       const dobEl = document.getElementById('f1_dob');
       const dodEl = document.getElementById('f1_dod');
       const lmpEl = document.getElementById('f4_lmp');
 
-      const dob = parseDate(dobEl?.value);
-      const dod = parseDate(dodEl?.value);
-      const lmp = parseDate(lmpEl?.value);
+      const dob = parseStrictDate(dobEl?.value);
+      const dod = parseStrictDate(dodEl?.value);
+      const lmp = parseStrictDate(lmpEl?.value);
 
       // 1. Future Dates Check (Nothing can happen tomorrow)
       if (dob && dob > today) { alert("Error: DOB cannot be in the future."); dobEl.value = ''; sync('sync-dob', ''); }
@@ -2132,9 +2146,9 @@
       if (lmp && lmp > today) { alert("Error: LMP cannot be in the future."); lmpEl.value = ''; }
 
       // Refresh parsed values in case they were just wiped
-      const validDob = parseDate(dobEl?.value);
-      const validDod = parseDate(dodEl?.value);
-      const validLmp = parseDate(lmpEl?.value);
+      const validDob = parseStrictDate(dobEl?.value);
+      const validDod = parseStrictDate(dodEl?.value);
+      const validLmp = parseStrictDate(lmpEl?.value);
 
       // 2. Logical Sequencing
       if (validDob && validDod && validDod < validDob) {
@@ -2143,15 +2157,20 @@
       }
 
       if (validLmp && validDob && validDob < validLmp) {
-          alert("Clinical Error: Date of Birth cannot be earlier than Last Menstrual Period (LMP).");
-          dobEl.value = ''; sync('sync-dob', '');
+          if (document.activeElement === lmpEl || (!document.activeElement || document.activeElement.id === 'f4_lmp')) {
+              alert("Clinical Error: Last Menstrual Period (LMP) cannot be later than Date of Birth.");
+              lmpEl.value = '';
+          } else {
+              alert("Clinical Error: Date of Birth cannot be earlier than Last Menstrual Period (LMP).");
+              dobEl.value = ''; sync('sync-dob', '');
+          }
       }
 
       // 3. ANC Visits Sequencing
       for (let i = 1; i <= 8; i++) {
           const vEl = document.getElementById('f4_v' + i + '_date');
           if (vEl && vEl.value) {
-              const vDate = parseDate(vEl.value);
+              const vDate = parseStrictDate(vEl.value);
               if (vDate > today) {
                   alert(`Error: ANC Visit ${i} cannot be in the future.`);
                   vEl.value = '';
@@ -2597,9 +2616,11 @@
                   if(warning3a) warning3a.style.display = 'block';
                   if(warning3b) warning3b.style.display = 'none';
               }
+              applyConditionals();
               debouncedSave();
           }
       } else {
+          document.querySelectorAll('.sync-age').forEach(el => { el.value = ''; });
           form3a.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
           form3b.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
           form3a.classList.remove('restricted-tab');
@@ -2608,6 +2629,7 @@
           if(btn3b) btn3b.style.display = 'block';
           if(warning3a) warning3a.style.display = 'none';
           if(warning3b) warning3b.style.display = 'none';
+          applyConditionals();
       }
   }
 
@@ -2678,6 +2700,8 @@
           } else {
               usGaField.value = "Invalid (DOB before derived US-LMP)";
           }
+      } else if (usEddStr && !dobStr) {
+          usGaField.value = "Enter Child's DOB in Form 1";
       } else {
           usGaField.value = "";
       }
@@ -2839,8 +2863,9 @@
       const cVill = String(document.getElementById('f1_village')?.value || "").replace(/"/g, '""');
       const cBlk = String(document.getElementById('f1_block')?.value || "").replace(/"/g, '""');
       const cDist = String(document.getElementById('f1_district')?.value || "").replace(/"/g, '""');
-      const cause = String(document.getElementById('f3a_assigned_cause')?.value || document.getElementById('f3b_assigned_cause')?.value || "Pending").replace(/"/g, '""');
-      const icd = String(document.getElementById('f3a_icd_subcode')?.value || document.getElementById('f3b_icd_subcode')?.value || "None").replace(/"/g, '""');
+      const isPostNeonatal = document.getElementById('form3a')?.classList.contains('restricted-tab');
+      const cause = String((isPostNeonatal ? document.getElementById('f3b_assigned_cause')?.value : document.getElementById('f3a_assigned_cause')?.value) || document.getElementById('f3a_assigned_cause')?.value || document.getElementById('f3b_assigned_cause')?.value || "Pending").replace(/"/g, '""');
+      const icd = String((isPostNeonatal ? document.getElementById('f3b_icd_subcode')?.value : document.getElementById('f3a_icd_subcode')?.value) || document.getElementById('f3a_icd_subcode')?.value || document.getElementById('f3b_icd_subcode')?.value || "None").replace(/"/g, '""');
 
       // 3. Loop through all inputs instantly
       document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
@@ -2951,14 +2976,42 @@
           }
         };
       } else {
-        const docIcon = document.createElement('div');
-        docIcon.style.padding = '20px';
-        docIcon.style.background = '#e9ecef';
-        docIcon.style.marginTop = '10px';
-        docIcon.innerText = '📄 PDF Document\n(' + file.name + ')';
-        wrapper.appendChild(docIcon);
-        previewArea.appendChild(wrapper);
-        debouncedSave();
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(event) {
+          const docCard = document.createElement('div');
+          docCard.style.padding = '15px';
+          docCard.style.background = '#f8fafc';
+          docCard.style.border = '1px solid var(--border-light)';
+          docCard.style.borderRadius = '6px';
+          docCard.style.marginTop = '10px';
+          docCard.style.textAlign = 'center';
+
+          const docTitle = document.createElement('div');
+          docTitle.style.fontWeight = 'bold';
+          docTitle.style.fontSize = '0.9rem';
+          docTitle.style.marginBottom = '8px';
+          docTitle.innerText = '📄 ' + file.name;
+          docCard.appendChild(docTitle);
+
+          const dlLink = document.createElement('a');
+          dlLink.href = event.target.result;
+          dlLink.download = file.name;
+          dlLink.className = 'btn no-print';
+          dlLink.style.display = 'inline-block';
+          dlLink.style.padding = '6px 12px';
+          dlLink.style.fontSize = '0.85rem';
+          dlLink.style.backgroundColor = 'var(--primary)';
+          dlLink.style.color = '#fff';
+          dlLink.style.textDecoration = 'none';
+          dlLink.style.borderRadius = '4px';
+          dlLink.innerText = 'Download / View PDF';
+          docCard.appendChild(dlLink);
+
+          wrapper.appendChild(docCard);
+          previewArea.appendChild(wrapper);
+          debouncedSave();
+        };
       }
     }); // <--- THIS CLOSES THE FOREACH LOOP CORRECTLY
     
