@@ -230,14 +230,7 @@
     .preview-item:active {
       cursor: grabbing;
     }
-    .preview-item.is-landscape {
-      grid-column: span 2;
-    }
-    @media (max-width: 640px) {
-      .preview-item.is-landscape {
-        grid-column: span 1;
-      }
-    }
+
     .preview-item.dragging {
       opacity: 0.45;
       transform: scale(0.98);
@@ -519,20 +512,14 @@
         text-align: left; 
       }
       .preview-item img { 
-        max-width: 100% !important; 
-        max-height: 24cm !important; 
-        width: auto !important;
+        width: 100% !important; 
+        max-height: 25.5cm !important; 
         height: auto !important; 
         object-fit: contain !important; 
         display: block; 
         margin: 0 auto; 
         page-break-inside: avoid !important;
         break-inside: avoid !important; 
-      }
-      .preview-item.is-landscape img {
-        width: 100% !important;
-        max-height: 20cm !important;
-        height: auto !important;
       }
       .preview-label { 
         font-size: 14pt !important; 
@@ -1814,9 +1801,6 @@
           </div>
         </div>
         <button type="button" class="btn btn-attach" onclick="processMediaUpload()" style="margin-top: 10px;">Attach Files to Record</button>
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px 14px; margin-top: 14px; font-size: 0.85rem; color: #166534;" class="no-print">
-          💡 <strong>Orientation &amp; Sequencing:</strong> Landscape documents (e.g. <em>RNTCP Card</em>) automatically take wide format without bottom empty space. Use <strong>◀</strong> and <strong>▶</strong> buttons or drag-and-drop cards to alter sequence. Click <strong>🔄 Rotate</strong> if an image was taken sideways.
-        </div>
       </div>
 
       <div id="mediaPreviewArea" class="preview-grid">
@@ -3183,14 +3167,9 @@
       canvas.height = tempImg.naturalWidth;
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((90 * Math.PI) / 180);
-      ctx.drawImage(tempImg, -tempImg.naturalWidth / 2, -tempImg.naturalHeight / 2);
+      ctx.drawImage(tempImg, -tempImg.naturalWidth / 2, -tempImg.naturalHeight / 2, tempImg.naturalWidth, tempImg.naturalHeight);
 
       img.src = canvas.toDataURL('image/jpeg', 0.85);
-      if (canvas.width > canvas.height) {
-        item.classList.add('is-landscape');
-      } else {
-        item.classList.remove('is-landscape');
-      }
       debouncedSave();
     };
     tempImg.src = img.src;
@@ -3273,6 +3252,7 @@
     const items = container.querySelectorAll('.preview-item');
     items.forEach((item) => {
       item.draggable = true;
+      item.classList.remove('is-landscape');
 
       const oldRemove = item.querySelector(':scope > .remove-btn');
       if (oldRemove) oldRemove.remove();
@@ -3292,23 +3272,6 @@
           </div>
         `;
         item.prepend(header);
-      }
-
-      if (img) {
-        const applyOrientation = () => {
-          if (img.naturalWidth && img.naturalHeight) {
-            if (img.naturalWidth > img.naturalHeight) {
-              item.classList.add('is-landscape');
-            } else {
-              item.classList.remove('is-landscape');
-            }
-          }
-        };
-        if (img.complete && img.naturalWidth) {
-          applyOrientation();
-        } else {
-          img.addEventListener('load', applyOrientation);
-        }
       }
     });
 
@@ -3363,21 +3326,37 @@
           img.onload = function() {
             const canvas = document.createElement('canvas');
             
-            const MAX_WIDTH = 2000; 
-            const MAX_HEIGHT = 2000;
-            let width = img.width;
-            let height = img.height;
+            const MAX_DIM = 2000;
+            let srcW = img.width;
+            let srcH = img.height;
+            const isLandscape = (srcW > srcH);
 
-            if (width > height) {
-              wrapper.classList.add('is-landscape');
-              if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            if (isLandscape) {
+              // Auto-rotate landscape 90deg clockwise so it defaults to vertical (orientation like ss 2 / ss 4)
+              let targetW = srcH;
+              let targetH = srcW;
+              if (targetH > MAX_DIM) {
+                targetW = Math.round(targetW * (MAX_DIM / targetH));
+                targetH = MAX_DIM;
+              }
+              canvas.width = targetW;
+              canvas.height = targetH;
+              const ctx = canvas.getContext('2d');
+              ctx.translate(canvas.width / 2, canvas.height / 2);
+              ctx.rotate((90 * Math.PI) / 180);
+              ctx.drawImage(img, -targetH / 2, -targetW / 2, targetH, targetW);
             } else {
-              if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+              let targetW = srcW;
+              let targetH = srcH;
+              if (targetH > MAX_DIM) {
+                targetW = Math.round(targetW * (MAX_DIM / targetH));
+                targetH = MAX_DIM;
+              }
+              canvas.width = targetW;
+              canvas.height = targetH;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, targetW, targetH);
             }
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
             
             const compressedImg = document.createElement('img');
             compressedImg.src = canvas.toDataURL('image/jpeg', 0.85); 
@@ -3439,4 +3418,3 @@
 </script>
 </body>
 </html>
-
