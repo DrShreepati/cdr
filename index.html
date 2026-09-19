@@ -168,6 +168,31 @@
     th, td { border: 1px solid var(--border-light); padding: 10px 12px; text-align: left; vertical-align: top; }
     th { background-color: #f8fafc; color: var(--text-main); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;}
     
+    /* Problems Faced Matrix Table */
+    .matrix-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
+    .matrix-table th.col-details, .matrix-table td:first-child { width: 28%; font-size: 0.85rem; font-weight: 600; }
+    .matrix-table th.col-fac, .matrix-table td:not(:first-child) { width: 18%; }
+    .matrix-table td textarea {
+      width: 100%;
+      min-height: 34px;
+      padding: 5px 8px;
+      font-size: 0.85rem;
+      line-height: 1.3;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    .matrix-table td input[type="number"], .matrix-table td select {
+      width: 100%;
+      height: 34px;
+      padding: 5px 8px;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
     /* Checkboxes */
     .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 8px 0 15px 0; }
     .checkbox-grid-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 8px 0 15px 0; }
@@ -322,6 +347,31 @@
       table { min-width: 100% !important; }
       table, tr, td, th { page-break-inside: avoid !important; break-inside: avoid !important; border: 1px solid #000 !important; padding: 4px; }
       th { background-color: transparent !important; }
+      
+      .matrix-table { table-layout: fixed !important; width: 100% !important; min-width: 100% !important; margin: 4px 0 !important; }
+      .matrix-table th.col-details, .matrix-table td:first-child { width: 28% !important; }
+      .matrix-table th.col-fac, .matrix-table td:not(:first-child) { width: 18% !important; }
+      .matrix-table th { font-size: 8.5pt !important; padding: 4px 2px !important; text-align: center !important; }
+      .matrix-table th:first-child { text-align: left !important; padding-left: 4px !important; }
+      .matrix-table td { padding: 3px 4px !important; font-size: 9.5pt !important; vertical-align: middle !important; }
+      .matrix-table td:first-child { font-size: 9pt !important; font-weight: normal !important; }
+      .matrix-table .print-mirror { 
+          display: block !important; 
+          white-space: pre-wrap !important; 
+          word-wrap: break-word !important; 
+          overflow-wrap: break-word !important; 
+          border-bottom: 1px dotted #000 !important; 
+          font-weight: bold; 
+          font-size: 9.5pt !important; 
+          line-height: 1.25 !important; 
+          padding: 1px 0 !important; 
+          min-height: 1.25em; 
+      }
+      .matrix-table input[type="number"], .matrix-table select { 
+          font-size: 9.5pt !important; 
+          padding: 1px 0 !important; 
+          line-height: 1.25 !important; 
+      }
       .form-header { page-break-after: avoid !important; break-after: avoid !important; margin-top: 10px; margin-bottom: 10px; }
       .handover-note, .checkbox-grid, .checkbox-grid-2col { page-break-inside: avoid !important; break-inside: avoid !important; }
 
@@ -1053,18 +1103,18 @@
 
       <div class="keep-together table-responsive">
         <h4>15. Problems faced Matrix:</h4>
-        <table>
-          <tr><th style="min-width: 250px;">Details</th><th>First Health Facility</th><th>Referral Institution I</th><th>Referral Institution II</th><th>Referral Institution III</th></tr>
-          <tr><td>15.1 Name / Type of facility visited</td><td><input type="text" id="f3c_15_1a"></td><td><input type="text" id="f3c_15_1b"></td><td><input type="text" id="f3c_15_1c"></td><td><input type="text" id="f3c_15_1d"></td></tr>
-          <tr><td>15.2 Complications faced during transport or at facility</td><td><input type="text" id="f3c_15_2a"></td><td><input type="text" id="f3c_15_2b"></td><td><input type="text" id="f3c_15_2c"></td><td><input type="text" id="f3c_15_2d"></td></tr>
+        <table class="matrix-table" id="f3c_matrix_table">
+          <tr><th class="col-details">Details</th><th class="col-fac">First Health Facility</th><th class="col-fac">Referral Institution I</th><th class="col-fac">Referral Institution II</th><th class="col-fac">Referral Institution III</th></tr>
+          <tr><td>15.1 Name / Type of facility visited</td><td><textarea rows="1" id="f3c_15_1a"></textarea></td><td><textarea rows="1" id="f3c_15_1b"></textarea></td><td><textarea rows="1" id="f3c_15_1c"></textarea></td><td><textarea rows="1" id="f3c_15_1d"></textarea></td></tr>
+          <tr><td>15.2 Complications faced during transport or at facility</td><td><textarea rows="1" id="f3c_15_2a"></textarea></td><td><textarea rows="1" id="f3c_15_2b"></textarea></td><td><textarea rows="1" id="f3c_15_2c"></textarea></td><td><textarea rows="1" id="f3c_15_2d"></textarea></td></tr>
           <tr><td>15.3 Time taken to reach the facility (Hours)</td><td><input type="number" id="f3c_15_3a"></td><td><input type="number" id="f3c_15_3b"></td><td><input type="number" id="f3c_15_3c"></td><td><input type="number" id="f3c_15_3d"></td></tr>
-          <tr><td>15.4 Treatment received at the facility</td><td><input type="text" id="f3c_15_4a"></td><td><input type="text" id="f3c_15_4b"></td><td><input type="text" id="f3c_15_4c"></td><td><input type="text" id="f3c_15_4d"></td></tr>
-          <tr><td>15.5 Reason for referring to another facility</td><td><input type="text" id="f3c_15_5a"></td><td><input type="text" id="f3c_15_5b"></td><td><input type="text" id="f3c_15_5c"></td><td><input type="text" id="f3c_15_5d"></td></tr>
-          <tr><td>15.6 Mode of transport used for referral</td><td><input type="text" id="f3c_15_6a"></td><td><input type="text" id="f3c_15_6b"></td><td><input type="text" id="f3c_15_6c"></td><td><input type="text" id="f3c_15_6d"></td></tr>
+          <tr><td>15.4 Treatment received at the facility</td><td><textarea rows="1" id="f3c_15_4a"></textarea></td><td><textarea rows="1" id="f3c_15_4b"></textarea></td><td><textarea rows="1" id="f3c_15_4c"></textarea></td><td><textarea rows="1" id="f3c_15_4d"></textarea></td></tr>
+          <tr><td>15.5 Reason for referring to another facility</td><td><textarea rows="1" id="f3c_15_5a"></textarea></td><td><textarea rows="1" id="f3c_15_5b"></textarea></td><td><textarea rows="1" id="f3c_15_5c"></textarea></td><td><textarea rows="1" id="f3c_15_5d"></textarea></td></tr>
+          <tr><td>15.6 Mode of transport used for referral</td><td><textarea rows="1" id="f3c_15_6a"></textarea></td><td><textarea rows="1" id="f3c_15_6b"></textarea></td><td><textarea rows="1" id="f3c_15_6c"></textarea></td><td><textarea rows="1" id="f3c_15_6d"></textarea></td></tr>
           <tr><td>15.7 Distance to the referral facility (Kms)</td><td><input type="number" id="f3c_15_7a"></td><td><input type="number" id="f3c_15_7b"></td><td><input type="number" id="f3c_15_7c"></td><td><input type="number" id="f3c_15_7d"></td></tr>
           <tr><td>15.10 Was the child attended immediately?</td><td><select id="f3c_15_10a"><option></option><option>Yes</option><option>No</option></select></td><td><select id="f3c_15_10b"><option></option><option>Yes</option><option>No</option></select></td><td><select id="f3c_15_10c"><option></option><option>Yes</option><option>No</option></select></td><td><select id="f3c_15_10d"><option></option><option>Yes</option><option>No</option></select></td></tr>
           <tr><td>15.11 If no, delay in receiving treatment (Mins)</td><td><input type="number" id="f3c_15_11a"></td><td><input type="number" id="f3c_15_11b"></td><td><input type="number" id="f3c_15_11c"></td><td><input type="number" id="f3c_15_11d"></td></tr>
-          <tr><td>15.12 Main reason for the delay in treatment</td><td><input type="text" id="f3c_15_12a"></td><td><input type="text" id="f3c_15_12b"></td><td><input type="text" id="f3c_15_12c"></td><td><input type="text" id="f3c_15_12d"></td></tr>
+          <tr><td>15.12 Main reason for the delay in treatment</td><td><textarea rows="1" id="f3c_15_12a"></textarea></td><td><textarea rows="1" id="f3c_15_12b"></textarea></td><td><textarea rows="1" id="f3c_15_12c"></textarea></td><td><textarea rows="1" id="f3c_15_12d"></textarea></td></tr>
         </table>
       </div>
 
@@ -1684,7 +1734,8 @@
       if (el.offsetWidth > 0 || el.offsetHeight > 0) { 
           el.style.height = 'auto';
           let isSingleRow = el.getAttribute('rows') === '1' || el.rows === 1 || el.id === 'f3a_icd_subcode' || el.id === 'f3b_icd_subcode';
-          let minHeight = isSingleRow ? 38 : 80;
+          let inMatrix = el.closest && el.closest('.matrix-table');
+          let minHeight = isSingleRow ? (inMatrix ? 34 : 38) : 80;
           let newHeight = el.scrollHeight;
           if (newHeight < minHeight) newHeight = minHeight;
           el.style.height = (newHeight + 4) + 'px';
