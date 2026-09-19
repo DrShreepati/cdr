@@ -494,7 +494,8 @@
       #form1 .handover-note p { margin: 4px 0; font-size: 10pt; line-height: 1.1; }
       #form1 .office-use-box { margin-bottom: 5px !important; padding: 5px 10px !important; }
 
-      #form2 .grid-4, #form2 .grid-3, #form2 .grid-2 { margin-bottom: 6px !important; gap: 8px !important; }
+      #form2 .grid-5, #form2 .grid-4, #form2 .grid-3, #form2 .grid-2 { margin-bottom: 6px !important; gap: 8px !important; }
+      #form2 .sub-q-row { margin-bottom: 6px !important; gap: 8px !important; padding: 0 !important; }
       #form2 .field-group { margin-bottom: 4px !important; }
       #form2 table { margin-top: 6px !important; margin-bottom: 6px !important; }
       #form2 table td { padding: 3px 5px !important; }
@@ -799,20 +800,13 @@
         <div class="field-group"><label>4. Sex:</label><select class="sync-sex" id="f2_sex" disabled><option></option><option>Male</option><option>Female</option></select></div>
       </div>
       <div class="field-group"><label>5. Address:</label><textarea rows="1" id="f2_address" readonly placeholder="Auto-compiled from Form 1"></textarea></div>
-      <div class="grid-4">
+      <div class="grid-5">
         <div class="field-group"><label>6. Area PHC:</label><input type="text" class="sync-phc" id="f2_phc" oninput="sync('sync-phc', this.value)"></div>
         <div class="field-group"><label>7. Area Sub-center:</label><input type="text" class="sync-sub" id="f2_subcenter" oninput="sync('sync-sub', this.value)"></div>
         <div class="field-group"><label>8. Order of Birth:</label><select id="f2_birth_order"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5 or more</option></select></div>
         <div class="field-group"><label>9. Category:</label><select class="sync-cat" id="f2_category" onchange="sync('sync-cat', this.value)"><option></option><option>SC/ST</option><option>OBC</option><option>General</option></select></div>
-      </div>
-      
-      <div class="sub-q-row">
         <div class="field-group"><label>10. BPL Card:</label><select class="sync-bpl" id="f2_bpl" onchange="sync('sync-bpl', this.value)"><option></option><option>Yes</option><option>No</option></select></div>
-        <div class="field-group"><label>12. Weight (Kg):</label><input type="text" id="f2_weight"></div>
-        <div class="field-group"><label>13. Growth Curve:</label><select id="f2_growth"><option></option><option>Green Zone</option><option>Yellow Zone</option><option>Orange Zone</option></select></div>
       </div>
-      
-      <div class="field-group"><label>14/15. History of Illness/Injury:</label><textarea rows="1" id="f2_hx"></textarea></div>
       
       <h4>11. Immunization Status</h4>
       <div class="checkbox-grid">
@@ -822,6 +816,14 @@
         <label><input type="checkbox" id="f2_imm_hib1"> HiB 1</label><label><input type="checkbox" id="f2_imm_hib2"> HiB 2</label>
         <label><input type="checkbox" id="f2_imm_hib3"> HiB 3</label>
       </div>
+
+      <div class="sub-q-row">
+        <div class="field-group"><label>12.A Birth Weight(g):</label><input type="number" id="f2_birth_weight" placeholder="in grams" data-ailabel="Form 2 Birth Weight in grams"></div>
+        <div class="field-group"><label>12.B Last Recorded Weight(Kg):</label><input type="text" id="f2_weight" data-ailabel="Form 2 Last Recorded Weight (Kg)"></div>
+        <div class="field-group"><label>13. Growth Curve:</label><select id="f2_growth"><option></option><option>Green Zone</option><option>Yellow Zone</option><option>Orange Zone</option></select></div>
+      </div>
+      
+      <div class="field-group"><label>14/15. History of Illness/Injury:</label><textarea rows="1" id="f2_hx"></textarea></div>
 
       <div class="keep-together">
         <h4>16. Symptoms during illness</h4>
@@ -2141,6 +2143,9 @@
           }
       });
       data['visibleAncRows'] = visibleAncRows;
+      if (data['f2_weight'] !== undefined) {
+          data['f2_weight_b'] = data['f2_weight'];
+      }
 
       const mediaHTML = document.getElementById('mediaPreviewArea').innerHTML.trim();
       if (mediaHTML !== '') hasMeaningfulData = true;
@@ -2205,6 +2210,20 @@
                       else el.value = data[k];
                   }
               });
+
+              // Form 2 Weight Backwards Compatibility:
+              // Ensure existing backups where weight was in f2_weight populate 12.B,
+              // and support f2_weight_b or f2_weight_a if ever exported under alternate keys.
+              if (data['f2_weight'] !== undefined && document.getElementById('f2_weight')) {
+                  document.getElementById('f2_weight').value = data['f2_weight'];
+              } else if (data['f2_weight_b'] !== undefined && document.getElementById('f2_weight')) {
+                  document.getElementById('f2_weight').value = data['f2_weight_b'];
+              }
+              if (data['f2_birth_weight'] !== undefined && document.getElementById('f2_birth_weight')) {
+                  document.getElementById('f2_birth_weight').value = data['f2_birth_weight'];
+              } else if (data['f2_weight_a'] !== undefined && document.getElementById('f2_birth_weight')) {
+                  document.getElementById('f2_birth_weight').value = data['f2_weight_a'];
+              }
 
               if(record.mediaHTML) {
                   document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
