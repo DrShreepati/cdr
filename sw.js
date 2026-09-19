@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cbcdr-cache-v10'; 
+const CACHE_NAME = 'cbcdr-cache-v11'; 
 const urlsToCache = ['./', './index.html', './manifest.json', './icon.png'];
 
 // Install & Force Immediate Activation

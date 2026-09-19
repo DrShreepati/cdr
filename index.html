@@ -11,69 +11,109 @@
        CORE TYPOGRAPHY & UX
        ========================================== */
     :root {
-      --bg-color: #f1f5f9;
+      --bg-color: #f8fafc;
       --container-bg: #ffffff;
       --text-main: #0f172a; /* Deepened to near-black for absolute clarity */
       --text-muted: #475569; /* Darkened to eliminate faintness */
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --primary-light: #eff6ff;
+      --accent: #0d9488;
       --border-light: #cbd5e1; /* Darkened so input boxes have clear boundaries */
       --border-focus: #2563eb; /* Sharper focus ring */
-      --danger: #ef4444;
-      --danger-hover: #dc2626;
-      --warning: #f59e0b;
+      --danger: #e11d48;
+      --danger-hover: #be123c;
+      --warning: #d97706;
+      --success: #059669;
+      --card-shadow: 0 4px 20px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
     }
 
     html, body { overscroll-behavior-y: none; }
     body { 
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; 
       background-color: var(--bg-color); 
-      margin: 0; padding: 20px 10px; 
+      margin: 0; padding: 20px 10px 90px 10px; /* Bottom padding so content never gets occluded */
       color: var(--text-main); 
       font-size: 0.95rem; 
       line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
     }
     .app-container { 
-      max-width: 1150px; margin: 0 auto; 
+      max-width: 1200px; margin: 0 auto; 
       background: var(--container-bg); 
-      padding: 30px 40px; 
-      border-radius: 12px; 
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05), 0 4px 6px rgba(15, 23, 42, 0.02); 
+      padding: 24px 32px; 
+      border-radius: 16px; 
+      border: 1px solid #e2e8f0;
+      box-shadow: var(--card-shadow); 
     }
     p { text-align: justify; color: var(--text-muted); }
 
     /* ==========================================
-       SWIPEABLE PILL TABS
+       SWIPEABLE SEGMENTED PILL TABS
        ========================================== */
+    .tab-nav-wrapper {
+      position: relative;
+      margin-bottom: 25px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #e2e8f0;
+    }
     .tab-navigation { 
       display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; 
-      border-bottom: 2px solid var(--border-light); 
-      padding-bottom: 15px; margin-bottom: 30px; 
+      padding: 4px 2px 10px 2px;
       -webkit-overflow-scrolling: touch; scrollbar-width: none; 
+      scroll-behavior: smooth;
     }
     .tab-navigation::-webkit-scrollbar { display: none; }
     .tab-btn { 
-      padding: 10px 20px; 
-      border: 1px solid transparent; 
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px; 
+      border: 1px solid #e2e8f0; 
       background: #f8fafc; 
       cursor: pointer; 
-      font-weight: 600; 
+      font-weight: 700; 
       color: var(--text-muted); 
-      font-size: 0.9rem; 
+      font-size: 0.88rem; 
       border-radius: 30px; 
-      transition: all 0.2s ease; 
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
       white-space: nowrap; flex-shrink: 0; 
+      user-select: none;
+    }
+    .tab-btn .tab-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      color: #64748b;
+      transition: color 0.2s ease;
+    }
+    .tab-btn .nav-doc-badge {
+      background: #e2e8f0;
+      color: #1e293b;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      margin-left: 3px;
+      transition: all 0.2s ease;
     }
     .tab-btn:hover { background: #e2e8f0; color: var(--text-main); }
     .tab-btn.active { 
       background: var(--primary); 
       color: #fff; 
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); 
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25); 
+    }
+    .tab-btn.active .tab-num { color: #fff; }
+    .tab-btn.active .nav-doc-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
     }
     
-    .tab-content { display: none; margin-bottom: 30px; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .tab-content { display: none; margin-bottom: 25px; }
+    .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Physical Master View Override for Mobile Failsafe */
     body.print-all-mode .tab-content { display: block !important; border-bottom: 2px dashed var(--border-light); padding-bottom: 30px; }
@@ -325,7 +365,11 @@
       display: block; 
       margin: 0 auto;
       object-fit: contain;
-      pointer-events: none;
+      cursor: zoom-in;
+      transition: transform 0.2s ease;
+    }
+    .preview-item img:hover {
+      transform: scale(1.02);
     }
     .preview-item-header {
       display: flex;
@@ -410,60 +454,749 @@
     /* Smart Alerts */
     #printBanner { display: none; background: #fef9c3; color: #92400e; padding: 15px; font-weight: 700; text-align: center; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde047; }
     body.print-all-mode #printBanner { display: block; }
-    #autoSaveIndicator, #autoSaveStatus { display: inline-block; font-size: 0.85rem; color: #10b981; opacity: 0; transition: opacity 0.3s; font-weight: bold; margin-right: 15px; }
+    /* Smart Alerts */
+    #printBanner { display: none; background: #fef9c3; color: #92400e; padding: 15px; font-weight: 700; text-align: center; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde047; }
+    body.print-all-mode #printBanner { display: block; }
     .age-warning { display: none; background: #fef2f2; color: #991b1b; padding: 15px; border: 1px solid #fecaca; border-radius: 8px; font-weight: bold; margin-bottom: 20px; text-align: center; }
     .restricted-tab .grid-2, .restricted-tab .grid-3, .restricted-tab .grid-4, .restricted-tab .grid-5, .restricted-tab .sub-q-row, .restricted-tab table, .restricted-tab .signature-block, .restricted-tab .table-responsive { opacity: 0.3; pointer-events: none; }
 
     /* ==========================================
-       ACTION BAR (CLEANED HIERARCHY)
+       1. CLINICAL PORTAL HEADER
+       ========================================== */
+    .clinical-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 14px 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .header-branding {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-emblem {
+      font-size: 1.8rem;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+    }
+    .portal-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    .portal-subtitle {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #64748b;
+      letter-spacing: 0.2px;
+    }
+    .header-case-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .case-info-pill {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 30px;
+      padding: 4px 6px 4px 12px;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .case-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.5px;
+    }
+    .case-selector-dropdown {
+      border: none !important;
+      background: transparent !important;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #0f172a;
+      padding: 4px 6px !important;
+      cursor: pointer;
+      outline: none;
+      max-width: 240px;
+    }
+    .btn-hdr-new {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-hdr-new:hover { background: var(--primary-hover); }
+    .autosave-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 20px;
+      opacity: 0.85;
+      transition: opacity 0.3s ease;
+    }
+    .save-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #22c55e;
+      display: inline-block;
+      box-shadow: 0 0 6px #22c55e;
+    }
+
+    /* ==========================================
+       2. FORM STEPPERS (NEXT / PREV FORM)
+       ========================================== */
+    .form-stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #e2e8f0;
+      flex-wrap: wrap;
+    }
+    .btn-stepper {
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-stepper.btn-prev {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-stepper.btn-prev:hover { background: #e2e8f0; }
+    .btn-stepper.btn-next {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      margin-left: auto;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.2);
+    }
+    .btn-stepper.btn-next:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-stepper.btn-print-cta {
+      background: #059669;
+      color: #ffffff;
+      border: none;
+      margin-left: auto;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+    }
+    .btn-stepper.btn-print-cta:hover { background: #047857; }
+
+    /* ==========================================
+       3. FLOATING REFERENCE PILL & DRAWER
+       ========================================== */
+    .floating-ref-btn {
+      position: fixed;
+      bottom: 85px;
+      right: 24px;
+      z-index: 999;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 11px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.15);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .floating-ref-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+      background: #1e293b;
+    }
+    .floating-doc-badge {
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    /* Sidecar / Bottom-Sheet Reference Drawer */
+    .reference-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 440px;
+      max-width: 90vw;
+      background: #ffffff;
+      box-shadow: -10px 0 35px rgba(15, 23, 42, 0.2);
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reference-drawer.open {
+      transform: translateX(0);
+    }
+    .reference-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .drawer-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .drawer-icon { font-size: 1.4rem; }
+    .drawer-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+    }
+    .drawer-subtitle {
+      font-size: 0.74rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .drawer-close-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+    .drawer-close-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .reference-drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: #f8fafc;
+    }
+    .ref-doc-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ref-doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ref-doc-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+    .ref-doc-thumb {
+      max-width: 100%;
+      max-height: 240px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: #000;
+      cursor: zoom-in;
+      transition: opacity 0.2s;
+    }
+    .ref-doc-thumb:hover { opacity: 0.95; }
+    .btn-ref-zoom {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+    .btn-ref-zoom:hover { background: #dbeafe; }
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 10000;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .drawer-backdrop.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* ==========================================
+       4. INTERACTIVE LIGHTBOX & ZOOM INSPECTOR
+       ========================================== */
+    .lightbox-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(10px);
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+    .lightbox-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(30, 41, 59, 0.9);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+    }
+    .lightbox-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .lightbox-cat-badge {
+      background: var(--primary);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.3px;
+    }
+    .lightbox-counter {
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .lightbox-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lb-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 7px 13px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .lb-btn:hover { background: rgba(255, 255, 255, 0.2); }
+    .lb-btn-close {
+      background: #e11d48 !important;
+      border-color: #e11d48 !important;
+      padding: 7px 15px;
+      font-size: 1rem;
+    }
+    .lb-btn-close:hover { background: #be123c !important; }
+    .lightbox-canvas-area {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+    }
+    .lightbox-canvas-area:active { cursor: grabbing; }
+    .lightbox-image {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+      border-radius: 4px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+    }
+    .lb-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: all 0.2s ease;
+    }
+    .lb-nav-btn:hover { background: var(--primary); }
+    .lb-nav-prev { left: 20px; }
+    .lb-nav-next { right: 20px; }
+
+    /* ==========================================
+       5. CLUTTER-FREE ACTION BAR & MOBILE THUMB BAR
        ========================================== */
     .actions-bar { 
-      position: sticky; bottom: 0; background: rgba(255,255,255,0.95); 
-      backdrop-filter: blur(10px); padding: 15px 30px; 
-      border-top: 1px solid var(--border-light); 
-      display: flex; justify-content: space-between; align-items: center; 
-      box-shadow: 0 -10px 25px rgba(15,23,42,0.03); z-index: 100; 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      right: 0; 
+      background: rgba(255, 255, 255, 0.94); 
+      backdrop-filter: blur(12px); 
+      padding: 12px 24px; 
+      border-top: 1px solid #e2e8f0; 
+      box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08); 
+      z-index: 1000; 
     }
-    .actions-container { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; width: 100%; }
-    .actions-status-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-    
-    /* Unified Button Design */
-    .btn { 
-      padding: 10px 18px; border: none; font-weight: 600; cursor: pointer; 
-      font-size: 0.9rem; border-radius: 6px; transition: all 0.2s ease; 
-      white-space: nowrap; color: #fff;
+    .actions-desktop-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .btn:active { transform: translateY(0); }
+    .actions-group-primary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .actions-group-utilities {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-action-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25);
+    }
+    .btn-action-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-action-secondary {
+      background: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-action-secondary:hover { background: #e2e8f0; }
+    .btn-action-csv {
+      background: #059669;
+      color: #ffffff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+    }
+    .btn-action-csv:hover { background: #047857; transform: translateY(-1px); }
+    .btn-action-util {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-action-util:hover { background: #f8fafc; color: #0f172a; }
     
-    /* Strict Color Hierarchy */
-    .btn-toggle { display: none; background-color: var(--text-main); width: 140px; }
-    
-    /* Primary Actions */
-    .btn-attach { background-color: var(--primary); } 
-    button[onclick="exportAndShareCSV()"] { background-color: #10b981 !important; color: white !important; } 
-    .btn-add-row { background-color: #f1f5f9; color: var(--text-main); border: 1px dashed var(--border-light); margin-top: 8px; width: 100%; display: block; box-shadow: none; }
-    .btn-add-row:hover { background-color: #e2e8f0; }
+    /* Safety Options Menu */
+    .safety-menu-wrap {
+      position: relative;
+    }
+    .btn-action-more {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: all 0.2s ease;
+    }
+    .btn-action-more:hover { background: #e2e8f0; color: #0f172a; }
+    .safety-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+      padding: 6px;
+      min-width: 200px;
+      z-index: 1010;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .safety-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .safety-item:hover { background: #f1f5f9; }
+    .safety-item.danger { color: #e11d48; }
+    .safety-item.danger:hover { background: #fef2f2; }
 
-    /* Secondary Utilities */
-    .btn-backup, .btn-print, .btn-print-all { background-color: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-light); box-shadow: none;}
-    .btn-backup:hover, .btn-print:hover, .btn-print-all:hover { background-color: #e2e8f0; }
+    /* Mobile Thumb Bar */
+    .mobile-thumb-bar {
+      display: none;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      gap: 8px;
+    }
+    .thumb-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 8px 4px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: #475569;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .thumb-btn .thumb-icon { font-size: 1.25rem; line-height: 1; }
+    .thumb-btn:active { background: #f1f5f9; }
+    .thumb-btn.thumb-primary {
+      background: #eff6ff;
+      color: var(--primary);
+    }
 
-    /* Destructive Actions */
-    .btn-clear-single { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; box-shadow: none; }
-    .btn-clear-single:hover { background-color: #fef3c7; }
-    .btn-clear-all { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; box-shadow: none; }
-    .btn-clear-all:hover { background-color: #fee2e2; }
+    /* Mobile Actions Bottom Sheet */
+    .mobile-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #ffffff;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.25);
+      z-index: 10002;
+      padding: 16px 20px 30px 20px;
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .sheet-handle {
+      width: 42px;
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 4px;
+      margin: 0 auto 12px auto;
+    }
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .sheet-header h4 { margin: 0; font-size: 1rem; color: #0f172a; }
+    .sheet-close {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .sheet-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sheet-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e293b;
+      cursor: pointer;
+      text-align: left;
+    }
+    .sheet-item.warn { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+    .sheet-item.danger { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .sheet-divider { margin: 6px 0; border: none; border-top: 1px solid #e2e8f0; }
 
-    /* Case Selector Styling */
-    #caseSelector { border-color: var(--border-light); font-weight: 700; color: var(--text-main); padding: 9px 12px; }
+    /* ==========================================
+       6. MOBILE & TABLET RESPONSIVE REFLOW
+       ========================================== */
+    @media (max-width: 900px) {
+      .reference-drawer {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 75vh;
+        border-radius: 20px 20px 0 0;
+        transform: translateY(100%);
+      }
+      .reference-drawer.open {
+        transform: translateY(0);
+      }
+    }
 
     @media (max-width: 768px) {
-      .actions-bar { flex-direction: column; padding: 15px; align-items: stretch; border-radius: 12px 12px 0 0; }
-      .btn-toggle { display: block; }
-      .actions-container { display: none; margin-top: 15px; justify-content: center; gap: 10px; }
-      .actions-container.expanded { display: flex; }
-      .actions-container .btn, .actions-container select { flex: 1 1 45%; text-align: center; padding: 12px; } 
+      body { padding: 10px 6px 85px 6px; }
+      .app-container { padding: 16px 14px; border-radius: 12px; }
+      .clinical-header { padding: 12px; flex-direction: column; align-items: stretch; gap: 10px; }
+      .header-case-panel { width: 100%; justify-content: space-between; }
+      .case-info-pill { flex: 1; max-width: none; }
+      .case-selector-dropdown { max-width: none; flex: 1; }
+      
+      /* Grids reflow */
+      .grid-5, .grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+      .grid-3 { grid-template-columns: 1fr !important; gap: 10px !important; }
+      .grid-2 { grid-template-columns: 1fr !important; gap: 10px !important; }
+      .sub-q-row { padding: 10px !important; gap: 10px !important; }
+
+      /* Anti-zoom input standards */
+      input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
+        font-size: 16px !important;
+        min-height: 42px !important;
+      }
+      .field-group label { font-size: 0.82rem; }
+
+      /* Action Bar: Hide desktop cluster, show mobile thumb bar */
+      .actions-desktop-wrap { display: none !important; }
+      .mobile-thumb-bar { display: flex !important; }
+      .actions-bar { padding: 8px 16px; }
+
+      /* Floating ref pill hidden on mobile because Thumb Bar has Docs button */
+      .floating-ref-btn { display: none !important; }
+
+      .form-stepper { flex-direction: column; }
+      .btn-stepper { width: 100%; justify-content: center; }
+      .btn-stepper.btn-next, .btn-stepper.btn-print-cta { margin-left: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .grid-5, .grid-4 { grid-template-columns: 1fr !important; }
+      .header-titles .portal-title { font-size: 1rem; }
     }
 
     /* ==========================================
@@ -474,7 +1207,7 @@
       body { background: #fff; font-family: "Times New Roman", serif; padding: 0; color: #000; font-size: 11pt; line-height: 1.3; -webkit-print-color-adjust: exact; print-color-adjust: exact; } 
       .app-container { max-width: 100%; padding: 0; box-shadow: none; margin: 0; }
       
-      .tab-navigation, .actions-bar, #printBanner, .age-warning, .btn-add-row, .no-print { display: none !important; }
+      .clinical-header, .tab-nav-wrapper, .tab-navigation, .actions-bar, .form-stepper, .floating-ref-btn, .reference-drawer, .drawer-backdrop, .lightbox-modal, .mobile-thumb-bar, .mobile-sheet, .safety-dropdown, #printBanner, .age-warning, .btn-add-row, .no-print { display: none !important; }
       .restricted-tab { display: none !important; }
       .tab-content { display: none !important; } 
       .tab-content.active { display: block !important; }
@@ -707,16 +1440,58 @@
     MASTER PDF MODE ACTIVE: The entire document is unfolded. After saving the PDF, tap any Tab Button below to restore normal view.
   </div>
 
+  <!-- CLINICAL APP HEADER -->
+  <header class="clinical-header no-print">
+    <div class="header-branding">
+      <div class="header-emblem">🏥</div>
+      <div class="header-titles">
+        <h1 class="portal-title">Child Death Review (CDR) Suite</h1>
+        <span class="portal-subtitle">Community & Facility Investigation System</span>
+      </div>
+    </div>
+    
+    <div class="header-case-panel">
+      <div class="case-info-pill">
+        <span class="case-label">CASE:</span>
+        <select id="caseSelector" class="case-selector-dropdown" onchange="switchCase(this.value)" title="Switch Active Case">
+          <!-- Populated dynamically by populateCaseList -->
+        </select>
+        <button type="button" class="btn-hdr-new" onclick="createNewCase()" title="Create New CDR Case">+ New Case</button>
+      </div>
+
+      <div class="autosave-badge" id="autoSaveIndicator">
+        <span class="save-dot"></span>
+        <span class="save-text">Saved Locally</span>
+      </div>
+    </div>
+  </header>
+
   <!-- Navigation -->
-  <div class="tab-navigation no-print">
-    <button class="tab-btn active" onclick="switchTab('form1')">Form 1: Notification</button>
-    <button class="tab-btn" onclick="switchTab('form2')">Form 2: First Brief</button>
-    <button class="tab-btn" onclick="switchTab('form3a')" id="btn_3a">Form 3a: Neonatal</button>
-    <button class="tab-btn" onclick="switchTab('form3b')" id="btn_3b">Form 3b: Post-Neonatal</button>
-    <button class="tab-btn" onclick="switchTab('form3c')">Form 3c: Social</button>
-    <button class="tab-btn" onclick="switchTab('form4')" style="background-color: #e2e3e5;">Maternal History</button>
-    <button class="tab-btn" onclick="switchTab('mediaTab')" style="background-color: #cce5ff;">Media Upload</button>
-  </div>
+  <nav class="tab-nav-wrapper no-print">
+    <div class="tab-navigation">
+      <button type="button" class="tab-btn active" onclick="switchTab('form1')" id="btn_f1">
+        <span class="tab-num">①</span> Form 1: Notification
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('form2')" id="btn_f2">
+        <span class="tab-num">②</span> Form 2: First Brief
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('form3a')" id="btn_3a">
+        <span class="tab-num">③</span> Form 3a: Neonatal
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('form3b')" id="btn_3b">
+        <span class="tab-num">③</span> Form 3b: Post-Neonatal
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('form3c')" id="btn_f3c">
+        <span class="tab-num">④</span> Form 3c: Social
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('form4')" id="btn_f4">
+        <span class="tab-num">⑤</span> Maternal History
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('mediaTab')" id="btn_media">
+        <span class="tab-num">📷</span> Attached Records <span id="navDocBadge" class="nav-doc-badge">0</span>
+      </button>
+    </div>
+  </nav>
 
   <form id="cdrMasterForm">
 
@@ -782,6 +1557,9 @@
           <div class="field-group"><label>Designation:</label><input type="text" id="f1_note_desig"></div>
           <div class="field-group"><label>Date:</label><input type="date" id="f1_note_date"></div>
         </div>
+      </div>
+      <div class="form-stepper no-print">
+        <button type="button" class="btn-stepper btn-next" onclick="switchTab('form2')">Continue to Form 2: First Brief →</button>
       </div>
     </div>
 
@@ -869,6 +1647,10 @@
         <div class="field-group"><label>ANM Name:</label><input type="text" id="f2_anm"></div>
         <div class="field-group"><label>Health Centre:</label><input type="text" id="f2_hc"></div>
         <div class="field-group"><label>Date:</label><input type="date" id="f2_date"></div>
+      </div>
+      <div class="form-stepper no-print">
+        <button type="button" class="btn-stepper btn-prev" onclick="switchTab('form1')">← Form 1: Notification</button>
+        <button type="button" class="btn-stepper btn-next" onclick="goToAppropriateForm3()">Continue to Form 3: Verbal Autopsy →</button>
       </div>
     </div>
 
@@ -1106,7 +1888,10 @@
           DNO will have to communicate the assigned cause of death to the respective block
         </p>
       </div>
-
+      <div class="form-stepper no-print">
+        <button type="button" class="btn-stepper btn-prev" onclick="switchTab('form2')">← Form 2: First Brief</button>
+        <button type="button" class="btn-stepper btn-next" onclick="switchTab('form3c')">Continue to Form 3c: Social Autopsy →</button>
+      </div>
     </div>
 
     <!-- ==========================================
@@ -1321,7 +2106,10 @@
           DNO will have to communicate the assigned cause of death to the respective block
         </p>
       </div>
-
+      <div class="form-stepper no-print">
+        <button type="button" class="btn-stepper btn-prev" onclick="switchTab('form2')">← Form 2: First Brief</button>
+        <button type="button" class="btn-stepper btn-next" onclick="switchTab('form3c')">Continue to Form 3c: Social Autopsy →</button>
+      </div>
     </div>
 
     <!-- ==========================================
@@ -1434,6 +2222,10 @@
           <label><input type="checkbox" id="f3c_20d"> Community fund</label>
           <label><input type="checkbox" id="f3c_20e"> Government scheme</label>
         </div>
+      </div>
+      <div class="form-stepper no-print">
+        <button type="button" class="btn-stepper btn-prev" onclick="goToAppropriateForm3()">← Form 3: Verbal Autopsy</button>
+        <button type="button" class="btn-stepper btn-next" onclick="switchTab('form4')">Continue to Maternal History (ANC) →</button>
       </div>
     </div>
 
@@ -1938,13 +2730,17 @@
         <input type="text" id="f4_pp_comp" placeholder="e.g., PPH, Puerperal Sepsis, None">
       </div>
 
+      <div class="form-stepper no-print">
+        <button type="button" class="btn btn-stepper btn-prev" onclick="switchTab('form3c')">← Form 3c: Social Autopsy</button>
+        <button type="button" class="btn btn-stepper btn-next" onclick="switchTab('mediaTab')">Continue to Attached Records (Media) →</button>
+      </div>
     </div>
     
     <!-- ==========================================
          MEDIA UPLOAD
          ========================================== -->
     <div id="mediaTab" class="tab-content no-print">
-      <div class="form-header"><h2>MEDIA UPLOAD</h2></div>
+      <div class="form-header"><h2>MEDIA UPLOAD & PATIENT RECORDS</h2></div>
       
       <div class="media-card" style="margin-top: 15px;">
         <div class="grid-2">
@@ -1977,29 +2773,148 @@
       <div id="mediaPreviewArea" class="preview-grid">
         <!-- Javascript injects attached files here -->
       </div>
+
+      <div class="form-stepper no-print">
+        <button type="button" class="btn btn-stepper btn-prev" onclick="switchTab('form4')">← Maternal History (ANC)</button>
+        <button type="button" class="btn btn-stepper btn-print-cta" onclick="window.print()">🖨️ Print Active Form</button>
+      </div>
     </div>
 
   </form>
 
-  <div class="actions-bar no-print">
-    <div class="actions-container" id="actionsContainer">
-        <select id="caseSelector" onchange="switchCase(this.value)" style="font-weight:bold; background:#eef2f5;">
-            <!-- IndexedDB cases auto-populated here -->
-        </select>
-        <button class="btn btn-attach" onclick="createNewCase()">+ New Case</button>
-        <button class="btn btn-backup" onclick="exportBackup()">Export Backup</button>
-        <button class="btn btn-backup" onclick="document.getElementById('importDataInput').click()">Restore Backup</button>
-        <input type="file" id="importDataInput" style="display:none;" accept=".json" onchange="importBackup(event)">
-        <button class="btn btn-print" onclick="window.print()">Print Active</button>
-        <button class="btn btn-print-all" onclick="printAllForms()">Print ALL Forms</button>
-        <button type="button" class="btn btn-backup" style="background-color: #28a745;" onclick="exportAndShareCSV()">Share Analytics CSV</button>
-        <button class="btn btn-clear-single" onclick="clearCurrentTab()">Clear Tab</button>
-        <button class="btn btn-clear-all" onclick="deleteActiveCase()">Delete Case</button>
+  <!-- FLOATING REFERENCE DRAWER TRIGGER (Desktop/Tablet) -->
+  <button type="button" class="floating-ref-btn no-print" id="floatingRefTrigger" onclick="toggleReferenceDrawer()" title="Open Attached Patient Records">
+    <span class="floating-icon">📎</span>
+    <span>Records</span>
+    <span class="floating-doc-badge" id="floatDocCount">0</span>
+  </button>
+
+  <!-- REFERENCE DRAWER BACKDROP & DRAWER -->
+  <div class="drawer-backdrop no-print" id="referenceDrawerBackdrop" onclick="toggleReferenceDrawer(false)"></div>
+  <aside class="reference-drawer no-print" id="referenceDrawer" aria-label="Attached Patient Records">
+    <div class="reference-drawer-header">
+      <div class="drawer-title-wrap">
+        <span class="drawer-icon">📁</span>
+        <div>
+          <h3 class="drawer-title">Patient Records</h3>
+          <span class="drawer-subtitle" id="drawerDocCountText">0 attached documents</span>
+        </div>
+      </div>
+      <button type="button" class="drawer-close-btn" onclick="toggleReferenceDrawer(false)" title="Close Reference Panel">✕</button>
     </div>
-    
-    <div class="actions-status-bar mobile-actions-header">
-        <span id="autoSaveIndicator">Saved (IndexedDB)</span>
-        <button type="button" class="btn btn-toggle" onclick="toggleActions()">⚙️ Actions ▼</button>
+    <div class="reference-drawer-content" id="referenceDrawerContent">
+      <!-- Populated dynamically with image preview cards -->
+    </div>
+  </aside>
+
+  <!-- FULLSCREEN INTERACTIVE LIGHTBOX & ZOOM INSPECTOR -->
+  <div class="lightbox-modal no-print" id="imageLightboxModal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="lightbox-toolbar">
+      <div class="lightbox-info">
+        <span class="lightbox-cat-badge" id="lightboxCategory">Document</span>
+        <span class="lightbox-counter" id="lightboxCounter">1 of 1</span>
+      </div>
+      <div class="lightbox-tools">
+        <button type="button" class="lb-btn" onclick="lbRotateCCW()" title="Rotate 90° Counter-Clockwise">↺ 90°</button>
+        <button type="button" class="lb-btn" onclick="lbRotateCW()" title="Rotate 90° Clockwise">↻ 90°</button>
+        <button type="button" class="lb-btn" onclick="lbZoomOut()" title="Zoom Out">-</button>
+        <button type="button" class="lb-btn" onclick="lbResetZoom()" id="lbZoomLevel" title="Reset Zoom">100%</button>
+        <button type="button" class="lb-btn" onclick="lbZoomIn()" title="Zoom In">+</button>
+        <button type="button" class="lb-btn lb-btn-close" onclick="closeLightbox()" title="Close (Esc)">✕</button>
+      </div>
+    </div>
+    <div class="lightbox-canvas-area" id="lightboxCanvasArea">
+      <button type="button" class="lb-nav-btn lb-nav-prev" id="lbPrevBtn" onclick="lbPrevImage()" title="Previous Image">❮</button>
+      <img src="" id="lightboxActiveImg" class="lightbox-image" alt="Clinical Document Fullscreen View">
+      <button type="button" class="lb-nav-btn lb-nav-next" id="lbNextBtn" onclick="lbNextImage()" title="Next Image">❯</button>
+    </div>
+  </div>
+
+  <!-- CLUTTER-FREE ACTION BAR -->
+  <div class="actions-bar no-print">
+    <!-- Desktop Layout -->
+    <div class="actions-desktop-wrap">
+      <div class="actions-group-primary">
+        <button type="button" class="btn-action-primary" onclick="window.print()">
+          <span>🖨️</span> Print Active Form
+        </button>
+        <button type="button" class="btn-action-secondary" onclick="printAllForms()">
+          <span>📄</span> Print ALL Forms
+        </button>
+        <button type="button" class="btn-action-csv" onclick="exportAndShareCSV()">
+          <span>📊</span> Analytics CSV
+        </button>
+      </div>
+
+      <div class="actions-group-utilities">
+        <button type="button" class="btn-action-util" onclick="exportBackup()">
+          <span>💾</span> Export Backup
+        </button>
+        <button type="button" class="btn-action-util" onclick="document.getElementById('importDataInput').click()">
+          <span>📂</span> Restore Backup
+        </button>
+        <input type="file" id="importDataInput" style="display:none;" accept=".json" onchange="importBackup(event)">
+
+        <div class="safety-menu-wrap">
+          <button type="button" class="btn-action-more" id="safetyMenuBtn" onclick="toggleSafetyMenu(event)" title="Additional Options">•••</button>
+          <div class="safety-dropdown" id="safetyMenu" style="display:none;">
+            <button type="button" class="safety-item" onclick="toggleReferenceDrawer(); toggleSafetyMenu(false);">📎 View Attached Records</button>
+            <button type="button" class="safety-item" onclick="clearCurrentTab(); toggleSafetyMenu(false);">🧹 Clear Current Tab</button>
+            <button type="button" class="safety-item danger" onclick="deleteActiveCase(); toggleSafetyMenu(false);">🗑️ Delete Active Case</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Thumb Bar -->
+    <div class="mobile-thumb-bar">
+      <button type="button" class="thumb-btn thumb-primary" onclick="window.print()">
+        <span class="thumb-icon">🖨️</span>
+        <span>Print</span>
+      </button>
+      <button type="button" class="thumb-btn" onclick="toggleReferenceDrawer()">
+        <span class="thumb-icon">📎</span>
+        <span>Docs (<span id="mobileDocBadge">0</span>)</span>
+      </button>
+      <button type="button" class="thumb-btn" onclick="openMobileActionsSheet()">
+        <span class="thumb-icon">⚙️</span>
+        <span>Actions</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Actions Bottom Sheet -->
+  <div class="drawer-backdrop no-print" id="mobileSheetBackdrop" onclick="closeMobileActionsSheet()"></div>
+  <div class="mobile-sheet no-print" id="mobileActionsSheet" style="display:none;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h4>Case Actions & Export</h4>
+      <button type="button" class="sheet-close" onclick="closeMobileActionsSheet()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <button type="button" class="sheet-item" onclick="window.print(); closeMobileActionsSheet();">
+        <span>🖨️</span> Print Active Form
+      </button>
+      <button type="button" class="sheet-item" onclick="printAllForms(); closeMobileActionsSheet();">
+        <span>📄</span> Print ALL Forms
+      </button>
+      <button type="button" class="sheet-item" onclick="exportAndShareCSV(); closeMobileActionsSheet();">
+        <span>📊</span> Export & Share Analytics CSV
+      </button>
+      <hr class="sheet-divider">
+      <button type="button" class="sheet-item" onclick="exportBackup(); closeMobileActionsSheet();">
+        <span>💾</span> Export Backup (.json)
+      </button>
+      <button type="button" class="sheet-item" onclick="document.getElementById('importDataInput').click(); closeMobileActionsSheet();">
+        <span>📂</span> Restore Backup (.json)
+      </button>
+      <hr class="sheet-divider">
+      <button type="button" class="sheet-item warn" onclick="clearCurrentTab(); closeMobileActionsSheet();">
+        <span>🧹</span> Clear Current Tab
+      </button>
+      <button type="button" class="sheet-item danger" onclick="deleteActiveCase(); closeMobileActionsSheet();">
+        <span>🗑️</span> Delete Active Case
+      </button>
     </div>
   </div>
 </div>
@@ -2170,8 +3085,13 @@
 
       const ind = document.getElementById('autoSaveIndicator');
       if(ind) {
-          ind.style.opacity = 1;
-          setTimeout(() => ind.style.opacity = 0, 1000);
+          const txt = ind.querySelector('.save-text');
+          if (txt) txt.textContent = "Saved Just Now";
+          ind.style.opacity = '1';
+          setTimeout(() => {
+            if (txt) txt.textContent = "Saved Locally";
+            ind.style.opacity = '0.85';
+          }, 1500);
       }
       populateCaseList();
   }
@@ -2230,6 +3150,7 @@
                   upgradeExistingMediaItems();
               } else {
                   document.getElementById('mediaPreviewArea').innerHTML = '';
+                  if (typeof updateDocBadges === 'function') updateDocBadges();
               }
 
               const hiddenManual = document.getElementById('f4_hrp_manual_hidden');
@@ -2336,6 +3257,7 @@
       localStorage.setItem('CDR_ACTIVE_CASE_ID', activeCaseId);
       document.getElementById('cdrMasterForm').reset();
       document.getElementById('mediaPreviewArea').innerHTML = '';
+      if (typeof updateDocBadges === 'function') updateDocBadges();
       manualHrpFactors = [];
       hrpFactorsList = [];
       renderHrpFactors();
@@ -2598,14 +3520,8 @@
 
   // ACTION MENU TOGGLE
   function toggleActions() {
-    const container = document.getElementById('actionsContainer');
-    const btn = document.querySelector('.btn-toggle');
-    if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerText = '⚙️ Actions ▼';
-    } else {
-        container.classList.add('expanded');
-        btn.innerText = '⚙️ Close ▲';
+    if (typeof openMobileActionsSheet === 'function') {
+      openMobileActionsSheet();
     }
   }
 
@@ -3206,15 +4122,31 @@
     document.getElementById('printBanner').style.display = 'none';
     
     document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
+    const targetContent = document.getElementById(t);
+    if (targetContent) targetContent.classList.add('active');
     
     const buttons = document.querySelectorAll('.tab-btn');
     buttons.forEach(btn => {
-        if(btn.getAttribute('onclick') === `switchTab('${t}')`) btn.classList.add('active');
+        const onClickAttr = btn.getAttribute('onclick') || '';
+        if (onClickAttr.includes(`'${t}'`)) {
+            btn.classList.add('active');
+            try {
+                btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            } catch(err) {}
+        }
     });
     window.scrollTo(0, 0);
     
     setTimeout(resizeAllTextareas, 50);
+  }
+
+  function goToAppropriateForm3() {
+    const isPostNeonatal = document.getElementById('form3a')?.classList.contains('restricted-tab');
+    if (isPostNeonatal) {
+      switchTab('form3b');
+    } else {
+      switchTab('form3a');
+    }
   }
 
   // PRINT WYSIWYG FAILSAFE
@@ -3316,6 +4248,7 @@
       if (btnLeft) btnLeft.disabled = (index === 0);
       if (btnRight) btnRight.disabled = (index === items.length - 1);
     });
+    if (typeof updateDocBadges === 'function') updateDocBadges();
   }
 
   function moveMediaItem(btn, dir) {
@@ -3603,6 +4536,388 @@
     document.getElementById('mediaCategoryOther').style.display = 'none';
     document.getElementById('mediaCategory').value = 'MCP Card';
   }
+
+  // ==========================================
+  // REFERENCE DRAWER & DOC BADGES ENGINE
+  // ==========================================
+  function updateDocBadges() {
+    const container = document.getElementById('mediaPreviewArea');
+    const count = container ? container.querySelectorAll('.preview-item img').length : 0;
+    
+    const navBadge = document.getElementById('navDocBadge');
+    if (navBadge) navBadge.textContent = count;
+    
+    const floatBadge = document.getElementById('floatDocCount');
+    if (floatBadge) floatBadge.textContent = count;
+
+    const mobileBadge = document.getElementById('mobileDocBadge');
+    if (mobileBadge) mobileBadge.textContent = count;
+
+    const drawerText = document.getElementById('drawerDocCountText');
+    if (drawerText) {
+      drawerText.textContent = `${count} attached document${count === 1 ? '' : 's'}`;
+    }
+
+    const drawer = document.getElementById('referenceDrawer');
+    if (drawer && drawer.classList.contains('open')) {
+      renderReferenceDrawer();
+    }
+  }
+
+  function toggleReferenceDrawer(forceState) {
+    const drawer = document.getElementById('referenceDrawer');
+    const backdrop = document.getElementById('referenceDrawerBackdrop');
+    if (!drawer || !backdrop) return;
+    
+    const shouldOpen = (typeof forceState === 'boolean') ? forceState : !drawer.classList.contains('open');
+    if (shouldOpen) {
+      renderReferenceDrawer();
+      drawer.classList.add('open');
+      backdrop.classList.add('active');
+    } else {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('active');
+    }
+  }
+
+  function renderReferenceDrawer() {
+    const content = document.getElementById('referenceDrawerContent');
+    if (!content) return;
+    
+    const container = document.getElementById('mediaPreviewArea');
+    const items = container ? container.querySelectorAll('.preview-item') : [];
+    
+    if (!items || items.length === 0) {
+      content.innerHTML = `
+        <div style="text-align: center; padding: 40px 15px; color: #64748b;">
+          <div style="font-size: 2.5rem; margin-bottom: 12px;">📑</div>
+          <p style="font-weight: 700; color: #334155; margin-bottom: 6px;">No attached records yet</p>
+          <p style="font-size: 0.82rem; margin-bottom: 16px;">Attach MCP cards, USG slips, and hospital notes in the Attached Records tab.</p>
+          <button type="button" class="btn btn-stepper btn-next" style="font-size: 0.85rem; padding: 8px 16px; margin: 0 auto;" onclick="toggleReferenceDrawer(false); switchTab('mediaTab');">Go to Attached Records</button>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    let imgIdx = 0;
+    items.forEach((item) => {
+      const img = item.querySelector('img');
+      const labelEl = item.querySelector('.preview-label strong');
+      const category = labelEl ? labelEl.textContent.trim() : (img ? img.alt : 'Document');
+      
+      if (img) {
+        const currentIdx = imgIdx++;
+        html += `
+          <div class="ref-doc-card">
+            <div class="ref-doc-header">
+              <span class="ref-doc-title">📄 ${category}</span>
+              <span class="seq-badge">#${currentIdx + 1}</span>
+            </div>
+            <img src="${img.src}" class="ref-doc-thumb" alt="${category}" onclick="openLightboxFromDrawer(${currentIdx})" title="Click to enlarge in Lightbox">
+            <button type="button" class="btn-ref-zoom" onclick="openLightboxFromDrawer(${currentIdx})">🔍 Enlarge & Zoom</button>
+          </div>
+        `;
+      } else {
+        const link = item.querySelector('a');
+        const docTitle = item.querySelector('div[style*="font-weight: bold"]')?.innerText || 'Attached Document';
+        html += `
+          <div class="ref-doc-card">
+            <div class="ref-doc-header">
+              <span class="ref-doc-title">📑 ${category}</span>
+            </div>
+            <p style="font-size: 0.85rem; font-weight: 600; color: #475569; margin: 4px 0;">${docTitle}</p>
+            ${link ? `<a href="${link.href}" download="${link.download || 'document.pdf'}" class="btn-ref-zoom" style="text-decoration:none; display:inline-block; text-align:center;">Download / Open PDF</a>` : ''}
+          </div>
+        `;
+      }
+    });
+
+    content.innerHTML = html;
+  }
+
+  // ==========================================
+  // ACTION BAR, SAFETY MENU & MOBILE SHEET
+  // ==========================================
+  function toggleSafetyMenu(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const menu = document.getElementById('safetyMenu');
+    if (!menu) return;
+    menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'flex' : 'none';
+  }
+
+  function openMobileActionsSheet() {
+    const sheet = document.getElementById('mobileActionsSheet');
+    const backdrop = document.getElementById('mobileSheetBackdrop');
+    if (sheet) sheet.style.display = 'flex';
+    if (backdrop) backdrop.classList.add('active');
+  }
+
+  function closeMobileActionsSheet() {
+    const sheet = document.getElementById('mobileActionsSheet');
+    const backdrop = document.getElementById('mobileSheetBackdrop');
+    if (sheet) sheet.style.display = 'none';
+    if (backdrop) backdrop.classList.remove('active');
+  }
+
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('safetyMenu');
+    const btn = document.getElementById('safetyMenuBtn');
+    if (menu && menu.style.display !== 'none' && !menu.contains(e.target) && e.target !== btn) {
+      menu.style.display = 'none';
+    }
+  });
+
+  // ==========================================
+  // FULLSCREEN LIGHTBOX & ZOOM INSPECTOR ENGINE
+  // ==========================================
+  let lbImages = [];
+  let lbCurrentIndex = 0;
+  let lbZoom = 1.0;
+  let lbRotate = 0;
+  let lbPanX = 0;
+  let lbPanY = 0;
+  let lbIsDragging = false;
+  let lbStartX = 0;
+  let lbStartY = 0;
+  let lbInitialTouchDist = 0;
+  let lbInitialTouchZoom = 1.0;
+
+  function getAllAttachedImages() {
+    const container = document.getElementById('mediaPreviewArea');
+    if (!container) return [];
+    const items = container.querySelectorAll('.preview-item');
+    const list = [];
+    items.forEach(item => {
+      const img = item.querySelector('img');
+      if (img && img.src) {
+        const label = item.querySelector('.preview-label strong')?.textContent.trim() || img.alt || 'Document';
+        list.push({ src: img.src, category: label });
+      }
+    });
+    return list;
+  }
+
+  function openLightboxFromDrawer(idx) {
+    lbImages = getAllAttachedImages();
+    if (lbImages.length === 0) return;
+    lbCurrentIndex = Math.max(0, Math.min(idx, lbImages.length - 1));
+    showLightboxModal();
+  }
+
+  function openLightboxForElement(imgEl) {
+    lbImages = getAllAttachedImages();
+    if (lbImages.length === 0) return;
+    const idx = lbImages.findIndex(item => item.src === imgEl.src);
+    lbCurrentIndex = idx >= 0 ? idx : 0;
+    showLightboxModal();
+  }
+
+  function showLightboxModal() {
+    const modal = document.getElementById('imageLightboxModal');
+    if (!modal) return;
+    lbZoom = 1.0;
+    lbRotate = 0;
+    lbPanX = 0;
+    lbPanY = 0;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    updateLightboxView();
+  }
+
+  function closeLightbox() {
+    const modal = document.getElementById('imageLightboxModal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function updateLightboxView() {
+    if (!lbImages || lbImages.length === 0) return;
+    const current = lbImages[lbCurrentIndex];
+    
+    const imgEl = document.getElementById('lightboxActiveImg');
+    const catEl = document.getElementById('lightboxCategory');
+    const counterEl = document.getElementById('lightboxCounter');
+    const zoomEl = document.getElementById('lbZoomLevel');
+    const prevBtn = document.getElementById('lbPrevBtn');
+    const nextBtn = document.getElementById('lbNextBtn');
+
+    if (imgEl && current) {
+      imgEl.src = current.src;
+      imgEl.alt = current.category;
+      applyLightboxTransform();
+    }
+    if (catEl && current) catEl.textContent = current.category;
+    if (counterEl) counterEl.textContent = `${lbCurrentIndex + 1} of ${lbImages.length}`;
+    if (zoomEl) zoomEl.textContent = `${Math.round(lbZoom * 100)}%`;
+
+    if (prevBtn) prevBtn.style.visibility = (lbCurrentIndex > 0) ? 'visible' : 'hidden';
+    if (nextBtn) nextBtn.style.visibility = (lbCurrentIndex < lbImages.length - 1) ? 'visible' : 'hidden';
+  }
+
+  function applyLightboxTransform() {
+    const imgEl = document.getElementById('lightboxActiveImg');
+    if (!imgEl) return;
+    imgEl.style.transform = `translate(${lbPanX}px, ${lbPanY}px) scale(${lbZoom}) rotate(${lbRotate}deg)`;
+  }
+
+  function lbZoomIn() {
+    lbZoom = Math.min(5.0, lbZoom + 0.25);
+    updateLightboxZoomDisplay();
+    applyLightboxTransform();
+  }
+
+  function lbZoomOut() {
+    lbZoom = Math.max(0.5, lbZoom - 0.25);
+    if (lbZoom <= 1.0) { lbPanX = 0; lbPanY = 0; }
+    updateLightboxZoomDisplay();
+    applyLightboxTransform();
+  }
+
+  function lbResetZoom() {
+    lbZoom = 1.0;
+    lbPanX = 0;
+    lbPanY = 0;
+    updateLightboxZoomDisplay();
+    applyLightboxTransform();
+  }
+
+  function updateLightboxZoomDisplay() {
+    const zoomEl = document.getElementById('lbZoomLevel');
+    if (zoomEl) zoomEl.textContent = `${Math.round(lbZoom * 100)}%`;
+  }
+
+  function lbRotateCW() {
+    lbRotate = (lbRotate + 90) % 360;
+    applyLightboxTransform();
+  }
+
+  function lbRotateCCW() {
+    lbRotate = (lbRotate - 90) % 360;
+    applyLightboxTransform();
+  }
+
+  function lbPrevImage() {
+    if (lbCurrentIndex > 0) {
+      lbCurrentIndex--;
+      lbZoom = 1.0;
+      lbRotate = 0;
+      lbPanX = 0;
+      lbPanY = 0;
+      updateLightboxView();
+    }
+  }
+
+  function lbNextImage() {
+    if (lbCurrentIndex < lbImages.length - 1) {
+      lbCurrentIndex++;
+      lbZoom = 1.0;
+      lbRotate = 0;
+      lbPanX = 0;
+      lbPanY = 0;
+      updateLightboxView();
+    }
+  }
+
+  function initLightboxEvents() {
+    const area = document.getElementById('lightboxCanvasArea');
+    if (!area || area.dataset.eventsInitialized) return;
+    area.dataset.eventsInitialized = "true";
+
+    // Mouse Drag / Pan
+    area.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.lb-nav-btn')) return;
+      lbIsDragging = true;
+      lbStartX = e.clientX - lbPanX;
+      lbStartY = e.clientY - lbPanY;
+      area.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!lbIsDragging) return;
+      lbPanX = e.clientX - lbStartX;
+      lbPanY = e.clientY - lbStartY;
+      applyLightboxTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      lbIsDragging = false;
+      if (area) area.style.cursor = 'grab';
+    });
+
+    // Mouse Wheel Zoom
+    area.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.deltaY < 0) lbZoomIn();
+      else lbZoomOut();
+    }, { passive: false });
+
+    // Touch Drag & Pinch Zoom
+    area.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.lb-nav-btn')) return;
+      if (e.touches.length === 1) {
+        lbIsDragging = true;
+        lbStartX = e.touches[0].clientX - lbPanX;
+        lbStartY = e.touches[0].clientY - lbPanY;
+      } else if (e.touches.length === 2) {
+        lbIsDragging = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lbInitialTouchDist = Math.hypot(dx, dy);
+        lbInitialTouchZoom = lbZoom;
+      }
+    }, { passive: true });
+
+    area.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && lbIsDragging) {
+        lbPanX = e.touches[0].clientX - lbStartX;
+        lbPanY = e.touches[0].clientY - lbStartY;
+        applyLightboxTransform();
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        if (lbInitialTouchDist > 0) {
+          const factor = dist / lbInitialTouchDist;
+          lbZoom = Math.max(0.5, Math.min(5.0, lbInitialTouchZoom * factor));
+          updateLightboxZoomDisplay();
+          applyLightboxTransform();
+        }
+      }
+    }, { passive: true });
+
+    area.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) lbInitialTouchDist = 0;
+      if (e.touches.length === 0) lbIsDragging = false;
+    });
+
+    // Keyboard navigation (Esc, ArrowLeft, ArrowRight)
+    window.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('imageLightboxModal');
+      if (!modal || modal.style.display === 'none') return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') lbPrevImage();
+      else if (e.key === 'ArrowRight') lbNextImage();
+    });
+  }
+
+  // Click delegation on Media tab images to open in Lightbox
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.matches('#mediaPreviewArea .preview-item img')) {
+      openLightboxForElement(e.target);
+    }
+  });
+
+  // Initialize lightbox events & doc badges on load
+  window.addEventListener('DOMContentLoaded', () => {
+    initLightboxEvents();
+    updateDocBadges();
+  });
+  window.addEventListener('load', () => {
+    initLightboxEvents();
+    updateDocBadges();
+  });
 </script>
 </body>
 </html>
