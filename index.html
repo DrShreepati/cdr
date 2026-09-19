@@ -192,6 +192,84 @@
       border-radius: 4px;
       box-sizing: border-box;
     }
+
+    /* ANC Visit Matrix (High Legibility & Text Space) */
+    .anc-visit-table { width: 100%; border-collapse: collapse; min-width: 860px; }
+    .anc-visit-table th { 
+      padding: 8px 3px; 
+      font-size: 0.74rem; 
+      text-align: center; 
+      vertical-align: middle; 
+      letter-spacing: 0.3px; 
+      background-color: #f8fafc;
+    }
+    .anc-visit-table td { 
+      padding: 6px 3px; 
+      text-align: center; 
+      vertical-align: top; 
+      border: 1px solid var(--border-light); 
+    }
+    .anc-visit-table input[type="text"],
+    .anc-visit-table input[type="number"],
+    .anc-visit-table input[type="date"] {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      padding: 6px 3px !important;
+      font-size: 0.9rem !important;
+      font-weight: 700 !important;
+      text-align: center !important;
+      border-radius: 6px !important;
+      line-height: 1.3 !important;
+      min-height: 36px !important;
+    }
+    .anc-visit-table input[type="date"] {
+      font-size: 0.8rem !important;
+      padding: 5px 2px !important;
+    }
+    .anc-visit-table input[readonly] {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+      font-size: 0.82rem !important;
+      cursor: default;
+    }
+    .bp-field-wrap {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .bp-input {
+      flex: 1 1 45%;
+      min-width: 0 !important;
+      padding: 6px 2px !important;
+      text-align: center !important;
+    }
+    .bp-sep {
+      font-weight: bold;
+      color: var(--text-muted);
+      padding: 0 1px;
+    }
+    .vital-check-inf {
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-top: 3px;
+      text-align: center;
+      line-height: 1.15;
+    }
+    /* Disable inner spin buttons on numeric inputs so text doesn't get clipped */
+    .anc-visit-table input[type="number"]::-webkit-inner-spin-button,
+    .anc-visit-table input[type="number"]::-webkit-outer-spin-button,
+    input.vital-check::-webkit-inner-spin-button,
+    input.vital-check::-webkit-outer-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+    .anc-visit-table input[type="number"],
+    input.vital-check {
+      -moz-appearance: textfield !important;
+    }
     
     /* Checkboxes */
     .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 8px 0 15px 0; }
@@ -451,17 +529,96 @@
           min-height: 1.4em;
       }
       
-      input[type="text"], input[type="date"], input[type="time"], input[type="number"], select { 
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      input[type="text"]:not(.vital-check), input[type="date"]:not(.vital-check), input[type="time"], input[type="number"]:not(.vital-check), select { 
         border: none !important; border-bottom: 1px dotted #000 !important; background: transparent !important; color: #000 !important; font-weight: bold; padding: 2px 0; font-size: 11pt; line-height: 1.6;
       }
       select { appearance: none; -webkit-appearance: none; }
-      input[readonly], input[disabled], select[disabled] { background: transparent !important; border-bottom: 1px dotted #000 !important; color: #000 !important; }
+      input[readonly]:not(.vital-check), input[disabled], select[disabled] { background: transparent !important; border-bottom: 1px dotted #000 !important; color: #000 !important; }
       select.cause-box { padding: 2px 0 !important; height: auto !important; }
       
       .table-responsive { border: none !important; overflow: visible !important; }
       table { min-width: 100% !important; }
       table, tr, td, th { page-break-inside: avoid !important; break-inside: avoid !important; border: 1px solid #000 !important; padding: 4px; }
       th { background-color: transparent !important; }
+
+      /* ANC Visit Matrix Print Layout & Vibrant Color Emphasis */
+      .anc-visit-table {
+        min-width: 100% !important;
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        margin: 6px 0 !important;
+      }
+      .anc-visit-table th, .anc-visit-table td {
+        padding: 3px 2px !important;
+        text-align: center !important;
+        vertical-align: top !important;
+        border: 1px solid #000 !important;
+      }
+      .anc-visit-table th {
+        font-size: 7.5pt !important;
+        font-weight: bold !important;
+        background-color: #f1f5f9 !important;
+        padding: 4px 2px !important;
+      }
+      .anc-visit-table input[type="date"],
+      .anc-visit-table input[type="text"]:not(.vital-check) {
+        border: none !important;
+        border-bottom: 1px dotted #000 !important;
+        background: transparent !important;
+        color: #000 !important;
+        font-size: 8.5pt !important;
+        padding: 2px 0 !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        width: 100% !important;
+      }
+      .anc-visit-table .vital-check,
+      input.vital-check {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        border: 1px solid rgba(0, 0, 0, 0.25) !important;
+        border-radius: 4px !important;
+        padding: 2px 1px !important;
+        font-size: 9.5pt !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        display: inline-block !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        min-height: 22px !important;
+        line-height: 1.2 !important;
+      }
+      .bp-field-wrap {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 2px !important;
+      }
+      .bp-field-wrap .bp-input {
+        width: 46% !important;
+        font-size: 9pt !important;
+      }
+      .bp-sep {
+        font-size: 9pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+      }
+      .vital-check-inf,
+      .anc-visit-table div[id$="_inf"] {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        font-weight: 800 !important;
+        font-size: 7.2pt !important;
+        margin-top: 1px !important;
+        line-height: 1.1 !important;
+        text-align: center !important;
+      }
       
       .matrix-table { table-layout: fixed !important; width: 100% !important; min-width: 100% !important; margin: 4px 0 !important; }
       .matrix-table th.col-details, .matrix-table td:first-child { width: 28% !important; }
@@ -1386,306 +1543,318 @@
 
       <h4>B2. Visit Matrix (From MCP Card)</h4>
       <div class="table-responsive keep-together">
-        <table>
-          <tr>
-            <th style="width: 50px;">Visit</th>
-            <th>Date</th>
-            <th style="min-width: 70px;">GA at ANC</th>
-            <th>Weight (kg)</th>
-            <th style="min-width: 140px; text-align: center;">BP (Sys/Dia)</th>
-            <th>Hb (g/dL)</th>
-            <th>Urine Dipstick</th>
-            <th>RBS/OGTT (mg/dL)</th>
-            <th>FHR (bpm)</th>
-          </tr>
-          <!-- Visit 1 -->
-          <tr id="anc_row_1">
-            <td>
-                <strong>1st</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(1)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v1_date" data-ailabel="ANC Visit 1 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v1_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 1 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v1_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Weight">
-              <div id="f4_v1_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v1_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 1 BP Systolic"> / 
-                <input type="number" id="f4_v1_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 1 BP Diastolic">
-              </div>
-              <div id="f4_v1_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v1_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Hemoglobin">
-              <div id="f4_v1_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v1_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Urine">
-                <div id="f4_v1_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v1_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 RBS/OGTT">
-                <div id="f4_v1_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v1_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Fetal Heart Rate">
-                <div id="f4_v1_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 2 -->
-          <tr id="anc_row_2">
-            <td>
-                <strong>2nd</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(2)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v2_date" data-ailabel="ANC Visit 2 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v2_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 2 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v2_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Weight">
-              <div id="f4_v2_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v2_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 2 BP Systolic"> / 
-                <input type="number" id="f4_v2_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 2 BP Diastolic">
-              </div>
-              <div id="f4_v2_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v2_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Hemoglobin">
-              <div id="f4_v2_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v2_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Urine">
-                <div id="f4_v2_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v2_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 RBS/OGTT">
-                <div id="f4_v2_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v2_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Fetal Heart Rate">
-                <div id="f4_v2_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 3 -->
-          <tr id="anc_row_3">
-            <td>
-                <strong>3rd</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(3)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v3_date" data-ailabel="ANC Visit 3 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v3_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 3 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v3_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Weight">
-              <div id="f4_v3_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v3_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 3 BP Systolic"> / 
-                <input type="number" id="f4_v3_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 3 BP Diastolic">
-              </div>
-              <div id="f4_v3_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v3_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Hemoglobin">
-              <div id="f4_v3_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v3_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Urine">
-                <div id="f4_v3_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v3_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 RBS/OGTT">
-                <div id="f4_v3_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v3_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Fetal Heart Rate">
-                <div id="f4_v3_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 4 -->
-          <tr id="anc_row_4">
-            <td>
-                <strong>4th</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(4)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v4_date" data-ailabel="ANC Visit 4 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v4_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 4 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v4_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Weight">
-              <div id="f4_v4_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v4_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 4 BP Systolic"> / 
-                <input type="number" id="f4_v4_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 4 BP Diastolic">
-              </div>
-              <div id="f4_v4_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v4_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Hemoglobin">
-              <div id="f4_v4_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v4_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Urine">
-                <div id="f4_v4_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v4_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 RBS/OGTT">
-                <div id="f4_v4_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v4_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Fetal Heart Rate">
-                <div id="f4_v4_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 5 (Hidden by default) -->
-          <tr id="anc_row_5" style="display: none;">
-            <td>
-                <strong>5th</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(5)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v5_date" data-ailabel="ANC Visit 5 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v5_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 5 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v5_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Weight">
-              <div id="f4_v5_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v5_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 5 BP Systolic"> / 
-                <input type="number" id="f4_v5_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 5 BP Diastolic">
-              </div>
-              <div id="f4_v5_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v5_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Hemoglobin">
-              <div id="f4_v5_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v5_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Urine">
-                <div id="f4_v5_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v5_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 RBS/OGTT">
-                <div id="f4_v5_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v5_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Fetal Heart Rate">
-                <div id="f4_v5_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 6 (Hidden by default) -->
-          <tr id="anc_row_6" style="display: none;">
-            <td>
-                <strong>6th</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(6)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v6_date" data-ailabel="ANC Visit 6 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v6_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 6 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v6_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Weight">
-              <div id="f4_v6_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v6_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 6 BP Systolic"> / 
-                <input type="number" id="f4_v6_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 6 BP Diastolic">
-              </div>
-              <div id="f4_v6_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v6_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Hemoglobin">
-              <div id="f4_v6_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v6_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Urine">
-                <div id="f4_v6_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v6_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 RBS/OGTT">
-                <div id="f4_v6_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v6_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Fetal Heart Rate">
-                <div id="f4_v6_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 7 (Hidden by default) -->
-          <tr id="anc_row_7" style="display: none;">
-            <td>
-                <strong>7th</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(7)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v7_date" data-ailabel="ANC Visit 7 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v7_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 7 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v7_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Weight">
-              <div id="f4_v7_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v7_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 7 BP Systolic"> / 
-                <input type="number" id="f4_v7_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 7 BP Diastolic">
-              </div>
-              <div id="f4_v7_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v7_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Hemoglobin">
-              <div id="f4_v7_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v7_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Urine">
-                <div id="f4_v7_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v7_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 RBS/OGTT">
-                <div id="f4_v7_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v7_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Fetal Heart Rate">
-                <div id="f4_v7_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
-          <!-- Visit 8 (Hidden by default) -->
-          <tr id="anc_row_8" style="display: none;">
-            <td>
-                <strong>8th</strong><br>
-                <button type="button" class="no-print" onclick="removeLastAncRow(8)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
-            </td>
-            <td><input type="date" id="f4_v8_date" data-ailabel="ANC Visit 8 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
-            <td><input type="text" id="f4_v8_wks" style="width:70px; font-size:0.75rem;" readonly data-ailabel="ANC Visit 8 Gestational Age"></td>
-            <td>
-              <input type="number" id="f4_v8_wt" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Weight">
-              <div id="f4_v8_wt_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-              <div style="display:flex; gap:2px; align-items:center; justify-content:center;">
-                <input type="number" id="f4_v8_bp_s" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 8 BP Systolic"> / 
-                <input type="number" id="f4_v8_bp_d" class="vital-check" style="width:100%; min-width:40px; text-align:center; padding: 8px 2px;" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 8 BP Diastolic">
-              </div>
-              <div id="f4_v8_bp_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px; text-align:center;"></div>
-            </td>
-            <td>
-              <input type="number" id="f4_v8_hb" class="vital-check" style="width:65px;" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Hemoglobin">
-              <div id="f4_v8_hb_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="text" id="f4_v8_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Urine">
-                <div id="f4_v8_urine_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v8_rbs" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 RBS/OGTT">
-                <div id="f4_v8_rbs_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-            <td>
-                <input type="number" id="f4_v8_fhr" class="vital-check" style="width:65px;" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Fetal Heart Rate">
-                <div id="f4_v8_fhr_inf" style="font-size: 0.7rem; font-weight: bold; margin-top: 2px;"></div>
-            </td>
-          </tr>
+        <table class="anc-visit-table">
+          <thead>
+            <tr>
+              <th style="width: 5%;">Visit</th>
+              <th style="width: 16%;">Date</th>
+              <th style="width: 10%;">GA at ANC</th>
+              <th style="width: 9%;">Weight (kg)</th>
+              <th style="width: 17%; text-align: center;">BP (Sys/Dia)</th>
+              <th style="width: 11%;">Hb (g/dL)</th>
+              <th style="width: 10%;">Urine Dipstick</th>
+              <th style="width: 11%;">RBS/OGTT (mg/dL)</th>
+              <th style="width: 11%;">FHR (bpm)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Visit 1 -->
+            <tr id="anc_row_1">
+              <td>
+                  <strong>1st</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(1)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v1_date" data-ailabel="ANC Visit 1 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v1_wks" readonly data-ailabel="ANC Visit 1 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v1_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Weight">
+                <div id="f4_v1_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v1_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 1 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v1_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 1 BP Diastolic">
+                </div>
+                <div id="f4_v1_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v1_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Hemoglobin">
+                <div id="f4_v1_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v1_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Urine">
+                  <div id="f4_v1_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v1_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 RBS/OGTT">
+                  <div id="f4_v1_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v1_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 1 Fetal Heart Rate">
+                  <div id="f4_v1_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 2 -->
+            <tr id="anc_row_2">
+              <td>
+                  <strong>2nd</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(2)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v2_date" data-ailabel="ANC Visit 2 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v2_wks" readonly data-ailabel="ANC Visit 2 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v2_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Weight">
+                <div id="f4_v2_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v2_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 2 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v2_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 2 BP Diastolic">
+                </div>
+                <div id="f4_v2_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v2_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Hemoglobin">
+                <div id="f4_v2_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v2_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Urine">
+                  <div id="f4_v2_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v2_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 RBS/OGTT">
+                  <div id="f4_v2_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v2_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 2 Fetal Heart Rate">
+                  <div id="f4_v2_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 3 -->
+            <tr id="anc_row_3">
+              <td>
+                  <strong>3rd</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(3)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v3_date" data-ailabel="ANC Visit 3 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v3_wks" readonly data-ailabel="ANC Visit 3 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v3_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Weight">
+                <div id="f4_v3_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v3_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 3 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v3_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 3 BP Diastolic">
+                </div>
+                <div id="f4_v3_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v3_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Hemoglobin">
+                <div id="f4_v3_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v3_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Urine">
+                  <div id="f4_v3_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v3_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 RBS/OGTT">
+                  <div id="f4_v3_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v3_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 3 Fetal Heart Rate">
+                  <div id="f4_v3_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 4 -->
+            <tr id="anc_row_4">
+              <td>
+                  <strong>4th</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(4)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v4_date" data-ailabel="ANC Visit 4 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v4_wks" readonly data-ailabel="ANC Visit 4 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v4_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Weight">
+                <div id="f4_v4_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v4_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 4 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v4_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 4 BP Diastolic">
+                </div>
+                <div id="f4_v4_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v4_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Hemoglobin">
+                <div id="f4_v4_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v4_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Urine">
+                  <div id="f4_v4_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v4_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 RBS/OGTT">
+                  <div id="f4_v4_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v4_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 4 Fetal Heart Rate">
+                  <div id="f4_v4_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 5 (Hidden by default) -->
+            <tr id="anc_row_5" style="display: none;">
+              <td>
+                  <strong>5th</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(5)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v5_date" data-ailabel="ANC Visit 5 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v5_wks" readonly data-ailabel="ANC Visit 5 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v5_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Weight">
+                <div id="f4_v5_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v5_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 5 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v5_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 5 BP Diastolic">
+                </div>
+                <div id="f4_v5_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v5_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Hemoglobin">
+                <div id="f4_v5_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v5_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Urine">
+                  <div id="f4_v5_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v5_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 RBS/OGTT">
+                  <div id="f4_v5_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v5_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 5 Fetal Heart Rate">
+                  <div id="f4_v5_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 6 (Hidden by default) -->
+            <tr id="anc_row_6" style="display: none;">
+              <td>
+                  <strong>6th</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(6)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v6_date" data-ailabel="ANC Visit 6 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v6_wks" readonly data-ailabel="ANC Visit 6 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v6_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Weight">
+                <div id="f4_v6_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v6_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 6 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v6_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 6 BP Diastolic">
+                </div>
+                <div id="f4_v6_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v6_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Hemoglobin">
+                <div id="f4_v6_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v6_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Urine">
+                  <div id="f4_v6_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v6_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 RBS/OGTT">
+                  <div id="f4_v6_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v6_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 6 Fetal Heart Rate">
+                  <div id="f4_v6_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 7 (Hidden by default) -->
+            <tr id="anc_row_7" style="display: none;">
+              <td>
+                  <strong>7th</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(7)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v7_date" data-ailabel="ANC Visit 7 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v7_wks" readonly data-ailabel="ANC Visit 7 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v7_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Weight">
+                <div id="f4_v7_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v7_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 7 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v7_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 7 BP Diastolic">
+                </div>
+                <div id="f4_v7_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v7_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Hemoglobin">
+                <div id="f4_v7_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v7_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Urine">
+                  <div id="f4_v7_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v7_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 RBS/OGTT">
+                  <div id="f4_v7_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v7_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 7 Fetal Heart Rate">
+                  <div id="f4_v7_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+            <!-- Visit 8 (Hidden by default) -->
+            <tr id="anc_row_8" style="display: none;">
+              <td>
+                  <strong>8th</strong><br>
+                  <button type="button" class="no-print" onclick="removeLastAncRow(8)" style="color:#dc3545; font-size:14px; padding:2px; border:none; background:none; cursor:pointer;" title="Delete Visit">🗑️</button>
+              </td>
+              <td><input type="date" id="f4_v8_date" data-ailabel="ANC Visit 8 Date" onchange="enforceDateLogic(); calculateVisitGAs();"></td>
+              <td><input type="text" id="f4_v8_wks" readonly data-ailabel="ANC Visit 8 Gestational Age"></td>
+              <td>
+                <input type="number" id="f4_v8_wt" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Weight">
+                <div id="f4_v8_wt_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <div class="bp-field-wrap">
+                  <input type="number" id="f4_v8_bp_s" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="120" data-ailabel="ANC Visit 8 BP Systolic">
+                  <span class="bp-sep">/</span>
+                  <input type="number" id="f4_v8_bp_d" class="vital-check bp-input" oninput="checkVitals(this)" placeholder="80" data-ailabel="ANC Visit 8 BP Diastolic">
+                </div>
+                <div id="f4_v8_bp_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                <input type="number" id="f4_v8_hb" class="vital-check" step="0.1" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Hemoglobin">
+                <div id="f4_v8_hb_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="text" id="f4_v8_urine" class="vital-check" placeholder="0 or 1+" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Urine">
+                  <div id="f4_v8_urine_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v8_rbs" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 RBS/OGTT">
+                  <div id="f4_v8_rbs_inf" class="vital-check-inf"></div>
+              </td>
+              <td>
+                  <input type="number" id="f4_v8_fhr" class="vital-check" oninput="checkVitals(this)" data-ailabel="ANC Visit 8 Fetal Heart Rate">
+                  <div id="f4_v8_fhr_inf" class="vital-check-inf"></div>
+              </td>
+            </tr>
+          </tbody>
         </table>
         
         <div style="display:flex; justify-content:space-between; margin-top:8px;">
@@ -3332,7 +3501,7 @@
             const isLandscape = (srcW > srcH);
 
             if (isLandscape) {
-              // Auto-rotate landscape 90deg clockwise so it defaults to vertical (orientation like ss 2 / ss 4)
+              // Auto-rotate landscape 90deg counterclockwise so it defaults to vertical
               let targetW = srcH;
               let targetH = srcW;
               if (targetH > MAX_DIM) {
@@ -3343,7 +3512,7 @@
               canvas.height = targetH;
               const ctx = canvas.getContext('2d');
               ctx.translate(canvas.width / 2, canvas.height / 2);
-              ctx.rotate((90 * Math.PI) / 180);
+              ctx.rotate((-90 * Math.PI) / 180);
               ctx.drawImage(img, -targetH / 2, -targetW / 2, targetH, targetW);
             } else {
               let targetW = srcW;
