@@ -208,11 +208,133 @@
 
     /* Media Upload Tab */
     .media-card { background: #fff; border: 1px solid var(--border-light); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-    .preview-item { border: 1px solid var(--border-light); border-radius: 6px; padding: 8px; text-align: center; position: relative; background: #fff; }
-    .preview-item img { max-width: 100%; height: auto; border-radius: 4px; }
-    .preview-label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; word-break: break-all; }
-    .remove-btn { position: absolute; top: -10px; right: -10px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+    .preview-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+      gap: 16px; 
+      margin-top: 15px; 
+      align-items: start; 
+    }
+    .preview-item { 
+      border: 1px solid var(--border-light); 
+      border-radius: 8px; 
+      padding: 10px; 
+      text-align: center; 
+      position: relative; 
+      background: #fff; 
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: grab;
+      user-select: none;
+    }
+    .preview-item:active {
+      cursor: grabbing;
+    }
+    .preview-item.is-landscape {
+      grid-column: span 2;
+    }
+    @media (max-width: 640px) {
+      .preview-item.is-landscape {
+        grid-column: span 1;
+      }
+    }
+    .preview-item.dragging {
+      opacity: 0.45;
+      transform: scale(0.98);
+      border: 2px dashed var(--primary);
+    }
+    .preview-item.drag-over {
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    }
+    .preview-item img { 
+      max-width: 100%; 
+      height: auto; 
+      border-radius: 4px; 
+      display: block; 
+      margin: 0 auto;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .preview-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: default;
+    }
+    .media-drag-handle {
+      cursor: grab;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      user-select: none;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .media-action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+    }
+    .btn-media-action {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1.2;
+      transition: all 0.15s ease;
+    }
+    .btn-media-action:hover:not(:disabled) {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .btn-media-action:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .btn-media-action.btn-delete {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-color: #fca5a5;
+    }
+    .btn-media-action.btn-delete:hover:not(:disabled) {
+      background: #ef4444;
+      color: #fff;
+    }
+    .preview-label { 
+      font-size: 0.88rem; 
+      font-weight: 700; 
+      color: var(--text-main); 
+      margin-bottom: 8px; 
+      word-break: break-word; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .seq-badge {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .remove-btn { 
+      position: absolute; top: -10px; right: -10px; 
+      background: var(--danger); color: white; border: none; 
+      border-radius: 50%; width: 26px; height: 26px; 
+      cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+    }
 
     /* Smart Alerts */
     #printBanner { display: none; background: #fef9c3; color: #92400e; padding: 15px; font-weight: 700; text-align: center; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde047; }
@@ -384,33 +506,50 @@
       #mediaTab .form-header { display: none !important; }
       .media-card { display: none !important; }
       .preview-grid { display: block !important; margin-top: 0; }
+      .preview-item-header, .remove-btn, .btn-media-action, .media-drag-handle { display: none !important; }
       .preview-item { 
         display: block !important; 
         width: 100% !important; 
         page-break-inside: avoid !important; 
         break-inside: avoid !important; 
         border: none !important; 
-        margin-bottom: 20px !important; 
+        box-shadow: none !important;
+        margin-bottom: 25px !important; 
+        padding: 0 !important;
         text-align: left; 
       }
       .preview-item img { 
-        width: 100% !important; 
-        max-height: 26cm !important; 
+        max-width: 100% !important; 
+        max-height: 24cm !important; 
+        width: auto !important;
         height: auto !important; 
         object-fit: contain !important; 
         display: block; 
         margin: 0 auto; 
         page-break-inside: avoid !important;
-        break-inside: avoid !important;
+        break-inside: avoid !important; 
+      }
+      .preview-item.is-landscape img {
+        width: 100% !important;
+        max-height: 20cm !important;
+        height: auto !important;
       }
       .preview-label { 
         font-size: 14pt !important; 
         font-weight: bold; 
-        margin-bottom: 10px; 
+        margin-bottom: 12px; 
         text-align: left; 
         border-bottom: 2px solid #000; 
         padding-bottom: 5px; 
         color: #000 !important; 
+        display: block !important;
+      }
+      .seq-badge {
+        background: transparent !important;
+        color: #000 !important;
+        font-size: 14pt !important;
+        padding: 0 !important;
+        margin-right: 6px;
       }
     }
   </style>
@@ -1662,6 +1801,7 @@
               <option value="OPD Prescription">OPD Prescription</option>
               <option value="Discharge/ Referral Slip">Discharge/ Referral Slip</option>
               <option value="Investigation Reports">Investigation Reports</option>
+              <option value="RNTCP Card">RNTCP Card</option>
               <option value="Site visit by HCW">Site visit by HCW</option>
               <option value="Undertakings">Undertakings</option>
               <option value="Others...">Others...</option>
@@ -1674,6 +1814,9 @@
           </div>
         </div>
         <button type="button" class="btn btn-attach" onclick="processMediaUpload()" style="margin-top: 10px;">Attach Files to Record</button>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px 14px; margin-top: 14px; font-size: 0.85rem; color: #166534;" class="no-print">
+          💡 <strong>Orientation &amp; Sequencing:</strong> Landscape documents (e.g. <em>RNTCP Card</em>) automatically take wide format without bottom empty space. Use <strong>◀</strong> and <strong>▶</strong> buttons or drag-and-drop cards to alter sequence. Click <strong>🔄 Rotate</strong> if an image was taken sideways.
+        </div>
       </div>
 
       <div id="mediaPreviewArea" class="preview-grid">
@@ -1912,10 +2055,9 @@
 
               if(record.mediaHTML) {
                   document.getElementById('mediaPreviewArea').innerHTML = record.mediaHTML;
-                  document.getElementById('mediaPreviewArea').querySelectorAll('.remove-btn').forEach(btn => {
-                      btn.setAttribute('type', 'button');
-                      btn.setAttribute('onclick', "this.parentElement.remove(); debouncedSave();");
-                  });
+                  upgradeExistingMediaItems();
+              } else {
+                  document.getElementById('mediaPreviewArea').innerHTML = '';
               }
 
               const hiddenManual = document.getElementById('f4_hrp_manual_hidden');
@@ -2276,6 +2418,7 @@
 
   // AUTO-LOAD ON STARTUP
   window.addEventListener('DOMContentLoaded', () => {
+      initMediaDragAndDrop();
       initDB(() => {
           loadCaseFromIndexedDB(activeCaseId);
       });
@@ -2980,7 +3123,200 @@
       }
   } // <--- CLOSES exportAndShareCSV
 
-  // IMAGE COMPRESSION
+  // MEDIA MANAGEMENT: LANDSCAPE ORIENTATION & SEQUENCE REORDERING
+  function updateMediaOrderBadges() {
+    const container = document.getElementById('mediaPreviewArea');
+    if (!container) return;
+    const items = container.querySelectorAll('.preview-item');
+    items.forEach((item, index) => {
+      let badge = item.querySelector('.seq-badge');
+      const label = item.querySelector('.preview-label');
+      if (!badge && label) {
+        badge = document.createElement('span');
+        badge.className = 'seq-badge';
+        label.prepend(badge);
+      }
+      if (badge) {
+        badge.textContent = `#${index + 1}`;
+      }
+      const btnLeft = item.querySelector('.btn-move-left');
+      const btnRight = item.querySelector('.btn-move-right');
+      if (btnLeft) btnLeft.disabled = (index === 0);
+      if (btnRight) btnRight.disabled = (index === items.length - 1);
+    });
+  }
+
+  function moveMediaItem(btn, dir) {
+    const item = btn.closest('.preview-item');
+    if (!item) return;
+    const container = document.getElementById('mediaPreviewArea');
+    if (!container) return;
+
+    if (dir === -1) {
+      const prev = item.previousElementSibling;
+      if (prev && prev.classList.contains('preview-item')) {
+        container.insertBefore(item, prev);
+        updateMediaOrderBadges();
+        debouncedSave();
+      }
+    } else if (dir === 1) {
+      const next = item.nextElementSibling;
+      if (next && next.classList.contains('preview-item')) {
+        next.after(item);
+        updateMediaOrderBadges();
+        debouncedSave();
+      }
+    }
+  }
+
+  function rotateMediaItem(btn) {
+    const item = btn.closest('.preview-item');
+    if (!item) return;
+    const img = item.querySelector('img');
+    if (!img) return;
+
+    const tempImg = new Image();
+    tempImg.onload = function() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = tempImg.naturalHeight;
+      canvas.height = tempImg.naturalWidth;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((90 * Math.PI) / 180);
+      ctx.drawImage(tempImg, -tempImg.naturalWidth / 2, -tempImg.naturalHeight / 2);
+
+      img.src = canvas.toDataURL('image/jpeg', 0.85);
+      if (canvas.width > canvas.height) {
+        item.classList.add('is-landscape');
+      } else {
+        item.classList.remove('is-landscape');
+      }
+      debouncedSave();
+    };
+    tempImg.src = img.src;
+  }
+
+  function removeMediaItem(btn) {
+    const item = btn.closest('.preview-item') || btn.parentElement;
+    if (item) {
+      item.remove();
+      updateMediaOrderBadges();
+      debouncedSave();
+    }
+  }
+
+  let draggedMediaItem = null;
+
+  function initMediaDragAndDrop() {
+    const container = document.getElementById('mediaPreviewArea');
+    if (!container || container.dataset.dndInitialized) return;
+    container.dataset.dndInitialized = "true";
+
+    container.addEventListener('dragstart', (e) => {
+      const item = e.target.closest('.preview-item');
+      if (!item) return;
+      draggedMediaItem = item;
+      item.classList.add('dragging');
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', ''); } catch(err) {}
+      }
+    });
+
+    container.addEventListener('dragend', (e) => {
+      const item = e.target.closest('.preview-item');
+      if (item) item.classList.remove('dragging');
+      container.querySelectorAll('.preview-item').forEach(el => el.classList.remove('drag-over'));
+      draggedMediaItem = null;
+      updateMediaOrderBadges();
+      debouncedSave();
+    });
+
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+      const targetItem = e.target.closest('.preview-item');
+      if (!targetItem || targetItem === draggedMediaItem) return;
+
+      container.querySelectorAll('.preview-item').forEach(el => {
+        if (el !== targetItem) el.classList.remove('drag-over');
+      });
+      targetItem.classList.add('drag-over');
+    });
+
+    container.addEventListener('dragleave', (e) => {
+      const targetItem = e.target.closest('.preview-item');
+      if (targetItem) targetItem.classList.remove('drag-over');
+    });
+
+    container.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const targetItem = e.target.closest('.preview-item');
+      if (!targetItem || !draggedMediaItem || targetItem === draggedMediaItem) return;
+
+      targetItem.classList.remove('drag-over');
+      const rect = targetItem.getBoundingClientRect();
+      const midX = rect.left + rect.width / 2;
+      if (e.clientX < midX) {
+        container.insertBefore(draggedMediaItem, targetItem);
+      } else {
+        targetItem.after(draggedMediaItem);
+      }
+      updateMediaOrderBadges();
+      debouncedSave();
+    });
+  }
+
+  function upgradeExistingMediaItems() {
+    const container = document.getElementById('mediaPreviewArea');
+    if (!container) return;
+    const items = container.querySelectorAll('.preview-item');
+    items.forEach((item) => {
+      item.draggable = true;
+
+      const oldRemove = item.querySelector(':scope > .remove-btn');
+      if (oldRemove) oldRemove.remove();
+
+      const img = item.querySelector('img');
+      let header = item.querySelector('.preview-item-header');
+      if (!header) {
+        header = document.createElement('div');
+        header.className = 'preview-item-header no-print';
+        header.innerHTML = `
+          <span class="media-drag-handle" title="Drag to reorder">⋮⋮</span>
+          <div class="media-action-buttons">
+            <button type="button" class="btn-media-action btn-move-left" onclick="moveMediaItem(this, -1)" title="Move earlier">◀</button>
+            ${img ? '<button type="button" class="btn-media-action btn-rotate" onclick="rotateMediaItem(this)" title="Rotate 90°">🔄 Rotate</button>' : ''}
+            <button type="button" class="btn-media-action btn-move-right" onclick="moveMediaItem(this, 1)" title="Move later">▶</button>
+            <button type="button" class="btn-media-action btn-delete" onclick="removeMediaItem(this)" title="Delete">✕</button>
+          </div>
+        `;
+        item.prepend(header);
+      }
+
+      if (img) {
+        const applyOrientation = () => {
+          if (img.naturalWidth && img.naturalHeight) {
+            if (img.naturalWidth > img.naturalHeight) {
+              item.classList.add('is-landscape');
+            } else {
+              item.classList.remove('is-landscape');
+            }
+          }
+        };
+        if (img.complete && img.naturalWidth) {
+          applyOrientation();
+        } else {
+          img.addEventListener('load', applyOrientation);
+        }
+      }
+    });
+
+    updateMediaOrderBadges();
+    initMediaDragAndDrop();
+  }
+
+  // IMAGE COMPRESSION & UPLOAD
   function processMediaUpload() {
     const fileInput = document.getElementById('mediaUploadInput');
     let category = document.getElementById('mediaCategory').value;
@@ -2996,20 +3332,29 @@
     Array.from(fileInput.files).forEach(file => {
       const wrapper = document.createElement('div');
       wrapper.className = 'preview-item';
-      
-      const removeBtn = document.createElement('button');
-      removeBtn.setAttribute('type', 'button');
-      removeBtn.className = 'remove-btn no-print';
-      removeBtn.innerText = 'X';
-      removeBtn.setAttribute('onclick', "this.parentElement.remove(); debouncedSave();");
-      wrapper.appendChild(removeBtn);
+      wrapper.draggable = true;
+
+      const isImage = file.type.startsWith('image/');
+
+      const header = document.createElement('div');
+      header.className = 'preview-item-header no-print';
+      header.innerHTML = `
+        <span class="media-drag-handle" title="Drag to reorder">⋮⋮</span>
+        <div class="media-action-buttons">
+          <button type="button" class="btn-media-action btn-move-left" onclick="moveMediaItem(this, -1)" title="Move earlier">◀</button>
+          ${isImage ? '<button type="button" class="btn-media-action btn-rotate" onclick="rotateMediaItem(this)" title="Rotate 90°">🔄 Rotate</button>' : ''}
+          <button type="button" class="btn-media-action btn-move-right" onclick="moveMediaItem(this, 1)" title="Move later">▶</button>
+          <button type="button" class="btn-media-action btn-delete" onclick="removeMediaItem(this)" title="Delete">✕</button>
+        </div>
+      `;
+      wrapper.appendChild(header);
 
       const label = document.createElement('div');
       label.className = 'preview-label';
-      label.innerHTML = `<strong>${category}</strong>`;
+      label.innerHTML = `<span class="seq-badge">#</span><strong>${category}</strong>`;
       wrapper.appendChild(label);
 
-      if (file.type.startsWith('image/')) {
+      if (isImage) {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = function(event) {
@@ -3024,6 +3369,7 @@
             let height = img.height;
 
             if (width > height) {
+              wrapper.classList.add('is-landscape');
               if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
             } else {
               if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
@@ -3034,12 +3380,14 @@
             ctx.drawImage(img, 0, 0, width, height);
             
             const compressedImg = document.createElement('img');
-            // REVERTED TO 85% JPEG QUALITY TO PRESERVE TEXT LEGIBILITY
             compressedImg.src = canvas.toDataURL('image/jpeg', 0.85); 
+            compressedImg.alt = category;
             wrapper.appendChild(compressedImg);
             previewArea.appendChild(wrapper);
+            updateMediaOrderBadges();
+            initMediaDragAndDrop();
             debouncedSave();
-          }
+          };
         };
       } else {
         const reader = new FileReader();
@@ -3076,10 +3424,12 @@
 
           wrapper.appendChild(docCard);
           previewArea.appendChild(wrapper);
+          updateMediaOrderBadges();
+          initMediaDragAndDrop();
           debouncedSave();
         };
       }
-    }); // <--- THIS CLOSES THE FOREACH LOOP CORRECTLY
+    });
     
     fileInput.value = '';
     document.getElementById('mediaCategoryOther').value = '';
