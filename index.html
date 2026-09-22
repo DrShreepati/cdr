@@ -3156,6 +3156,7 @@
               if (el.type === 'checkbox' && el.checked) {
                   hasMeaningfulData = true;
               } else if (el.type !== 'checkbox') {
+                  let strVal = String(val).trim();
                   // Force engine to ignore the hidden HRP arrays and empty strings
                   if (strVal !== '' && strVal !== '[]' && el.id !== 'f4_hrp_manual_hidden' && el.id !== 'f4_hrp_exclusions_hidden') {
                       hasMeaningfulData = true;
@@ -4437,7 +4438,7 @@
       const safeName = cName.replace(/[/\\?%*:|"<>]/g, '_').trim().replace(/\s+/g, '_') || 'Case';
       const fileName = `CDR_Analytics_${safeName}.csv`;
       
-      // 9. Hard Download Fallback (Mandatory for Mac/PC/Strict Browsers)
+      // 9. Instant Direct Download (Always triggered for reliable instant save on PC/Mac/Mobile)
       const forceDownload = () => {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
@@ -4446,29 +4447,27 @@
           document.body.appendChild(link);
           link.click();
           setTimeout(() => {
-              document.body.removeChild(link);
+              if (link.parentNode) link.parentNode.removeChild(link);
               URL.revokeObjectURL(link.href);
-          }, 500);
+          }, 1000);
       };
 
-      // 10. Fire Share Menu or Fallback
-      try {
-          const file = new File([blob], fileName, { type: "text/csv" });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              navigator.share({
-                  files: [file]
-              }).catch(err => {
-                  console.log('Share result:', err.name);
-                  if (err.name !== 'AbortError') {
-                      forceDownload();
-                  }
-              });
-          } else {
-              forceDownload();
-          }
-      } catch (error) {
-          console.log('Mobile share not supported on this device:', error);
-          forceDownload();
+      // Always execute direct download
+      forceDownload();
+
+      // 10. Optional Mobile Share (only on mobile devices supporting Web Share)
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isMobile && navigator.canShare) {
+          try {
+              const file = new File([blob], fileName, { type: "text/csv" });
+              if (navigator.canShare({ files: [file] })) {
+                  navigator.share({
+                      title: 'CDR Analytics CSV',
+                      text: `Analytics Data for ${cName}`,
+                      files: [file]
+                  }).catch(() => {});
+              }
+          } catch (error) {}
       }
   } // <--- CLOSES exportAndShareCSV
 
