@@ -2725,6 +2725,7 @@
           <!-- Dynamically populated via JS -->
         </div>
         <input type="hidden" id="f4_hrp_manual_hidden">
+        <input type="hidden" id="f4_hrp_exclusions_hidden">
       </div>
 
       <div class="field-group" style="margin-top: 10px;">
@@ -2964,6 +2965,7 @@
   }
   let hrpFactorsList = [];
   let manualHrpFactors = [];
+  let manualExcludedAutoFactors = new Set(); // doctor-overridden auto-detections
   let visibleAncRows = 4;
 
   // AUTO-EXPAND TEXTAREAS
@@ -3179,6 +3181,10 @@
               if (hiddenManual && hiddenManual.value) {
                   try { manualHrpFactors = JSON.parse(hiddenManual.value); } catch(e) { manualHrpFactors = []; }
               }
+              const hiddenExcl = document.getElementById('f4_hrp_exclusions_hidden');
+              if (hiddenExcl && hiddenExcl.value) {
+                  try { manualExcludedAutoFactors = new Set(JSON.parse(hiddenExcl.value)); } catch(e) { manualExcludedAutoFactors = new Set(); }
+              }
 
               triggerInitialSync();
               calculateChildAge();
@@ -3281,6 +3287,7 @@
       document.getElementById('mediaPreviewArea').innerHTML = '';
       if (typeof updateDocBadges === 'function') updateDocBadges();
       manualHrpFactors = [];
+      manualExcludedAutoFactors = new Set();
       hrpFactorsList = [];
       renderHrpFactors();
       
@@ -3832,7 +3839,9 @@
       }
 
       window.currentAutoFactors = autoFactors; 
-      hrpFactorsList = Array.from(new Set([...manualHrpFactors, ...autoFactors]));
+      // Apply doctor overrides: remove excluded auto-factors from display
+      const effectiveAutoFactors = new Set([...autoFactors].filter(f => !manualExcludedAutoFactors.has(f)));
+      hrpFactorsList = Array.from(new Set([...manualHrpFactors, ...effectiveAutoFactors]));
       renderHrpFactors();
   }
 
@@ -3850,7 +3859,20 @@
 
   function removeHrpFactor(val) {
       if (window.currentAutoFactors && window.currentAutoFactors.has(val)) {
-          alert(`"${val}" is currently auto-detected from clinical inputs. Please change the clinical value (e.g., BP, Hb, Weight, Parity) to remove this flag.`);
+          // Auto-detected — ask doctor to confirm clinical override
+          const confirmed = confirm(
+              `"${val}" is currently auto-detected from clinical inputs.\n\n` +
+              `Do you want to clinically override and remove this flag?\n\n` +
+              `(The underlying data — e.g. urine albumin, BP — will remain unchanged. ` +
+              `This override persists until you clear the case.)`
+          );
+          if (!confirmed) return;
+          // Add to exclusion list so it stays suppressed across re-evaluations
+          manualExcludedAutoFactors.add(val);
+          // Also remove from manual list if it was ever manually added
+          manualHrpFactors = manualHrpFactors.filter(item => item !== val);
+          evaluateAllTriggers();
+          debouncedSave();
           return;
       }
       manualHrpFactors = manualHrpFactors.filter(item => item !== val);
@@ -3867,7 +3889,11 @@
           chip.innerHTML = `<span>${factor}</span> <button type="button" class="no-print" onclick="removeHrpFactor('${factor}')">×</button>`;
           container.appendChild(chip);
       });
+      // Persist manual factors
       document.getElementById('f4_hrp_manual_hidden').value = JSON.stringify(manualHrpFactors);
+      // Persist doctor overrides (exclusions of auto-factors)
+      const exclEl = document.getElementById('f4_hrp_exclusions_hidden');
+      if (exclEl) exclEl.value = JSON.stringify([...manualExcludedAutoFactors]);
   }
 
   // EXACT CALENDAR-BASED AGE CALCULATION (TIMEZONE-LOCKED)
