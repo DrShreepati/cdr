@@ -233,6 +233,41 @@
       box-sizing: border-box;
     }
 
+    /* Sickness Detail Tables (Form 3a B4, Form 3b B3) — compact checklist grid */
+    .sickness-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .sickness-table td {
+      border: 1px solid var(--border-light);
+      padding: 6px 8px;
+      vertical-align: middle;
+      width: 25%;
+    }
+    .sickness-table td label-text, .sickness-table td {
+      font-size: 0.83rem;
+      color: var(--text-main);
+    }
+    .sickness-table select {
+      width: auto !important;
+      min-width: 80px;
+      padding: 3px 6px !important;
+      font-size: 0.8rem !important;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+    .sickness-table input[type="number"] {
+      width: 56px !important;
+      padding: 3px 4px !important;
+      font-size: 0.8rem !important;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+    .sickness-table input[type="text"] {
+      width: 100px !important;
+      padding: 3px 4px !important;
+      font-size: 0.8rem !important;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
     /* ANC Visit Matrix (High Legibility & Text Space) */
     .anc-visit-table { width: 100%; border-collapse: collapse; min-width: 860px; }
     .anc-visit-table th { 
@@ -1302,6 +1337,39 @@
       table { border: 1px solid #000 !important; }
       th { background-color: transparent !important; }
 
+      /* Sickness Tables Print — compact like ANC matrix */
+      .sickness-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+        font-size: 8pt !important;
+        margin: 4px 0 !important;
+      }
+      .sickness-table td {
+        border: 1px solid #000 !important;
+        padding: 3px 4px !important;
+        vertical-align: middle !important;
+        width: 25% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.25 !important;
+      }
+      .sickness-table select,
+      .sickness-table input[type="number"],
+      .sickness-table input[type="text"] {
+        border: none !important;
+        border-bottom: 1px dotted #000 !important;
+        background: transparent !important;
+        font-weight: 800 !important;
+        font-size: 8pt !important;
+        padding: 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        color: #000 !important;
+        display: inline !important;
+        margin-left: 2px !important;
+      }
+
       /* ANC Visit Matrix Print Layout & Vibrant Color Emphasis */
       .anc-visit-table {
         min-width: 100% !important;
@@ -1793,7 +1861,7 @@
 
       <div>
         <h4>B4. Sickness Details</h4>
-        <table>
+        <table class="sickness-table">
           <tr>
             <td>28A. Fever? <select id="f3a_28a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
             <td>28B. Days: <input type="number" id="f3a_28b" style="width:60px;"></td>
@@ -1991,7 +2059,7 @@
       
       <div>
         <h4>B3. Sickness Details</h4>
-        <table>
+        <table class="sickness-table">
           <tr>
             <td>15A. Fever? <select id="f3b_15a"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></td>
             <td>15B. Days: <input type="number" id="f3b_15b" style="width:60px;"></td>
