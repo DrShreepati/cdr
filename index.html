@@ -1297,8 +1297,9 @@
       select.cause-box { padding: 2px 0 !important; height: auto !important; }
       
       .table-responsive { border: none !important; overflow: visible !important; }
-      table { min-width: 100% !important; }
-      table, tr, td, th { page-break-inside: avoid !important; break-inside: avoid !important; border: 1px solid #000 !important; padding: 4px; }
+      table { min-width: 100% !important; page-break-inside: auto !important; break-inside: auto !important; }
+      tr, td, th { page-break-inside: avoid !important; break-inside: avoid !important; border: 1px solid #000 !important; padding: 4px; }
+      table { border: 1px solid #000 !important; }
       th { background-color: transparent !important; }
 
       /* ANC Visit Matrix Print Layout & Vibrant Color Emphasis */
@@ -1400,6 +1401,7 @@
           line-height: 1.25 !important; 
       }
       .form-header { page-break-after: avoid !important; break-after: avoid !important; margin-top: 10px; margin-bottom: 10px; }
+      h4 { page-break-after: avoid !important; break-after: avoid !important; }
       .handover-note, .checkbox-grid, .checkbox-grid-2col { page-break-inside: avoid !important; break-inside: avoid !important; }
 
       .signature-block { border-top: 2px solid #000 !important; }
@@ -1789,7 +1791,7 @@
         <div class="field-group"><label>27B. What was given:</label><input type="text" id="f3a_27b"></div>
       </div>
 
-      <div class="keep-together">
+      <div>
         <h4>B4. Sickness Details</h4>
         <table>
           <tr>
@@ -1987,7 +1989,7 @@
         <div class="field-group"><label>14C. Breastfeeding during illness?</label><select id="f3b_14c"><option></option><option>Yes</option><option>No</option><option>Do Not Know</option></select></div>
       </div>
       
-      <div class="keep-together">
+      <div>
         <h4>B3. Sickness Details</h4>
         <table>
           <tr>
