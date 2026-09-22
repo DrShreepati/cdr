@@ -3146,9 +3146,8 @@
               if (el.type === 'checkbox' && el.checked) {
                   hasMeaningfulData = true;
               } else if (el.type !== 'checkbox') {
-                  let strVal = String(val).trim();
-                  // Force engine to ignore the hidden HRP array and empty strings
-                  if (strVal !== '' && strVal !== '[]' && el.id !== 'f4_hrp_manual_hidden') {
+                  // Force engine to ignore the hidden HRP arrays and empty strings
+                  if (strVal !== '' && strVal !== '[]' && el.id !== 'f4_hrp_manual_hidden' && el.id !== 'f4_hrp_exclusions_hidden') {
                       hasMeaningfulData = true;
                   }
               }
@@ -4162,7 +4161,7 @@
 
   // HARD BACKUP EXPORT/IMPORT WITH LEGACY WRAPPER
   function exportBackup() {
-    debouncedSave();
+    saveDataSilently();
     if (!db) return;
     const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
@@ -4281,39 +4280,145 @@
     }, 800);
   }
 
-  // CSV SHARE & EXPORT ENGINE (BULLETPROOF DOM FIX)
+  // CSV SHARE & EXPORT ENGINE (COMPREHENSIVE CLINICAL ANALYTICS ENGINE)
   function exportAndShareCSV() {
+      // 0. Recalculate and synchronize all clinical calculations before exporting
+      if (typeof calculateChildAge === 'function') calculateChildAge();
+      if (typeof calculateMotherAge === 'function') calculateMotherAge();
+      if (typeof calculateGestation === 'function') calculateGestation();
+      if (typeof calculateUSGestation === 'function') calculateUSGestation();
+      if (typeof calculateVisitGAs === 'function') calculateVisitGAs();
+      if (typeof evaluateAllTriggers === 'function') evaluateAllTriggers();
+      if (typeof compileAddress === 'function') compileAddress();
+      if (typeof saveDataSilently === 'function') saveDataSilently();
+
       // 1. Generate Headers
       let csvContent = "Case_ID,Child_Name,Age,Sex,Village,Block,District,Assigned_Cause,ICD_10,Variable_ID,Value\n";
       
-      // 2. Extract demographics directly from the live DOM
+      // 2. Extract demographics directly from live DOM with fallback to sync classes
       const cId = typeof activeCaseId !== 'undefined' ? activeCaseId : 'Unknown_Case';
-      const cName = String(document.getElementById('f1_child')?.value || "Unnamed").replace(/"/g, '""');
-      const cAge = String(document.getElementById('f1_age')?.value || "").replace(/"/g, '""');
-      const cSex = String(document.getElementById('f1_sex')?.value || "").replace(/"/g, '""');
-      const cVill = String(document.getElementById('f1_village')?.value || "").replace(/"/g, '""');
-      const cBlk = String(document.getElementById('f1_block')?.value || "").replace(/"/g, '""');
-      const cDist = String(document.getElementById('f1_district')?.value || "").replace(/"/g, '""');
+      const cName = String(document.getElementById('f1_child')?.value || document.querySelector('.sync-child')?.value || "Unnamed").replace(/"/g, '""');
+      const cAge = String(document.getElementById('f1_age')?.value || document.querySelector('.sync-age')?.value || "").replace(/"/g, '""');
+      const cSex = String(document.getElementById('f1_sex')?.value || document.querySelector('.sync-sex')?.value || "").replace(/"/g, '""');
+      const cVill = String(document.getElementById('f1_village')?.value || document.querySelector('.sync-village')?.value || "").replace(/"/g, '""');
+      const cBlk = String(document.getElementById('f1_block')?.value || document.querySelector('.sync-block')?.value || "").replace(/"/g, '""');
+      const cDist = String(document.getElementById('f1_district')?.value || document.querySelector('.sync-district')?.value || "").replace(/"/g, '""');
+      
+      // Correct Cause and ICD-10 extraction based on active form (Post-Neonatal vs Neonatal)
       const isPostNeonatal = document.getElementById('form3a')?.classList.contains('restricted-tab');
-      const cause = String((isPostNeonatal ? document.getElementById('f3b_assigned_cause')?.value : document.getElementById('f3a_assigned_cause')?.value) || document.getElementById('f3a_assigned_cause')?.value || document.getElementById('f3b_assigned_cause')?.value || "Pending").replace(/"/g, '""');
-      const icd = String((isPostNeonatal ? document.getElementById('f3b_icd_subcode')?.value : document.getElementById('f3a_icd_subcode')?.value) || document.getElementById('f3a_icd_subcode')?.value || document.getElementById('f3b_icd_subcode')?.value || "None").replace(/"/g, '""');
+      let cause = "";
+      let icd = "";
+      if (isPostNeonatal) {
+          cause = document.getElementById('f3b_assigned_cause')?.value || "";
+          icd = document.getElementById('f3b_icd_subcode')?.value || "";
+      } else {
+          cause = document.getElementById('f3a_assigned_cause')?.value || "";
+          icd = document.getElementById('f3a_icd_subcode')?.value || "";
+      }
+      if (!cause) cause = document.getElementById('f2_cause')?.value || "Pending";
+      if (!icd) icd = "None";
+      cause = String(cause).replace(/"/g, '""');
+      icd = String(icd).replace(/"/g, '""');
 
-      // 3. Loop through all inputs instantly
+      // Helper function to append a clean row
+      const addRow = (varId, rawVal) => {
+          if (rawVal === undefined || rawVal === null) return;
+          let valStr = String(rawVal).trim();
+          if (valStr === "") return;
+          let cleanVal = valStr.replace(/"/g, '""');
+          csvContent += `"${cId}","${cName}","${cAge}","${cSex}","${cVill}","${cBlk}","${cDist}","${cause}","${icd}","${varId}","${cleanVal}"\n`;
+      };
+
+      // 3. Set of internal UI/hidden fields that must NOT be exported in CSV
+      const ignoredIds = new Set([
+          'caseSelector',
+          'f4_hrp_dropdown',
+          'f4_hrp_manual_hidden',
+          'f4_hrp_exclusions_hidden',
+          'mediaCategory',
+          'mediaCategoryOther',
+          'mediaUploadInput'
+      ]);
+
+      // 4. Loop through form inputs, selects, textareas
       document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
-          if (el.id && el.type !== 'file' && el.id !== 'f4_hrp_dropdown' && el.id !== 'caseSelector') {
-              let val = el.type === 'checkbox' ? (el.checked ? "Yes" : "No") : el.value;
-              if (val !== "" && val !== undefined) {
-                  let cleanVal = String(val).replace(/"/g, '""');
-                  csvContent += `"${cId}","${cName}","${cAge}","${cSex}","${cVill}","${cBlk}","${cDist}","${cause}","${icd}","${el.id}","${cleanVal}"\n`;
-              }
+          if (!el.id || ignoredIds.has(el.id) || el.type === 'file' || el.type === 'button') return;
+          
+          // Skip elements in restricted tab (e.g., Form 3a when case is post-neonatal, or Form 3b when neonatal)
+          if (el.closest('.restricted-tab')) return;
+
+          // Skip inputs in hidden ANC rows (e.g. Visit 5-8 when only 4 visits are visible)
+          const ancRow = el.closest('tr[id^="anc_row_"]');
+          if (ancRow && (ancRow.style.display === 'none' || getComputedStyle(ancRow).display === 'none')) return;
+
+          let val = el.type === 'checkbox' ? (el.checked ? "Yes" : "No") : el.value;
+          addRow(el.id, val);
+
+          // Backward compatibility: export Form 2 Weight as f2_weight_b alongside f2_weight
+          if (el.id === 'f2_weight' && val !== "") {
+              addRow('f2_weight_b', val);
           }
       });
 
-      // 4. Construct the File
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const fileName = `CDR_Analytics_${cName.replace(/\s+/g, '_')}.csv`;
+      // 5. Export HRP (High-Risk Pregnancy) Categories from live clinical engine (hrpFactorsList)
+      // hrpFactorsList is the true active list of HRP categories (auto-detected + manual - doctor exclusions)
+      if (typeof hrpFactorsList !== 'undefined' && Array.isArray(hrpFactorsList)) {
+          // A. Summary of all identified HRP categories
+          const hrpSummary = hrpFactorsList.length > 0 ? hrpFactorsList.join('; ') : 'None';
+          addRow('f4_hrp_all_categories', hrpSummary);
+          addRow('f4_hrp_total_count', hrpFactorsList.length);
+
+          // B. Individual row for each identified category
+          hrpFactorsList.forEach(cat => {
+              addRow('f4_hrp_category', cat);
+          });
+
+          // C. Standardized binary indicator (Yes/No) for all 27 standard conditions from dropdown
+          const hrpDropdown = document.getElementById('f4_hrp_dropdown');
+          if (hrpDropdown) {
+              Array.from(hrpDropdown.options).forEach(opt => {
+                  const condName = opt.value.trim();
+                  if (condName) {
+                      const slug = 'f4_hrp_' + condName.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase();
+                      const isPresent = hrpFactorsList.includes(condName) ? "Yes" : "No";
+                      addRow(slug, isPresent);
+                  }
+              });
+          }
+      }
+
+      // 6. Export clinical vital interpretation badges (divs with id ending in _inf)
+      document.querySelectorAll('#cdrMasterForm div[id$="_inf"]').forEach(inf => {
+          if (inf.closest('.restricted-tab')) return;
+          const ancRow = inf.closest('tr[id^="anc_row_"]');
+          if (ancRow && (ancRow.style.display === 'none' || getComputedStyle(ancRow).display === 'none')) return;
+          
+          const text = inf.innerText ? inf.innerText.trim() : '';
+          if (text) {
+              addRow(inf.id, text);
+          }
+      });
+
+      // 7. Export Attached Patient Records summary from Media Tab
+      const mediaItems = document.querySelectorAll('#mediaPreviewArea .preview-item');
+      addRow('media_attached_count', mediaItems.length);
+      if (mediaItems.length > 0) {
+          const mediaCategories = [];
+          mediaItems.forEach(item => {
+              const lbl = item.querySelector('.preview-label')?.innerText?.replace(/#\d+\s*/, '')?.trim();
+              if (lbl) mediaCategories.push(lbl);
+          });
+          if (mediaCategories.length > 0) {
+              addRow('media_attached_categories', mediaCategories.join('; '));
+          }
+      }
+
+      // 8. Construct the File (with UTF-8 BOM for Microsoft Excel / international character safety)
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const safeName = cName.replace(/[/\\?%*:|"<>]/g, '_').trim().replace(/\s+/g, '_') || 'Case';
+      const fileName = `CDR_Analytics_${safeName}.csv`;
       
-      // 5. Hard Download Fallback (Mandatory for Mac/PC/Strict Browsers)
+      // 9. Hard Download Fallback (Mandatory for Mac/PC/Strict Browsers)
       const forceDownload = () => {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
@@ -4321,10 +4426,13 @@
           link.style.display = 'none';
           document.body.appendChild(link);
           link.click();
-          document.body.removeChild(link);
+          setTimeout(() => {
+              document.body.removeChild(link);
+              URL.revokeObjectURL(link.href);
+          }, 500);
       };
 
-      // 6. Fire Share Menu or Fallback
+      // 10. Fire Share Menu or Fallback
       try {
           const file = new File([blob], fileName, { type: "text/csv" });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
