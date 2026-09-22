@@ -3023,14 +3023,24 @@
       else console.log("Persistent storage not granted. Data may be cleared under pressure.");
     });
   }
-  // REGISTER SERVICE WORKER (OFFLINE MODE)
+  // REGISTER SERVICE WORKER (OFFLINE MODE + AUTO-UPDATE)
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').then(registration => {
         console.log('ServiceWorker registered with scope:', registration.scope);
+        // Force immediate check for updated sw.js
+        try { registration.update(); } catch(e) {}
       }, err => {
         console.log('ServiceWorker registration failed:', err);
       });
+    });
+    // Reload automatically when a new Service Worker takes over
+    let isSwReloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!isSwReloading) {
+        isSwReloading = true;
+        window.location.reload();
+      }
     });
   }
   let hrpFactorsList = [];
@@ -4329,6 +4339,9 @@
           csvContent += `"${cId}","${cName}","${cAge}","${cSex}","${cVill}","${cBlk}","${cDist}","${cause}","${icd}","${varId}","${cleanVal}"\n`;
       };
 
+      // Engine Version stamp
+      addRow('csv_engine_version', 'v18');
+
       // 3. Set of internal UI/hidden fields that must NOT be exported in CSV
       const ignoredIds = new Set([
           'caseSelector',
@@ -4342,7 +4355,7 @@
 
       // 4. Loop through form inputs, selects, textareas
       document.querySelectorAll('#cdrMasterForm input, #cdrMasterForm select, #cdrMasterForm textarea').forEach(el => {
-          if (!el.id || ignoredIds.has(el.id) || el.type === 'file' || el.type === 'button') return;
+          if (!el.id || el.id.includes('hidden') || el.id.includes('exclusions') || ignoredIds.has(el.id) || el.type === 'file' || el.type === 'button') return;
           
           // Skip elements in restricted tab (e.g., Form 3a when case is post-neonatal, or Form 3b when neonatal)
           if (el.closest('.restricted-tab')) return;
@@ -4360,31 +4373,37 @@
           }
       });
 
-      // 5. Export HRP (High-Risk Pregnancy) Categories from live clinical engine (hrpFactorsList)
-      // hrpFactorsList is the true active list of HRP categories (auto-detected + manual - doctor exclusions)
-      if (typeof hrpFactorsList !== 'undefined' && Array.isArray(hrpFactorsList)) {
-          // A. Summary of all identified HRP categories
-          const hrpSummary = hrpFactorsList.length > 0 ? hrpFactorsList.join('; ') : 'None';
-          addRow('f4_hrp_all_categories', hrpSummary);
-          addRow('f4_hrp_total_count', hrpFactorsList.length);
+      // 5. Export HRP (High-Risk Pregnancy) Categories from live clinical engine AND DOM chips
+      // Combine memory list and live chips directly from DOM as a bulletproof double-failsafe
+      const domHrpChips = Array.from(document.querySelectorAll('#hrp_selected_list .hrp-chip span'))
+          .map(s => s.innerText.trim())
+          .filter(Boolean);
+      const unifiedHrpList = Array.from(new Set([
+          ...(Array.isArray(hrpFactorsList) ? hrpFactorsList : []),
+          ...domHrpChips
+      ])).filter(cat => !manualExcludedAutoFactors.has(cat));
 
-          // B. Individual row for each identified category
-          hrpFactorsList.forEach(cat => {
-              addRow('f4_hrp_category', cat);
+      // A. Summary of all identified HRP categories
+      const hrpSummary = unifiedHrpList.length > 0 ? unifiedHrpList.join('; ') : 'None';
+      addRow('f4_hrp_all_categories', hrpSummary);
+      addRow('f4_hrp_total_count', unifiedHrpList.length);
+
+      // B. Individual row for each identified category
+      unifiedHrpList.forEach(cat => {
+          addRow('f4_hrp_category', cat);
+      });
+
+      // C. Standardized binary indicator (Yes/No) for all 27 standard conditions from dropdown
+      const hrpDropdown = document.getElementById('f4_hrp_dropdown');
+      if (hrpDropdown) {
+          Array.from(hrpDropdown.options).forEach(opt => {
+              const condName = opt.value.trim();
+              if (condName) {
+                  const slug = 'f4_hrp_' + condName.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase();
+                  const isPresent = unifiedHrpList.includes(condName) ? "Yes" : "No";
+                  addRow(slug, isPresent);
+              }
           });
-
-          // C. Standardized binary indicator (Yes/No) for all 27 standard conditions from dropdown
-          const hrpDropdown = document.getElementById('f4_hrp_dropdown');
-          if (hrpDropdown) {
-              Array.from(hrpDropdown.options).forEach(opt => {
-                  const condName = opt.value.trim();
-                  if (condName) {
-                      const slug = 'f4_hrp_' + condName.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase();
-                      const isPresent = hrpFactorsList.includes(condName) ? "Yes" : "No";
-                      addRow(slug, isPresent);
-                  }
-              });
-          }
       }
 
       // 6. Export clinical vital interpretation badges (divs with id ending in _inf)
